@@ -8,7 +8,7 @@ const Banner = () => {
     <Box
       sx={{
         width: "100%",
-        maxHeight: { xs: "auto", md: "400px" },
+        maxHeight: { xs: "auto", md: "450px" },
         overflow: "hidden",
         "& img": {
           width: "100%",

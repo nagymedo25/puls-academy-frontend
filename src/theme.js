@@ -7,7 +7,7 @@ const theme = createTheme({
     primary: {
       main: '#F91C45', // Pulse Academy - Main Red
       light: '#FF6F8E', // A lighter shade of the main red
-      dark: '#C60029',  // A darker shade for contrast
+      dark: '#b80226ff',  // A darker shade for contrast
     },
     secondary: {
       main: '#FFFFFF', // Pulse Academy - White
