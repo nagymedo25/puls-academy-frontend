@@ -17,6 +17,7 @@ import {
   Stack,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import { Link } from 'react-router-dom'; // استيراد Link
 import Logo from "../../../assets/Logo1.png";
 
 const navLinks = [
@@ -90,11 +91,11 @@ const Header = () => {
             </ListItemButton>
           </ListItem>
         ))}
-        <Stack component="div" gap={2}>
-            <Button variant="outlined" color="primary" fullWidth>
+        <Stack component="div" gap={2} sx={{ mt: 2 }}>
+            <Button component={Link} to="/login" variant="outlined" color="primary" fullWidth>
               تسجيل الدخول
             </Button>
-            <Button variant="contained" color="primary" fullWidth>
+            <Button component={Link} to="/register" variant="contained" color="primary" fullWidth>
               إنشاء حساب
             </Button>
         </Stack>
@@ -179,10 +180,10 @@ const Header = () => {
               </Box>
 
               <Stack direction="row" gap={1.5}>
-                <Button variant="outlined" color="primary">
+                <Button component={Link} to="/login" variant="outlined" color="primary">
                   تسجيل الدخول
                 </Button>
-                <Button variant="contained" color="primary" disableElevation>
+                <Button component={Link} to="/register" variant="contained" color="primary" disableElevation>
                   إنشاء حساب
                 </Button>
               </Stack>
