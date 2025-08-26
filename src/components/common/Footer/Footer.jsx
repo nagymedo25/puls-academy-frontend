@@ -1,29 +1,24 @@
-// src/components/landing/Footer/Footer.jsx
+// src/components/common/Footer/Footer.jsx
 import React from 'react';
 import { Box, Container, Typography, IconButton, Stack, Grid, Link } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom'; // استيراد RouterLink
 import FacebookIcon from '@mui/icons-material/Facebook';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
-import Logo from '../../../assets/logo2.png'; // Using the second logo for the footer
+import Logo from '../../../assets/logo2.png';
 
+// 1. تحديث الروابط
 const quickLinks = [
-    { title: 'الرئيسية', path: '#' },
-    { title: 'من نحن', path: '#about-us' },
+    { title: 'الرئيسية', path: '/' },
     { title: 'الكورسات', path: '/courses' },
-    { title: 'تواصل معنا', path: '#contact' },
+    { title: 'من نحن', path: '/#about-us' }, // روابط الأقسام تعمل بشكل أفضل من الصفحة الرئيسية
+    { title: 'تواصل معنا', path: '/#contact' },
 ];
 
 const Footer = () => {
   return (
-    <Box
-      component="footer"
-      sx={{
-        py: 6,
-        backgroundColor: 'primary.dark',
-        color: 'white',
-      }}
-    >
+    <Box component="footer" sx={{ py: 6, backgroundColor: 'primary.dark', color: 'white' }}>
       <Container maxWidth="lg">
         <Grid container spacing={5}>
           {/* Column 1: Logo and About */}
@@ -41,7 +36,7 @@ const Footer = () => {
             </Typography>
             <Stack spacing={1}>
               {quickLinks.map(link => (
-                <Link href={link.path} color="inherit" underline="hover" key={link.title}>
+                <Link component={RouterLink} to={link.path} color="inherit" underline="hover" key={link.title}>
                   {link.title}
                 </Link>
               ))}
@@ -87,12 +82,8 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} Puls Academy. جميع الحقوق محفوظة.
           </Typography>
           <Stack direction="row" spacing={1}>
-            <IconButton href="#" target="_blank" color="inherit">
-              <FacebookIcon />
-            </IconButton>
-            <IconButton href="#" target="_blank" color="inherit">
-              <InstagramIcon />
-            </IconButton>
+            <IconButton href="#" target="_blank" color="inherit"><FacebookIcon /></IconButton>
+            <IconButton href="#" target="_blank" color="inherit"><InstagramIcon /></IconButton>
           </Stack>
         </Box>
       </Container>

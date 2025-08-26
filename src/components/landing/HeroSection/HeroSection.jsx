@@ -2,6 +2,7 @@
 import React from 'react';
 import { Box, Button, Typography, Container, Stack, Grid, alpha } from '@mui/material';
 import { keyframes } from '@emotion/react';
+import { Link } from 'react-router-dom';
 import SchoolIcon from '@mui/icons-material/School'; // Pharmacy Icon
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices'; // Dentistry Icon
 
@@ -99,6 +100,8 @@ const HeroSection = () => {
               }}
             >
               <Button 
+                component={Link}
+                to="/courses?category=pharmacy"
                 variant="contained" 
                 color="primary"
                 size="large"
@@ -118,6 +121,8 @@ const HeroSection = () => {
                 كورسات الصيدلة
               </Button>
               <Button 
+                component={Link}
+                to="/courses?category=dentistry"
                 variant="outlined" 
                 color="primary"
                 size="large"
