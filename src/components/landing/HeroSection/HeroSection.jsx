@@ -91,7 +91,7 @@ const HeroSection = () => {
             </Typography>
             <Stack
               direction={{ xs: 'column', sm: 'row' }}
-              spacing={{ xs: 2, sm: 3 }} // Increased spacing for larger screens
+              gap={{ xs: 2, sm: 3 }} // Increased spacing for larger screens
               justifyContent="center"
               sx={{
                 animation: `${fadeInUp} 0.8s ease-out 0.4s`,

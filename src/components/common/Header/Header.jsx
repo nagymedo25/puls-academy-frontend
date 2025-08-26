@@ -1,5 +1,5 @@
 // src/components/common/Header/Header.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -15,31 +15,31 @@ import {
   useMediaQuery,
   alpha,
   Stack,
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import Logo from '../../../assets/Logo1.png';
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import Logo from "../../../assets/Logo1.png";
 
 const navLinks = [
-  { title: 'الرئيسية', id: 'hero-section' },
-  { title: 'من نحن', id: 'about-us' },
-  { title: 'المميزات', id: 'features-section' },
-  { title: 'تواصل معنا', id: 'contact' },
+  { title: "الرئيسية", id: "hero-section" },
+  { title: "من نحن", id: "about-us" },
+  { title: "المميزات", id: "features-section" },
+  { title: "تواصل معنا", id: "contact" },
 ];
 
 const Header = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -48,11 +48,12 @@ const Header = () => {
     if (element) {
       const headerOffset = 80; // Offset for the sticky header
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - headerOffset;
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth',
+        behavior: "smooth",
       });
     }
   };
@@ -69,26 +70,34 @@ const Header = () => {
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', width: 250, p: 2 }}>
-       <img src={Logo} alt="Puls Academy Logo" style={{ height: '40px', marginBottom: '1rem' }} />
+    <Box
+      onClick={handleDrawerToggle}
+      sx={{ textAlign: "center", width: 250, p: 2 }}
+    >
+      <img
+        src={Logo}
+        alt="Puls Academy Logo"
+        style={{ height: "40px", marginBottom: "1rem" }}
+      />
       <List>
         {navLinks.map((link) => (
           <ListItem key={link.title} disablePadding>
-            <ListItemButton onClick={() => handleLinkClick(link.id)} sx={{ textAlign: 'center' }}>
+            <ListItemButton
+              onClick={() => handleLinkClick(link.id)}
+              sx={{ textAlign: "center" }}
+            >
               <ListItemText primary={link.title} />
             </ListItemButton>
           </ListItem>
         ))}
-         <ListItem >
-          <Button variant="outlined" color="primary" fullWidth>
-            تسجيل الدخول
-          </Button>
-        </ListItem>
-        <ListItem>
-          <Button variant="contained" color="primary" fullWidth>
-            إنشاء حساب
-          </Button>
-        </ListItem>
+        <Stack component="div" gap={2}>
+            <Button variant="outlined" color="primary" fullWidth>
+              تسجيل الدخول
+            </Button>
+            <Button variant="contained" color="primary" fullWidth>
+              إنشاء حساب
+            </Button>
+        </Stack>
       </List>
     </Box>
   );
@@ -99,23 +108,33 @@ const Header = () => {
         position="sticky"
         elevation={isScrolled ? 3 : 0}
         sx={{
-          backgroundColor: isScrolled ? alpha(theme.palette.background.paper, 0.85) : 'transparent',
-          backdropFilter: isScrolled ? 'blur(10px)' : 'none',
-          transition: 'background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+          backgroundColor: isScrolled
+            ? alpha(theme.palette.background.paper, 0.85)
+            : "transparent",
+          backdropFilter: isScrolled ? "blur(10px)" : "none",
+          transition:
+            "background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
         }}
       >
-        <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
+        <Toolbar sx={{ justifyContent: "space-between", py: 1 }}>
           <Box
             component="a"
             href="#"
-            onClick={(e) => { e.preventDefault(); handleLinkClick('hero-section'); }}
+            onClick={(e) => {
+              e.preventDefault();
+              handleLinkClick("hero-section");
+            }}
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              textDecoration: 'none',
+              display: "flex",
+              alignItems: "center",
+              textDecoration: "none",
             }}
           >
-            <img src={Logo} alt="Puls Academy Logo" style={{ height: '45px', transition: 'transform 0.3s' }} />
+            <img
+              src={Logo}
+              alt="Puls Academy Logo"
+              style={{ height: "45px", transition: "transform 0.3s" }}
+            />
           </Box>
 
           {isMobile ? (
@@ -129,29 +148,29 @@ const Header = () => {
             </IconButton>
           ) : (
             <>
-              <Box sx={{ display: 'flex', gap: 1 }}>
+              <Box sx={{ display: "flex", gap: 1 }}>
                 {navLinks.map((link) => (
-                  <Button 
-                    key={link.title} 
+                  <Button
+                    key={link.title}
                     onClick={() => handleLinkClick(link.id)}
                     sx={{
-                      color: 'text.primary',
+                      color: "text.primary",
                       fontWeight: 600,
-                      position: 'relative',
-                      '&::after': {
+                      position: "relative",
+                      "&::after": {
                         content: '""',
-                        position: 'absolute',
-                        width: '0',
-                        height: '2px',
-                        bottom: '5px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        backgroundColor: 'primary.main',
-                        transition: 'width 0.3s ease',
+                        position: "absolute",
+                        width: "0",
+                        height: "2px",
+                        bottom: "5px",
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        backgroundColor: "primary.main",
+                        transition: "width 0.3s ease",
                       },
-                      '&:hover::after': {
-                        width: '80%',
-                      }
+                      "&:hover::after": {
+                        width: "80%",
+                      },
                     }}
                   >
                     {link.title}
@@ -159,7 +178,7 @@ const Header = () => {
                 ))}
               </Box>
 
-              <Stack direction="row" spacing={1.5}>
+              <Stack direction="row" gap={1.5}>
                 <Button variant="outlined" color="primary">
                   تسجيل الدخول
                 </Button>
