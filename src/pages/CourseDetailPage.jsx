@@ -9,7 +9,7 @@ import Header from '../components/common/Header/Header';
 import Footer from '../components/common/Footer/Footer';
 import CourseService from '../services/courseService';
 import AuthRedirectModal from '../components/common/AuthRedirectModal';
-import SecureVideoPlayer from '../components/common/SecureVideoPlayer'; // ✨ استيراد المشغل الجديد
+import SecureVideoPlayer from '../components/common/SecureVideoPlayer'; // استيراد المشغل
 
 import './CourseDetailPage.css';
 
@@ -32,9 +32,9 @@ const CourseDetailPage = () => {
         ]);
         setCourse(courseRes.data.course);
         setLessons(lessonsRes.data.lessons);
-      } catch (err) {
+      } catch (err) { // --- START: هذا هو السطر الذي تم تصحيحه ---
         setError('فشل في تحميل بيانات الكورس. يرجى التأكد من الرابط والمحاولة مرة أخرى.');
-      } finally {
+      } finally { // --- END: نهاية الجزء المصحح ---
         setLoading(false);
       }
     };
@@ -57,8 +57,8 @@ const CourseDetailPage = () => {
           <div className="page-grid">
             <div className="video-column">
               
-              {/* ✨ استبدال iframe بالمشغل الجديد */}
-              <SecureVideoPlayer url={course.preview_url} />
+              {/* تم تغيير 'url' إلى 'src' ليتوافق مع المشغل الجديد */}
+              <SecureVideoPlayer src={course.preview_url} />
 
               <div className="course-meta">
                 <h1>{course.title}</h1>

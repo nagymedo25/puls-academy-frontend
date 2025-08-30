@@ -1,53 +1,44 @@
-// src/components/common/SecureVideoPlayer.jsx
-import React, { useState, useEffect } from 'react'; // ✨ ١. استيراد useState و useEffect
+import React, { useRef } from 'react';
 import ReactPlayer from 'react-player';
 import './SecureVideoPlayer.css';
 import { Box, Typography } from '@mui/material';
 
-const SecureVideoPlayer = ({ url }) => {
-  const [playing, setPlaying] = useState(false); // ✨ ٢. إضافة حالة جديدة
-
-  // ✨ ٣. تأخير التشغيل التلقائي قليلاً بعد تحميل المكون
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setPlaying(true);
-    }, 500); // تأخير نصف ثانية
-
-    return () => clearTimeout(timer); // تنظيف المؤقت
-  }, []);
+const SecureVideoPlayer = ({ src }) => {
+  const playerRef = useRef(null);
 
   const handleContextMenu = (e) => {
     e.preventDefault();
   };
-  
-  if (!url) {
-      return (
-          <Box className="player-wrapper" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Typography color="white">لا يوجد فيديو معاينة متاح حاليًا.</Typography>
-          </Box>
-      )
+
+  if (!src) {
+    return (
+      <Box className="player-wrapper" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#000' }}>
+        <Typography color="white">لا يوجد فيديو متاح حاليًا.</Typography>
+      </Box>
+    );
   }
 
   return (
-    <div className="player-wrapper">
-      <div className="player-overlay" onContextMenu={handleContextMenu} />
-      
+    <div className="player-wrapper" onContextMenu={handleContextMenu}>
       <ReactPlayer
+        ref={playerRef}
         className="react-player"
-        url={url}
+        src={src}
         width="100%"
         height="100%"
-        controls={true}
-        playing={playing} // ✨ ٤. تطبيق حالة التشغيل على المشغل
+        controls
         config={{
           file: {
-            forceFile: true,
             attributes: {
-              controlsList: 'nodownload',
+              controlsList: 'nodownload noplaybackrate',
               disablePictureInPicture: true,
             },
           },
         }}
+        onLeavePictureInPicture={() => {
+          /* تعامل مع إخراج PiP */
+        }}
+        onContextMenu={(e) => e.preventDefault()}
       />
     </div>
   );

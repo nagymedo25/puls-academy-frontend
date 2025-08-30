@@ -58,6 +58,7 @@ const CourseManagementPage = () => {
 
   const handleSaveCourse = async (courseData) => {
     setFormLoading(true);
+    setError(''); // مسح الأخطاء القديمة
     try {
       if (selectedCourse) {
         await AdminService.updateCourse(selectedCourse.course_id, courseData);
@@ -67,7 +68,8 @@ const CourseManagementPage = () => {
       handleCloseModal();
       fetchCourses();
     } catch (err) {
-      setError('فشل في حفظ الكورس.');
+      // ✨ التعديل هنا: عرض رسالة الخطأ القادمة من الواجهة الخلفية
+      setError(err.response?.data?.error || 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.');
     } finally {
       setFormLoading(false);
     }
