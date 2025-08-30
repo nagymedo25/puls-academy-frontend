@@ -20,11 +20,10 @@ const CourseCard = ({ course }) => {
   const navigate = useNavigate();
   const theme = useTheme();
 
-  // --- استخدام الرابط الحقيقي للصورة المصغرة من الـ API ---
-  const imageUrl = course.thumbnail_url || `https://placehold.co/600x400/F91C45/FFFFFF?text=${encodeURIComponent(course.title)}`;
+  const imageUrl = course.thumbnail_url;
 
   const handleCardClick = () => {
-    // navigate(`/courses/${course.course_id}`); // جاهز للتفعيل لاحقًا
+    // navigate(`/courses/${course.course_id}`); // This will be activated later
     console.log(`Navigating to course ${course.course_id}`);
   };
 
@@ -44,17 +43,30 @@ const CourseCard = ({ course }) => {
         overflow: 'hidden',
       }}
     >
-      <CardActionArea onClick={handleCardClick} sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 0, alignItems: 'flex-start' }}>
-        <Box sx={{ position: 'relative', width: '100%' }}>
+      <CardActionArea 
+        onClick={handleCardClick} 
+        sx={{ 
+          flexGrow: 1, 
+          display: 'flex', 
+          flexDirection: 'column',
+          // No padding here to allow the image to fill the top
+          p: 0, 
+        }}
+      >
+        <Box sx={{ position: 'relative', width: '100%', pt: '56.25%' /* 16:9 Aspect Ratio */ }}>
           <Box
             component="img"
-            src={imageUrl} // <-- هنا يتم استخدام الرابط الصحيح
+            src={imageUrl}
             alt={course.title}
             sx={{
-              height: 180,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              height: '100%',
               width: '100%',
               objectFit: 'cover',
               transition: 'transform 0.35s ease-in-out',
+              // Apply hover effect through the parent CardActionArea
               '.MuiCardActionArea-root:hover &': {
                 transform: 'scale(1.05)',
               }
@@ -68,18 +80,34 @@ const CourseCard = ({ course }) => {
               position: 'absolute',
               top: 16,
               right: 16,
-              backgroundColor: alpha(theme.palette.primary.dark, 0.8),
+              backgroundColor: alpha(theme.palette.primary.dark, 0.85),
               color: 'white',
-              backdropFilter: 'blur(4px)',
+              backdropFilter: 'blur(5px)',
               fontWeight: 'bold',
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
             }}
           />
         </Box>
-        <CardContent sx={{ flexGrow: 1, width: '100%', p: 2.5 }}>
-          <Typography gutterBottom variant="h6" component="h3" sx={{ fontWeight: 600, minHeight: { xs: 'auto', md: '64px' }, mb: 2 }}>
+        <CardContent sx={{ flexGrow: 1, width: '100%', p: { xs: 2, sm: 2.5 }, display: 'flex', flexDirection: 'column' }}>
+          <Typography 
+            gutterBottom 
+            variant="h6" 
+            component="h3" 
+            sx={{ 
+              fontWeight: 600, 
+              flexGrow: 1, // Allow title to take up available space
+              mb: 2,
+              minHeight: '56px', // Ensures a consistent height for 2 lines of text
+              display: '-webkit-box',
+              WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 2,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
             {course.title}
           </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 'auto' }}>
             <Typography variant="h5" color="primary.dark" sx={{ fontWeight: 'bold' }}>
               {course.price} جنيه
             </Typography>
@@ -89,7 +117,7 @@ const CourseCard = ({ course }) => {
           </Box>
         </CardContent>
       </CardActionArea>
-      <Box sx={{ p: 2.5, pt: 0 }}>
+      <Box sx={{ p: { xs: 2, sm: 2.5 }, pt: 0 }}>
         <Button
           fullWidth
           variant="contained"
