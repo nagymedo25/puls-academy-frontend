@@ -1,0 +1,67 @@
+/*
+ * Professional Course Form Modal Styles
+ */
+
+/* Style for the main modal box */
+.course-modal-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 700px; /* Max width on large screens */
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 32px;
+  max-height: 90vh; /* Limit height to 90% of viewport */
+  overflow-y: auto; /* Enable vertical scroll if content overflows */
+}
+
+/* Custom Scrollbar Styling (Red) */
+.course-modal-box::-webkit-scrollbar {
+  width: 8px;
+}
+
+.course-modal-box::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.course-modal-box::-webkit-scrollbar-thumb {
+  background: #F91C45; /* Pulse Academy Red */
+  border-radius: 10px;
+}
+
+.course-modal-box::-webkit-scrollbar-thumb:hover {
+  background: #b80226; /* Darker Red on hover */
+}
+
+/* Form container for spacing */
+.course-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Consistent spacing between all fields */
+}
+
+/* Styling for the two-column layout on larger screens */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.form-row > * {
+  flex: 1; /* Make columns equal width */
+  min-width: 200px; /* Prevent columns from getting too small */
+}
+
+/* Footer for buttons */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 16px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 24px;
+}

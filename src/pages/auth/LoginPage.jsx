@@ -11,7 +11,7 @@ import LockOutlined from '@mui/icons-material/LockOutlined';
 import AuthService from '../../services/authService';
 import Logo from '../../assets/Logo1.png';
 
-// Keyframes for animations (reusing from RegisterPage for consistency)
+// ... (الـ Keyframes و AbstractShape تبقى كما هي) ...
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -23,7 +23,6 @@ const float = keyframes`
   100% { transform: translate(0, 0) rotate(360deg); }
 `;
 
-// Abstract shape component for background decoration
 const AbstractShape = ({ sx }) => (
   <Box
     sx={{
@@ -35,6 +34,7 @@ const AbstractShape = ({ sx }) => (
     }}
   />
 );
+
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -56,15 +56,27 @@ const LoginPage = () => {
 
     try {
       const response = await AuthService.login(formData);
-      // Assuming the token is in response.data.token
-      localStorage.setItem('token', response.data.token);
-      // You might also get a refresh token
-      if (response.data.refreshToken) {
-        localStorage.setItem('refreshToken', response.data.refreshToken);
+      const { token, refreshToken } = response.data;
+
+      // 1. تخزين التوكن
+      localStorage.setItem('token', token);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
       }
-      navigate('/dashboard'); // Redirect to the user's dashboard after login
+
+      // 2. فك تشفير التوكن للحصول على صلاحية المستخدم
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const userRole = payload.role;
+
+      // 3. التوجيه بناءً على الصلاحية
+      if (userRole === 'admin') {
+        navigate('/admin'); // توجيه الأدمن إلى لوحة تحكم الأدمن
+      } else {
+        navigate('/dashboard'); // توجيه الطالب إلى لوحة تحكم الطالب
+      }
+
     } catch (err) {
-      setError(err.response?.data?.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+      setError(err.response?.data?.error || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.');
     } finally {
       setLoading(false);
     }
@@ -83,7 +95,7 @@ const LoginPage = () => {
         py: 5,
       }}
     >
-      {/* Background shapes */}
+      {/* ... (باقي كود JSX يبقى كما هو بدون تغيير) ... */}
       <AbstractShape sx={{ width: 250, height: 250, top: '-50px', right: '-80px', animationDuration: '20s' }} />
       <AbstractShape sx={{ width: 150, height: 150, top: '30%', left: '-50px', animationDuration: '18s' }} />
       <AbstractShape sx={{ width: 200, height: 200, bottom: '-70px', left: '20%', animationDuration: '22s' }} />

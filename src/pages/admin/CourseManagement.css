@@ -1,0 +1,135 @@
+/*
+ * Course Management Page Styles (Professional Mobile-First with Animated Borders)
+ */
+
+/* 1. Header Styling (No Change) */
+.course-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* 2. Base Table Styles (for Desktop) */
+.responsive-course-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.responsive-course-table thead {
+  background-color: #f9fafb; /* Light background for header */
+}
+
+.responsive-course-table th,
+.responsive-course-table td {
+  padding: 16px;
+  text-align: right;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle; /* Center content vertically */
+}
+
+.responsive-course-table th {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #616161;
+  text-transform: uppercase; /* Professional look */
+}
+
+/* Keyframes for the border animation */
+@keyframes rotateBorder {
+  0% {
+    border-color: #e0e0e0; /* Start with a subtle grey */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  25% {
+    border-color: #a7d9ff; /* Light blue */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12), 0 0 10px rgba(167, 217, 255, 0.4);
+  }
+  50% {
+    border-color: #c8e6c9; /* Light green */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12), 0 0 10px rgba(200, 230, 201, 0.4);
+  }
+  75% {
+    border-color: #ffe0b2; /* Light orange */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12), 0 0 10px rgba(255, 224, 178, 0.4);
+  }
+  100% {
+    border-color: #e0e0e0; /* End with subtle grey */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+}
+
+/* 3. Professional Mobile Card Design with Animated Border */
+@media (max-width: 960px) { /* Apply on tablets and phones */
+  
+  .responsive-course-table thead {
+    display: none; /* Hide table header on mobile */
+  }
+
+  /* Main Card Style with Animated Border */
+  .responsive-course-table.mobile-card-wrapper { /* Apply to the outer div in JSX */
+    margin-bottom: 24px;
+    border: 2px solid #e0e0e0; /* Initial border */
+    border-radius: 16px;
+    background-color: #fff;
+    overflow: hidden;
+    position: relative; /* For pseudo-element if needed */
+    transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+    animation: rotateBorder 15s infinite alternate ease-in-out; /* Apply animation */
+    
+    /* Add subtle hover effect */
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+  }
+
+  .responsive-course-table td {
+    display: block;
+    padding: 0; /* Reset padding to build custom layout */
+    border: none; /* Remove cell borders */
+  }
+
+  /* Custom Card Layout Classes */
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .card-body {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns for details */
+    gap: 16px;
+  }
+  
+  .card-detail {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-detail .label {
+    font-size: 0.8rem;
+    color: #757575;
+    margin-bottom: 4px;
+  }
+
+  .card-detail .value {
+    font-weight: 600;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: flex-end; /* Align buttons to the left (end for RTL) */
+    gap: 8px;
+    padding: 12px 16px;
+    background-color: #f9fafb;
+    border-top: 1px solid #e0e0e0;
+  }
+}

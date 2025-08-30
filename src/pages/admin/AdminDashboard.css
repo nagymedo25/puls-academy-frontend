@@ -1,0 +1,35 @@
+/* حاوية الشبكة الرئيسية للكروت */
+.stats-grid-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px; /* المسافة بين الكروت */
+  margin-top: 16px;
+}
+
+.full-width-card-item {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 24px; /* نفس قيمة الـ gap للمحافظة على التناسق */
+}
+
+/* العنصر الواحد (الكارت) داخل الشبكة */
+.stat-card-item {
+  width: 100%; /* العرض الكامل للشاشة على الهواتف (افتراضي) */
+  box-sizing: border-box;
+}
+
+/* للشاشات الصغيرة (Small) فما فوق - مثل الأجهزة اللوحية */
+@media (min-width: 600px) {
+  .stat-card-item {
+    /* كل كارت يأخذ نصف العرض مع حساب المسافة بينهما */
+    width: calc(50% - 12px); 
+  }
+}
+
+/* للشاشات المتوسطة (Medium) فما فوق - مثل شاشات الكمبيوتر */
+@media (min-width: 960px) {
+  .stat-card-item {
+    /* كل كارت يأخذ ربع العرض مع حساب المسافة بينهما */
+    width: calc(25% - 18px);
+  }
+}   

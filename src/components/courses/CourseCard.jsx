@@ -23,8 +23,7 @@ const CourseCard = ({ course }) => {
   const imageUrl = course.thumbnail_url;
 
   const handleCardClick = () => {
-    // navigate(`/courses/${course.course_id}`); // This will be activated later
-    console.log(`Navigating to course ${course.course_id}`);
+    navigate(`/course/${course.course_id}`); 
   };
 
   return (
