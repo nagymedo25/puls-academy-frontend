@@ -5,19 +5,24 @@ import LandingPage from './pages/LandingPage';
 import RegisterPage from './pages/auth/RegisterPage'; 
 import LoginPage from './pages/auth/LoginPage';
 import CoursesPage from './pages/CoursesPage';
+import CourseDetailPage from './pages/CourseDetailPage';
 
-// استيراد مكونات الأدمن الجديدة
+// Admin Imports
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import PaymentsManagementPage from './pages/admin/PaymentsManagementPage';
 import CourseManagementPage from './pages/admin/CourseManagementPage';
 import StudentManagementPage from './pages/admin/StudentManagementPage';
-import AdminRoute from './components/common/AdminRoute'; // استيراد مسار الأدمن المحمي
+import AdminRoute from './components/common/AdminRoute';
 
+// ✨ START: Student Dashboard Imports ✨
 import DashboardLayout from './pages/student/Dashboard/DashboardLayout';
-import DashboardHomePage from './pages/student/Dashboard/DashboardHomePage';
+import MyCoursesPage from './pages/student/Dashboard/MyCoursesPage'; // الصفحة الرئيسية الجديدة
+import NotificationsPage from './pages/student/Dashboard/NotificationsPage'; // صفحة الإشعارات
+import ProfilePage from './pages/student/Dashboard/ProfilePage'; // صفحة الملف الشخصي
 import PrivateRoute from './components/common/PrivateRoute';
-import CourseDetailPage from './pages/CourseDetailPage';
+// ✨ END: Student Dashboard Imports ✨
+
 
 function App() {
   return (
@@ -28,15 +33,17 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/courses" element={<CoursesPage />} />
-         <Route path="/course/:courseId" element={<CourseDetailPage />} />
+        <Route path="/course/:courseId" element={<CourseDetailPage />} />
 
-        {/* Private Student Dashboard Routes */}
+        {/* ✨ START: Updated Private Student Dashboard Routes ✨ */}
         <Route element={<PrivateRoute />}>
-          <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<DashboardHomePage />} />
-            {/* يمكنك إضافة مسارات لوحة التحكم الأخرى هنا مستقبلًا */}
+          <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route index element={<MyCoursesPage />} /> {/* الصفحة الرئيسية للداشبورد */}
+            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Route>
+        {/* ✨ END: Updated Private Student Dashboard Routes ✨ */}
         
         {/* Private Admin Dashboard Routes */}
         <Route element={<AdminRoute />}>

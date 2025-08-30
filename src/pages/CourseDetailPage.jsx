@@ -9,10 +9,10 @@ import Header from '../components/common/Header/Header';
 import Footer from '../components/common/Footer/Footer';
 import CourseService from '../services/courseService';
 import AuthRedirectModal from '../components/common/AuthRedirectModal';
-import SecureVideoPlayer from '../components/common/SecureVideoPlayer'; // استيراد المشغل
 
 import './CourseDetailPage.css';
 
+  
 const CourseDetailPage = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -32,9 +32,9 @@ const CourseDetailPage = () => {
         ]);
         setCourse(courseRes.data.course);
         setLessons(lessonsRes.data.lessons);
-      } catch (err) { // --- START: هذا هو السطر الذي تم تصحيحه ---
+      } catch (err) {
         setError('فشل في تحميل بيانات الكورس. يرجى التأكد من الرابط والمحاولة مرة أخرى.');
-      } finally { // --- END: نهاية الجزء المصحح ---
+      } finally {
         setLoading(false);
       }
     };
@@ -49,6 +49,27 @@ const CourseDetailPage = () => {
     return <Alert severity="error">{error || 'لم يتم العثور على الكورس.'}</Alert>;
   }
 
+  // ✨ START: دالة جديدة لتحويل رابط 'play' إلى رابط 'embed' الصحيح ✨
+  const getBunnyEmbedUrl = (playUrl) => {
+    if (!playUrl || !playUrl.includes('mediadelivery.net/play')) {
+      console.error("Invalid Bunny.net URL provided in database:", playUrl);
+      return ''; // إرجاع رابط فارغ إذا كان الرابط غير صالح
+    }
+    try {
+      // استبدال '/play/' بـ '/embed/' للحصول على رابط التضمين الصحيح
+      const embedUrl = new URL(playUrl.replace('/play/', '/embed/'));
+      // إضافة پارامترات مفيدة للتحكم في المشغل
+      embedUrl.searchParams.set('autoplay', 'false'); // منع التشغيل التلقائي
+      return embedUrl.toString();
+    } catch (e) {
+      console.error("Could not parse Bunny.net URL", e);
+      return ''; // إرجاع رابط فارغ في حالة حدوث خطأ
+    }
+  }
+
+  const embedSrc = getBunnyEmbedUrl(course.preview_url);
+  // ✨ END: نهاية الدالة الجديدة ✨
+
   return (
     <>
       <Header />
@@ -57,8 +78,23 @@ const CourseDetailPage = () => {
           <div className="page-grid">
             <div className="video-column">
               
-              {/* تم تغيير 'url' إلى 'src' ليتوافق مع المشغل الجديد */}
-              <SecureVideoPlayer src={course.preview_url} />
+              <div className="video-player-wrapper">
+                {embedSrc ? (
+                  <iframe
+                    src={embedSrc}
+                    loading="lazy"
+                    title={course.title}
+                    style={{ border: 'none', position: 'absolute', top: 0, left: 0, height: '100%', width: '100%' }}
+                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                    allowFullScreen={true}
+                  ></iframe>
+                ) : (
+                  // رسالة تظهر في حالة وجود مشكلة في الرابط
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                     <Typography color="white">فشل تحميل الفيديو. الرابط غير صالح.</Typography>
+                  </Box>
+                )}
+              </div>
 
               <div className="course-meta">
                 <h1>{course.title}</h1>
@@ -76,6 +112,7 @@ const CourseDetailPage = () => {
                 افتح الكورس الآن ({course.price} ج.م)
               </Button>
               <ul className="lessons-list">
+                <h2>الدروس الخاصة بالكورس :</h2>
                 {lessons.map(lesson => (
                   <li 
                     key={lesson.lesson_id} 
@@ -103,3 +140,4 @@ const CourseDetailPage = () => {
 };
 
 export default CourseDetailPage;
+

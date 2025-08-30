@@ -1,13 +1,15 @@
 // src/pages/admin/CourseManagementPage.jsx
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Button, CircularProgress, Alert, Modal, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import AdminService from '../../services/adminService';
 import CourseTable from '../../components/admin/CourseTable';
 import CourseFormModal from '../../components/admin/CourseFormModal';
-// ✨ ١. استيراد المكون الجديد
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { keyframes } from '@emotion/react';
+
+// ✨ 1. استيراد المكون الجديد لإدارة الدروس
+import LessonManager from '../../components/admin/LessonManager'; 
 
 import './CourseManagement.css'; 
 
@@ -24,10 +26,13 @@ const CourseManagementPage = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   
-  // ✨ ٢. حالات جديدة لنافذة تأكيد الحذف
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [courseToDelete, setCourseToDelete] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // ✨ 2. حالات جديدة لنافذة إدارة الدروس
+  const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
+  const [selectedCourseForLessons, setSelectedCourseForLessons] = useState(null);
 
 
   const fetchCourses = async () => {
@@ -68,26 +73,22 @@ const CourseManagementPage = () => {
       handleCloseModal();
       fetchCourses();
     } catch (err) {
-      // ✨ التعديل هنا: عرض رسالة الخطأ القادمة من الواجهة الخلفية
       setError(err.response?.data?.error || 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.');
     } finally {
       setFormLoading(false);
     }
   };
 
-  // ✨ ٣. دالة لفتح نافذة التأكيد
   const handleDeleteRequest = (courseId) => {
     setCourseToDelete(courseId);
     setConfirmModalOpen(true);
   };
 
-  // ✨ ٤. دالة لإغلاق نافذة التأكيد
   const handleCloseConfirmModal = () => {
     setConfirmModalOpen(false);
     setCourseToDelete(null);
   };
   
-  // ✨ ٥. دالة لتنفيذ الحذف بعد التأكيد
   const handleConfirmDelete = async () => {
     if (!courseToDelete) return;
     setDeleteLoading(true);
@@ -97,10 +98,22 @@ const CourseManagementPage = () => {
       fetchCourses(); // تحديث القائمة
     } catch (err) {
       setError('فشل في حذف الكورس.');
-      handleCloseConfirmModal(); // أغلق النافذة حتى في حالة الفشل
+      handleCloseConfirmModal();
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+  // ✨ 3. دوال لفتح وإغلاق نافذة إدارة الدروس
+  const handleOpenLessonManager = (course) => {
+    setSelectedCourseForLessons(course);
+    setIsLessonModalOpen(true);
+  };
+
+  const handleCloseLessonManager = () => {
+    setIsLessonModalOpen(false);
+    setSelectedCourseForLessons(null);
+    fetchCourses(); // ✨ تحديث عدد الدروس في الجدول عند إغلاق النافذة
   };
 
 
@@ -120,10 +133,16 @@ const CourseManagementPage = () => {
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Box>
       ) : (
-        // ✨ ٦. تمرير دالة handleDeleteRequest إلى الجدول
-        <CourseTable courses={courses} onEdit={handleOpenModal} onDelete={handleDeleteRequest} />
+        // ✨ 4. تمرير دالة فتح نافذة الدروس إلى الجدول
+        <CourseTable 
+          courses={courses} 
+          onEdit={handleOpenModal} 
+          onDelete={handleDeleteRequest}
+          onManageLessons={handleOpenLessonManager} 
+        />
       )}
 
+      {/* نافذة تعديل/إضافة الكورس (تبقى كما هي) */}
       <CourseFormModal 
         open={isModalOpen}
         onClose={handleCloseModal}
@@ -132,7 +151,6 @@ const CourseManagementPage = () => {
         loading={formLoading}
       />
       
-      {/* ✨ ٧. إضافة نافذة التأكيد إلى الصفحة */}
       <ConfirmationModal
         open={confirmModalOpen}
         onClose={handleCloseConfirmModal}
@@ -141,6 +159,16 @@ const CourseManagementPage = () => {
         message="هل أنت متأكد من رغبتك في حذف هذا الكورس؟ سيتم حذف جميع الدروس والبيانات المتعلقة به بشكل نهائي ولا يمكن التراجع عن هذا الإجراء."
         loading={deleteLoading}
       />
+
+      {/* ✨ 5. إضافة نافذة إدارة الدروس الجديدة */}
+      {selectedCourseForLessons && (
+        <Modal open={isLessonModalOpen} onClose={handleCloseLessonManager}>
+            <Paper sx={{ p: 4, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: { xs: '90%', md: '700px' }, maxHeight: '90vh', overflowY: 'auto', borderRadius: '16px' }}>
+                <Typography variant="h5" mb={3} fontWeight="700">إدارة دروس: {selectedCourseForLessons.title}</Typography>
+                <LessonManager courseId={selectedCourseForLessons.course_id} />
+            </Paper>
+        </Modal>
+      )}
     </Box>
   );
 };

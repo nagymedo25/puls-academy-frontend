@@ -22,24 +22,30 @@
   min-width: 0;
 }
 
-/* Video Player Styling */
+/* --- START: Video Player Styling --- */
+
+/* This is the main container for the video player */
 .video-player-wrapper {
   position: relative;
-  padding-top: 56.25%; /* 16:9 Aspect Ratio */
-  background-color: #000;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio (9 / 16 * 100) */
+  background-color: #000; /* Black background for loading */
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 
+/* This targets the iframe inside the wrapper */
 .video-player-wrapper iframe {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  border: none;
+  border: none; /* Removes the default iframe border */
 }
+
+/* --- END: Video Player Styling --- */
+
 
 /* Course Metadata */
 .course-meta {

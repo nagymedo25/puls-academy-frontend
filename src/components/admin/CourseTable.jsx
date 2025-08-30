@@ -2,20 +2,21 @@
 import React from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Avatar, Box, Typography, Chip, useTheme, useMediaQuery
+  IconButton, Avatar, Box, Typography, Chip, useTheme, useMediaQuery, Button
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SchoolIcon from '@mui/icons-material/School';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks'; // أيقونة جديدة للدروس
 
-const CourseTable = ({ courses, onEdit, onDelete }) => {
+// تم إضافة onManageLessons كخاصية جديدة
+const CourseTable = ({ courses, onEdit, onDelete, onManageLessons }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Mobile Card View
   const MobileCard = ({ course }) => (
-    // ✨ إضافة الكلاس الجديد هنا
     <div className="responsive-course-table mobile-card-wrapper">
       <div className="card-header">
         <Avatar variant="rounded" src={course.thumbnail_url} alt={course.title} sx={{ width: 56, height: 56 }} />
@@ -43,17 +44,16 @@ const CourseTable = ({ courses, onEdit, onDelete }) => {
         </div>
       </div>
       <div className="card-footer">
-        <IconButton onClick={() => onEdit(course)} color="primary">
-          <EditIcon />
-        </IconButton>
-        <IconButton onClick={() => onDelete(course.course_id)} color="error">
-          <DeleteIcon />
-        </IconButton>
+        <Button variant="outlined" size="small" startIcon={<LibraryBooksIcon />} onClick={() => onManageLessons(course)}>
+          الدروس
+        </Button>
+        <IconButton onClick={() => onEdit(course)} color="primary"><EditIcon /></IconButton>
+        <IconButton onClick={() => onDelete(course.course_id)} color="error"><DeleteIcon /></IconButton>
       </div>
     </div>
   );
 
-  // Desktop Table View (بدون تغيير)
+  // Desktop Table View
   const DesktopTable = () => (
     <TableContainer component={Paper} className="responsive-course-table" sx={{ borderRadius: '16px' }}>
       <Table>
@@ -86,6 +86,9 @@ const CourseTable = ({ courses, onEdit, onDelete }) => {
               <TableCell>{course.price} ج.م</TableCell>
               <TableCell>{course.lessons_count || 0}</TableCell>
               <TableCell align="center">
+                <Button variant="text" size="small" startIcon={<LibraryBooksIcon />} onClick={() => onManageLessons(course)}>
+                  الدروس
+                </Button>
                 <IconButton onClick={() => onEdit(course)} color="primary"><EditIcon /></IconButton>
                 <IconButton onClick={() => onDelete(course.course_id)} color="error"><DeleteIcon /></IconButton>
               </TableCell>
