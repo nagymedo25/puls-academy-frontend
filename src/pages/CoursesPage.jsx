@@ -143,6 +143,7 @@ const CoursesList = ({ category, collegeType }) => {
   const [error, setError] = useState('');
   const theme = useTheme();
   const categoryText = category === 'pharmacy' ? 'الصيدلة' : 'طب الأسنان';
+  // ✨ النص سيعرض بناء على اختيار المستخدم
   const collegeText = collegeType === 'male' ? 'البنين' : 'البنات';
 
   useEffect(() => {
@@ -150,7 +151,8 @@ const CoursesList = ({ category, collegeType }) => {
       setLoading(true);
       setError('');
       try {
-        const response = await CourseService.getAllCourses({ category, college_type: collegeType });
+        // ✨ هنا التعديل الرئيسي: يتم تجاهل college_type وإرسال القسم فقط
+        const response = await CourseService.getAllCourses({ category });
         setCourses(response.data.courses || []);
       } catch (err) {
         setError('حدث خطأ أثناء جلب الكورسات. يرجى المحاولة مرة أخرى.');

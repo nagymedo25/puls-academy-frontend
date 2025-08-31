@@ -1,7 +1,10 @@
 // src/pages/student/CourseWatchPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, List, ListItem, ListItemButton, ListItemText, CircularProgress, Alert, Paper, IconButton, useMediaQuery, useTheme, Divider, Button } from '@mui/material';
+// ✨ --- START: التعديل الرئيسي هنا --- ✨
+// تم إضافة ListItemIcon إلى قائمة الاستيراد لحل الخطأ
+import { Box, Typography, List, ListItem, ListItemButton, ListItemText, CircularProgress, Alert, Paper, IconButton, useMediaQuery, useTheme, Divider, Button, ListItemIcon } from '@mui/material';
+// ✨ --- END: التعديل الرئيسي هنا --- ✨
 import MenuIcon from '@mui/icons-material/Menu';
 import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';

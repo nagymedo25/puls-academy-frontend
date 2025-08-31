@@ -23,7 +23,6 @@ const AdminService = {
     return api.get("/admin/courses");
   },
   createCourse: (courseData) => {
-    // courseData should be an object with course details
     return api.post("/courses", courseData);
   },
   updateCourse: (courseId, courseData) => {
@@ -53,6 +52,29 @@ const AdminService = {
   },
   getUserDetails: (userId) => {
     return api.get(`/admin/users/${userId}`);
+  },
+  // ✨ دالة جديدة لتحديث بيانات الطالب
+  updateUser: (userId, userData) => {
+    return api.put(`/admin/users/${userId}`, userData);
+  },
+  // ✨ دالة جديدة لحذف الطالب
+  deleteUser: (userId) => {
+    return api.delete(`/admin/users/${userId}`);
+  },
+
+  getUserDetails: (userId) => {
+    return api.get(`/admin/users/${userId}`);
+  },
+
+  // ✨ دوال جديدة
+  getRevenueReport: () => {
+    return api.get("/admin/revenue/report");
+  },
+  getApprovedPayments: () => {
+    return api.get("/admin/payments/approved");
+  },
+  resetRevenue: () => {
+    return api.delete("/admin/revenue/reset");
   },
 };
 

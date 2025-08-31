@@ -1,0 +1,130 @@
+/* src/pages/admin/StudentManagement.css */
+
+/* Animation for elements fading in and sliding up */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Main page header styling */
+.student-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* --- Responsive Table/Card Styles --- */
+
+/* Base style for the container */
+.responsive-student-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Desktop Table Header */
+.responsive-student-table thead {
+  background-color: #f9fafb;
+}
+
+.responsive-student-table th {
+  font-weight: 600;
+  color: #616161;
+  text-transform: uppercase;
+}
+
+/* --- Mobile Card View --- */
+@media (max-width: 960px) {
+  .responsive-student-table thead {
+    display: none;
+  }
+
+  .student-card-wrapper {
+    display: block;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 0.5s ease-out forwards;
+    opacity: 0; /* Initial state for animation */
+  }
+
+  .student-card-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  .student-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .student-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .student-card-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .student-card-detail .label {
+    font-size: 0.9rem;
+    color: #757575;
+  }
+
+  .student-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    background-color: #f9fafb;
+    border-top: 1px solid #e0e0e0;
+  }
+}
+
+/* --- Student Detail Modal --- */
+.detail-modal-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  background-color: #f9fafb;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.detail-modal-header {
+  padding: 24px;
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.detail-modal-content {
+  padding: 24px;
+  overflow-y: auto;
+}
