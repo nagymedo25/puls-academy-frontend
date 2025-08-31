@@ -27,7 +27,8 @@ const CourseService = {
     return api.get('/courses/available');
   },
 
-  // جلب دروس كورس معين (للمستخدم المشترك)
+  // ✨ تم تحديث اسم الدالة هنا لتكون أكثر وضوحاً
+  // جلب دروس كورس معين (للمستخدم المشترك الذي لديه صلاحية الوصول)
   getCourseLessons: (courseId) => {
     return api.get(`/courses/${courseId}/lessons`);
   },

@@ -10,13 +10,16 @@ import SchoolIcon from '@mui/icons-material/School';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PaymentIcon from '@mui/icons-material/Payment'; // ✨ 1. استيراد الأيقونة الجديدة
 import Logo from '../../../assets/Logo1.png';
 import AuthService from '../../../services/authService';
 
 const drawerWidth = 260;
 
+// ✨ 2. إضافة الرابط الجديد في هذه القائمة
 const menuItems = [
   { text: 'كورساتي', icon: <SchoolIcon />, path: '/dashboard' },
+  { text: 'مدفوعاتي', icon: <PaymentIcon />, path: '/dashboard/payments' },
   { text: 'الإشعارات', icon: <NotificationsIcon />, path: '/dashboard/notifications' },
   { text: 'ملفي الشخصي', icon: <AccountCircleIcon />, path: '/dashboard/profile' },
 ];

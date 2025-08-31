@@ -1,0 +1,137 @@
+/* src/components/student/CourseDetailModal.css */
+
+/* Custom Scrollbar Styling (Red) */
+.course-detail-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.course-detail-modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+.course-detail-modal-content::-webkit-scrollbar-thumb {
+  background: #F91C45; /* Pulse Academy Red */
+  border-radius: 10px;
+}
+.course-detail-modal-content::-webkit-scrollbar-thumb:hover {
+  background: #b80226; /* Darker Red on hover */
+}
+
+
+.course-detail-modal-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.course-detail-modal-content {
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 750px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.close-button {
+    position: absolute !important;
+    top: 16px;
+    left: 16px; /* ✨ تم التعديل هنا لنقل الزر إلى اليمين */
+    z-index: 10;
+    color: white !important;
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(4px);
+    transition: transform 0.2s ease !important;
+}
+
+.close-button:hover {
+    transform: scale(1.1);
+}
+
+.modal-header {
+    position: relative;
+    height: 280px;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    overflow: hidden;
+}
+
+.course-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.course-detail-modal-content:hover .course-thumbnail {
+    transform: scale(1.05);
+}
+
+.header-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px 32px;
+    color: white;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+}
+
+.modal-body {
+    padding: 24px 32px;
+    flex-grow: 1;
+}
+
+.modal-footer {
+    padding: 24px 32px;
+    border-top: 1px solid #f0f0f0;
+    background-color: #fafafa;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.buy-now-button {
+    background: linear-gradient(45deg, #F91C45 30%, #ff5e62 90%) !important;
+    border-radius: 12px !important;
+    padding: 14px !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    transition: box-shadow 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(249, 28, 69, 0.4) !important;
+}
+
+.buy-now-button:hover {
+    box-shadow: 0 8px 25px rgba(249, 28, 69, 0.5) !important;
+    transform: translateY(-2px);
+}
+
+
+/* --- START: Responsive Video Player Styling --- */
+.video-player-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  background-color: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.video-player-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+/* --- END: Responsive Video Player Styling --- */
+
+
+@media (max-width: 600px) {
+    .modal-header { height: 220px; }
+    .modal-body, .modal-footer, .header-overlay { padding: 16px 24px; }
+}

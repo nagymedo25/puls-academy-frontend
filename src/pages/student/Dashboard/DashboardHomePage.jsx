@@ -123,8 +123,10 @@ const DashboardHomePage = () => {
                     AuthService.getProfile(),
                     CourseService.getAvailableCourses() // Assuming this fetches enrolled courses
                 ]);
-                setUser(profileResponse.data);
-                setCourses(coursesResponse.data);
+                // ✨ --- START: إصلاحات هنا --- ✨
+                setUser(profileResponse.data.user);
+                setCourses(coursesResponse.data.courses || []);
+                // ✨ --- END: إصلاحات هنا --- ✨
             } catch (err) {
                 setError('لم نتمكن من جلب بياناتك. يرجى المحاولة مرة أخرى.');
             } finally {

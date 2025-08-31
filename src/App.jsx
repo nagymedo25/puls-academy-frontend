@@ -15,14 +15,14 @@ import CourseManagementPage from './pages/admin/CourseManagementPage';
 import StudentManagementPage from './pages/admin/StudentManagementPage';
 import AdminRoute from './components/common/AdminRoute';
 
-// ✨ START: Student Dashboard Imports ✨
+// Student Dashboard Imports
 import DashboardLayout from './pages/student/Dashboard/DashboardLayout';
-import MyCoursesPage from './pages/student/Dashboard/MyCoursesPage'; // الصفحة الرئيسية الجديدة
-import NotificationsPage from './pages/student/Dashboard/NotificationsPage'; // صفحة الإشعارات
-import ProfilePage from './pages/student/Dashboard/ProfilePage'; // صفحة الملف الشخصي
+import MyCoursesPage from './pages/student/Dashboard/MyCoursesPage';
+import NotificationsPage from './pages/student/Dashboard/NotificationsPage';
+import ProfilePage from './pages/student/Dashboard/ProfilePage';
 import PrivateRoute from './components/common/PrivateRoute';
-// ✨ END: Student Dashboard Imports ✨
-
+import PaymentsPage from "./pages/student/Dashboard/PaymentsPage";
+import CourseWatchPage from "./pages/student/CourseWatchPage";
 
 function App() {
   return (
@@ -35,15 +35,21 @@ function App() {
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/course/:courseId" element={<CourseDetailPage />} />
 
-        {/* ✨ START: Updated Private Student Dashboard Routes ✨ */}
+        {/* Private Routes */}
         <Route element={<PrivateRoute />}>
+          
+          {/* ✨ تم وضع مسار المشاهدة هنا ليكون مستقلاً ومحمياً */}
+          <Route path="/course/:courseId/watch" element={<CourseWatchPage />} />
+
+          {/* Student Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<MyCoursesPage />} /> {/* الصفحة الرئيسية للداشبورد */}
+            <Route index element={<MyCoursesPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="payments" element={<PaymentsPage />} />
           </Route>
+
         </Route>
-        {/* ✨ END: Updated Private Student Dashboard Routes ✨ */}
         
         {/* Private Admin Dashboard Routes */}
         <Route element={<AdminRoute />}>
