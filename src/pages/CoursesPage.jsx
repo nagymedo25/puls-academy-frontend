@@ -10,7 +10,6 @@ import {
   useTheme,
   alpha,
   Paper,
-  CardActionArea,
 } from '@mui/material';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import Header from '../components/common/Header/Header';
@@ -69,7 +68,7 @@ const CollegeSelection = ({ onSelect, category }) => {
 
         <Grid container spacing={{ xs: 4, md: 8 }} justifyContent="center">
           {choices.map((choice, index) => (
-            <Grid item xs={12} md={5} key={choice.type} sx={{
+            <Grid xs={12} md={5} key={choice.type} sx={{
               animation: `${fadeInUp} 0.8s ease-out ${0.2 + index * 0.2}s`,
               animationFillMode: 'both',
             }}>
@@ -143,7 +142,6 @@ const CoursesList = ({ category, collegeType }) => {
   const [error, setError] = useState('');
   const theme = useTheme();
   const categoryText = category === 'pharmacy' ? 'الصيدلة' : 'طب الأسنان';
-  // ✨ النص سيعرض بناء على اختيار المستخدم
   const collegeText = collegeType === 'male' ? 'البنين' : 'البنات';
 
   useEffect(() => {
@@ -151,7 +149,6 @@ const CoursesList = ({ category, collegeType }) => {
       setLoading(true);
       setError('');
       try {
-        // ✨ هنا التعديل الرئيسي: يتم تجاهل college_type وإرسال القسم فقط
         const response = await CourseService.getAllCourses({ category });
         setCourses(response.data.courses || []);
       } catch (err) {
@@ -170,28 +167,29 @@ const CoursesList = ({ category, collegeType }) => {
         overflow: 'hidden',
         background: `linear-gradient(180deg, ${alpha(theme.palette.primary.light, 0.05)}, ${theme.palette.background.default} 30%)`,
     }}>
-        <Container maxWidth="lg" sx={{ py: 6, animation: `${fadeInUp} 0.8s ease-out`, zIndex: 1, position: 'relative' }}>
+        <Container maxWidth="xl" sx={{ py: 6, animation: `${fadeInUp} 0.8s ease-out`, zIndex: 1, position: 'relative' }}>
             <Typography variant="h3" component="h2" sx={{ fontWeight: 700, mb: 4, textAlign: 'center' }}>
                 كورسات {categoryText} - كلية {collegeText}
             </Typography>
         {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
-            <CircularProgress size={60} />
-            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress size={60} /></Box>
         ) : error ? (
             <Alert severity="error" sx={{ mt: 3 }}>{error}</Alert>
         ) : (
-            <Grid container spacing={4} justifyContent="center">
+            <Grid container spacing={5} justifyContent="center">
             {courses.length > 0 ? (
                 courses.map((course, index) => (
-                <Grid item xs={12} sm={6} md={4} key={course.course_id}>
-                    <Box sx={{ animation: `${fadeInUp} 0.5s ease-out ${index * 0.1}s`, animationFillMode: 'both' }}>
+                // ✨ --- التعديل الصحيح والنهائي هنا --- ✨
+                // sm={12} : يأخذ الكارت العرض كاملًا على الشاشات الصغيرة (tablets).
+                // md={6} : يأخذ الكارت نصف العرض على الشاشات المتوسطة والكبيرة (desktops).
+                <Grid xs={12} sm={12} md={6} key={course.course_id}>
+                    <Box sx={{ animation: `fadeInUp 0.5s ease-out ${index * 0.1}s`, animationFillMode: 'both' }}>
                         <CourseCard course={course} />
                     </Box>
                 </Grid>
                 ))
             ) : (
-                <Grid item xs={12}>
+                <Grid xs={12}>
                     <Paper sx={{p: 4, borderRadius: '16px', textAlign: 'center', mt: 2, backgroundColor: alpha(theme.palette.background.paper, 0.7), backdropFilter: 'blur(10px)'}}>
                         <Typography variant="h6" sx={{mb: 2}}>
                             لا توجد كورسات متاحة حاليًا

@@ -9,6 +9,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SchoolIcon from '@mui/icons-material/School';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ChatIcon from '@mui/icons-material/Chat'; 
 import LogoutIcon from '@mui/icons-material/Logout';
 import Logo from '../../assets/Logo1.png';
 import AuthService from '../../services/authService';
@@ -19,6 +20,8 @@ const menuItems = [
   { text: 'كورساتي', icon: <SchoolIcon />, path: '/dashboard' },
   { text: 'الإشعارات', icon: <NotificationsIcon />, path: '/dashboard/notifications' },
   { text: 'ملفي الشخصي', icon: <AccountCircleIcon />, path: '/dashboard/profile' },
+  { text: 'الدعم الفني', icon: <ChatIcon />, path: '/dashboard/chat' }, 
+
 ];
 
 const DashboardLayout = () => {

@@ -14,10 +14,12 @@ const fadeInUp = keyframes`
   }
 `;
 
-const StatCard = ({ title, value, icon, color = 'primary', link, navigate, delay = 0 }) => (
+const StatCard = ({ title, value, icon, color = 'primary', link, navigate, onClick, delay = 0 }) => (
     <Paper
       elevation={4}
-      onClick={() => link && navigate(link)}
+      // ✨ تم تعديل هذا السطر
+      // سيتم تنفيذ navigate(link) إذا كان الرابط موجودًا، أو onClick إذا كانت الدالة موجودة
+      onClick={link ? () => navigate(link) : onClick}
       sx={{
         p: 3,
         display: 'flex',
@@ -28,7 +30,8 @@ const StatCard = ({ title, value, icon, color = 'primary', link, navigate, delay
         opacity: 0,
         animation: `${fadeInUp} 0.6s ease-out ${delay}s forwards`,
         transition: 'transform 0.3s, box-shadow 0.3s',
-        cursor: link ? 'pointer' : 'default',
+        // ✨ سيتم تغيير المؤشر فقط إذا كانت البطاقة قابلة للضغط
+        cursor: link || onClick ? 'pointer' : 'default',
         '&:hover': {
             transform: 'translateY(-8px)',
             boxShadow: (theme) => `0 10px 20px ${theme.palette[color]?.light || theme.palette.grey[300]}`,

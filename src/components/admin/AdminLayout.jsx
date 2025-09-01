@@ -1,32 +1,46 @@
 // src/components/admin/AdminLayout.jsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  AppBar, Box, CssBaseline, Drawer, IconButton, List, ListItem,
-  ListItemIcon, ListItemText, Toolbar, Typography, useTheme, useMediaQuery, ListItemButton
-} from '@mui/material';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import PaymentIcon from '@mui/icons-material/Payment';
-import SchoolIcon from '@mui/icons-material/School';
-import PeopleIcon from '@mui/icons-material/People';
-import LogoutIcon from '@mui/icons-material/Logout';
-import Logo from '../../assets/Logo1.png';
-import AuthService from '../../services/authService';
+  AppBar,
+  Box,
+  CssBaseline,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  ListItemButton,
+} from "@mui/material";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PaymentIcon from "@mui/icons-material/Payment";
+import SchoolIcon from "@mui/icons-material/School";
+import PeopleIcon from "@mui/icons-material/People";
+import LogoutIcon from "@mui/icons-material/Logout";
+import MessageIcon from "@mui/icons-material/Message"; // ✨ إضافة أيقونة الرسائل
+import Logo from "../../assets/Logo1.png";
+import AuthService from "../../services/authService";
 
 const drawerWidth = 260;
 
 const menuItems = [
-  { text: 'لوحة التحكم', icon: <DashboardIcon />, path: '/admin' },
-  { text: 'معالجة المدفوعات', icon: <PaymentIcon />, path: '/admin/payments' },
-  { text: 'إدارة الكورسات', icon: <SchoolIcon />, path: '/admin/courses' },
-  { text: 'إدارة الطلاب', icon: <PeopleIcon />, path: '/admin/students' },
+  { text: "لوحة التحكم", icon: <DashboardIcon />, path: "/admin" },
+  { text: "معالجة المدفوعات", icon: <PaymentIcon />, path: "/admin/payments" },
+  { text: "إدارة الكورسات", icon: <SchoolIcon />, path: "/admin/courses" },
+  { text: "إدارة الطلاب", icon: <PeopleIcon />, path: "/admin/students" },
+  { text: "الرسائل", icon: <MessageIcon />, path: "/admin/messages" }, // ✨ إضافة الرابط الجديد
 ];
 
 const AdminLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,13 +50,20 @@ const AdminLayout = () => {
 
   const handleLogout = () => {
     AuthService.logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   const drawer = (
     <div>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'center', py: 2, backgroundColor: 'primary.dark' }}>
-        <img src={Logo} alt="Puls Academy Logo" style={{ height: '40px' }} />
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          py: 2,
+          backgroundColor: "primary.dark",
+        }}
+      >
+        <img src={Logo} alt="Puls Academy Logo" style={{ height: "40px" }} />
       </Toolbar>
       <List sx={{ p: 2 }}>
         {menuItems.map((item) => (
@@ -51,14 +72,14 @@ const AdminLayout = () => {
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
               sx={{
-                borderRadius: '8px',
+                borderRadius: "8px",
                 mb: 1,
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                  '&:hover': { backgroundColor: 'primary.dark' },
-                  '& .MuiListItemIcon-root': { color: 'white' }
-                }
+                "&.Mui-selected": {
+                  backgroundColor: "primary.main",
+                  color: "white",
+                  "&:hover": { backgroundColor: "primary.dark" },
+                  "& .MuiListItemIcon-root": { color: "white" },
+                },
               }}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
@@ -67,10 +88,12 @@ const AdminLayout = () => {
           </ListItem>
         ))}
       </List>
-      <Box sx={{ position: 'absolute', bottom: 0, width: '100%', p: 2 }}>
+      <Box sx={{ position: "absolute", bottom: 0, width: "100%", p: 2 }}>
         <ListItem disablePadding>
-          <ListItemButton onClick={handleLogout} sx={{ borderRadius: '8px' }}>
-            <ListItemIcon><LogoutIcon color="error" /></ListItemIcon>
+          <ListItemButton onClick={handleLogout} sx={{ borderRadius: "8px" }}>
+            <ListItemIcon>
+              <LogoutIcon color="error" />
+            </ListItemIcon>
             <ListItemText primary="تسجيل الخروج" />
           </ListItemButton>
         </ListItem>
@@ -79,16 +102,16 @@ const AdminLayout = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
         sx={{
           width: { md: `calc(100% - ${drawerWidth}px)` },
           mr: { md: `${drawerWidth}px` },
-          backgroundColor: 'background.paper',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-          color: 'text.primary'
+          backgroundColor: "background.paper",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+          color: "text.primary",
         }}
       >
         <Toolbar>
@@ -97,7 +120,7 @@ const AdminLayout = () => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
+            sx={{ mr: 2, display: { md: "none" } }}
           >
             <MenuIcon />
           </IconButton>
@@ -116,20 +139,32 @@ const AdminLayout = () => {
           onClose={handleDrawerToggle}
           anchor="right"
           ModalProps={{ keepMounted: true }}
-          sx={{ '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, borderLeft: '1px solid #eee' } }}
+          sx={{
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              borderLeft: "1px solid #eee",
+            },
+          }}
         >
           {drawer}
         </Drawer>
       </Box>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { md: `calc(100% - ${drawerWidth}px)` }, backgroundColor: '#f9fafb', minHeight: '100vh' }}
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+          backgroundColor: "#f9fafb",
+          minHeight: "100vh",
+        }}
       >
         <Toolbar />
         <Outlet />
       </Box>
     </Box>
   );
-}
+};
 
 export default AdminLayout;

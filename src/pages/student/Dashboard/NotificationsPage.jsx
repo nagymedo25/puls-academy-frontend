@@ -30,7 +30,6 @@ const NotificationsPage = () => {
   const handleMarkAllAsRead = async () => {
     try {
         await NotificationService.markAllAsRead();
-        // Optimistically update UI
         const updatedNotifications = notifications.map(n => ({...n, is_read: 1}));
         setNotifications(updatedNotifications);
     } catch (err) {
@@ -69,7 +68,8 @@ const NotificationsPage = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary={notif.message}
-                      secondary={new Date(notif.created_at).toLocaleString('ar-EG')}
+                      // ✨ FIX: Append 'Z' to treat the timestamp as UTC before formatting
+                      secondary={new Date(notif.created_at + 'Z').toLocaleString('ar-EG', { timeZone: 'Africa/Cairo' })}
                     />
                   </ListItem>
                   {index < notifications.length - 1 && <Divider component="li" />}

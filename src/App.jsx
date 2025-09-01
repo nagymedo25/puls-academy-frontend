@@ -13,6 +13,7 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import PaymentsManagementPage from './pages/admin/PaymentsManagementPage';
 import CourseManagementPage from './pages/admin/CourseManagementPage';
 import StudentManagementPage from './pages/admin/StudentManagementPage';
+import MessageManagementPage from './pages/admin/MessageManagementPage'; // استيراد صفحة الرسائل الجديدة
 import AdminRoute from './components/common/AdminRoute';
 
 // Student Dashboard Imports
@@ -23,6 +24,7 @@ import ProfilePage from './pages/student/Dashboard/ProfilePage';
 import PrivateRoute from './components/common/PrivateRoute';
 import PaymentsPage from "./pages/student/Dashboard/PaymentsPage";
 import CourseWatchPage from "./pages/student/CourseWatchPage";
+import ChatPage from "./pages/student/Dashboard/ChatPage"; // استيراد صفحة الدردشة الجديدة
 
 function App() {
   return (
@@ -38,7 +40,6 @@ function App() {
         {/* Private Routes */}
         <Route element={<PrivateRoute />}>
           
-          {/* ✨ تم وضع مسار المشاهدة هنا ليكون مستقلاً ومحمياً */}
           <Route path="/course/:courseId/watch" element={<CourseWatchPage />} />
 
           {/* Student Dashboard Routes */}
@@ -47,6 +48,7 @@ function App() {
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="payments" element={<PaymentsPage />} />
+            <Route path="chat" element={<ChatPage />} /> {/* إضافة مسار الدردشة للطالب */}
           </Route>
 
         </Route>
@@ -58,6 +60,7 @@ function App() {
             <Route path="payments" element={<PaymentsManagementPage />} />
             <Route path="courses" element={<CourseManagementPage />} />
             <Route path="students" element={<StudentManagementPage />} />
+            <Route path="messages" element={<MessageManagementPage />} /> {/* إضافة مسار الرسائل للأدمن */}
           </Route>
         </Route>
 

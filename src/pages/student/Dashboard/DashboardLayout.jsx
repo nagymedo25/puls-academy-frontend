@@ -1,33 +1,55 @@
 // src/pages/Student/Dashboard/DashboardLayout.jsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  AppBar, Box, CssBaseline, Drawer, IconButton, List, ListItem,
-  ListItemIcon, ListItemText, Toolbar, Typography, useTheme, useMediaQuery, ListItemButton
-} from '@mui/material';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
-import SchoolIcon from '@mui/icons-material/School';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PaymentIcon from '@mui/icons-material/Payment'; // ✨ 1. استيراد الأيقونة الجديدة
-import Logo from '../../../assets/Logo1.png';
-import AuthService from '../../../services/authService';
+  AppBar,
+  Box,
+  CssBaseline,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Toolbar,
+  Typography,
+  useTheme,
+  useMediaQuery,
+  ListItemButton,
+} from "@mui/material";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
+import SchoolIcon from "@mui/icons-material/School";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LogoutIcon from "@mui/icons-material/Logout";
+import ChatIcon from '@mui/icons-material/Chat'; 
+import PaymentIcon from "@mui/icons-material/Payment"; // ✨ 1. استيراد الأيقونة الجديدة
+import Logo from "../../../assets/Logo1.png";
+import AuthService from "../../../services/authService";
 
 const drawerWidth = 260;
 
 // ✨ 2. إضافة الرابط الجديد في هذه القائمة
 const menuItems = [
-  { text: 'كورساتي', icon: <SchoolIcon />, path: '/dashboard' },
-  { text: 'مدفوعاتي', icon: <PaymentIcon />, path: '/dashboard/payments' },
-  { text: 'الإشعارات', icon: <NotificationsIcon />, path: '/dashboard/notifications' },
-  { text: 'ملفي الشخصي', icon: <AccountCircleIcon />, path: '/dashboard/profile' },
+  { text: "كورساتي", icon: <SchoolIcon />, path: "/dashboard" },
+  { text: "مدفوعاتي", icon: <PaymentIcon />, path: "/dashboard/payments" },
+  {
+    text: "الإشعارات",
+    icon: <NotificationsIcon />,
+    path: "/dashboard/notifications",
+  },
+  {
+    text: "ملفي الشخصي",
+    icon: <AccountCircleIcon />,
+    path: "/dashboard/profile",
+  },
+  { text: "الدعم الفني", icon: <ChatIcon />, path: "/dashboard/chat" }, // ✨ إضافة الرابط الجديد
 ];
 
 const DashboardLayout = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,13 +59,13 @@ const DashboardLayout = () => {
 
   const handleLogout = () => {
     AuthService.logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   const drawer = (
     <div>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
-        <img src={Logo} alt="Puls Academy Logo" style={{ height: '40px' }} />
+      <Toolbar sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+        <img src={Logo} alt="Puls Academy Logo" style={{ height: "40px" }} />
       </Toolbar>
       <List sx={{ p: 2 }}>
         {menuItems.map((item) => (
@@ -52,18 +74,18 @@ const DashboardLayout = () => {
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
               sx={{
-                borderRadius: '8px',
+                borderRadius: "8px",
                 mb: 1,
-                '&.Mui-selected': {
-                  backgroundColor: 'primary.main',
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'primary.dark',
+                "&.Mui-selected": {
+                  backgroundColor: "primary.main",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "primary.dark",
                   },
-                  '& .MuiListItemIcon-root': {
-                    color: 'white',
-                  }
-                }
+                  "& .MuiListItemIcon-root": {
+                    color: "white",
+                  },
+                },
               }}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
@@ -72,10 +94,12 @@ const DashboardLayout = () => {
           </ListItem>
         ))}
       </List>
-      <Box sx={{ position: 'absolute', bottom: 0, width: '100%', p: 2 }}>
+      <Box sx={{ position: "absolute", bottom: 0, width: "100%", p: 2 }}>
         <ListItem disablePadding>
-          <ListItemButton onClick={handleLogout} sx={{ borderRadius: '8px' }}>
-            <ListItemIcon><LogoutIcon color="error" /></ListItemIcon>
+          <ListItemButton onClick={handleLogout} sx={{ borderRadius: "8px" }}>
+            <ListItemIcon>
+              <LogoutIcon color="error" />
+            </ListItemIcon>
             <ListItemText primary="تسجيل الخروج" />
           </ListItemButton>
         </ListItem>
@@ -84,16 +108,16 @@ const DashboardLayout = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
         position="fixed"
         sx={{
           width: { md: `calc(100% - ${drawerWidth}px)` },
           mr: { md: `${drawerWidth}px` },
-          backgroundColor: 'background.paper',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-          color: 'text.primary'
+          backgroundColor: "background.paper",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+          color: "text.primary",
         }}
       >
         <Toolbar>
@@ -102,7 +126,7 @@ const DashboardLayout = () => {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' } }}
+            sx={{ mr: 2, display: { md: "none" } }}
           >
             <MenuIcon />
           </IconButton>
@@ -125,7 +149,11 @@ const DashboardLayout = () => {
             keepMounted: true,
           }}
           sx={{
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, borderLeft: '1px solid #eee' },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+              borderLeft: "1px solid #eee",
+            },
           }}
         >
           {drawer}
@@ -133,13 +161,19 @@ const DashboardLayout = () => {
       </Box>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { md: `calc(100% - ${drawerWidth}px)` }, backgroundColor: '#f9fafb', minHeight: '100vh' }}
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+          backgroundColor: "#f9fafb",
+          minHeight: "100vh",
+        }}
       >
         <Toolbar />
         <Outlet />
       </Box>
     </Box>
   );
-}
+};
 
 export default DashboardLayout;

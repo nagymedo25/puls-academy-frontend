@@ -1,0 +1,12 @@
+/* src/pages/student/Dashboard/ChatPage.css */
+
+.student-chat-container {
+    padding: 16px 32px;
+}
+
+.chat-wrapper {
+    height: calc(100vh - 64px - 48px - 70px); /* Adjust height as needed */
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
