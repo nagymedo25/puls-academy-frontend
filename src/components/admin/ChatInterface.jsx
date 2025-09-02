@@ -12,6 +12,7 @@ const ChatInterface = ({ currentUser, otherUser, onMessageSent }) => {
     const messagesEndRef = useRef(null);
 
     const fetchMessages = async () => {
+        if (!otherUser?.user_id) return;
         setLoading(true);
         try {
             const response = await MessageService.getConversationWithUser(otherUser.user_id);
@@ -25,7 +26,7 @@ const ChatInterface = ({ currentUser, otherUser, onMessageSent }) => {
     
     useEffect(() => {
         fetchMessages();
-    }, [otherUser.user_id]);
+    }, [otherUser?.user_id]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,7 +42,12 @@ const ChatInterface = ({ currentUser, otherUser, onMessageSent }) => {
                 message_content: newMessage,
             };
             const response = await MessageService.sendMessage(messageData);
-            setMessages([...messages, { ...response.data.message, sender_name: 'Admin' }]);
+            
+            // ✨ --- START: التعديل الرئيسي هنا --- ✨
+            // الآن نستخدم كائن الرسالة الكامل العائد من الخادم مباشرة
+            setMessages(prevMessages => [...prevMessages, response.data.message]);
+            // ✨ --- END: نهاية التعديل --- ✨
+
             setNewMessage('');
             if (onMessageSent) onMessageSent();
         } catch (err) {
@@ -49,20 +55,23 @@ const ChatInterface = ({ currentUser, otherUser, onMessageSent }) => {
         }
     };
 
+    if (!currentUser || !otherUser) {
+        return <Typography sx={{ p: 2, textAlign: 'center' }}>يرجى تحديد محادثة.</Typography>;
+    }
+
     return (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Paper className="chat-header">
                 <Typography variant="h6">{otherUser.name}</Typography>
             </Paper>
             <Box className="chat-messages-area">
-                {loading ? <CircularProgress /> : error ? <Alert severity="error">{error}</Alert> : (
+                {loading ? <CircularProgress sx={{ display: 'block', margin: 'auto' }} /> : error ? <Alert severity="error">{error}</Alert> : (
                     messages.map(msg => (
-                        <Box key={msg.message_id} className={`message-bubble ${msg.sender_id === currentUser.userId ? 'sent' : 'received'}`}>
+                        <Box key={msg.message_id} className={`message-bubble ${msg.sender_id === currentUser.user_id ? 'sent' : 'received'}`}>
                            <Typography variant="body2" sx={{fontWeight:'bold', mb:0.5}}>{msg.sender_name}</Typography>
                            {msg.message_content}
-                           {/* ✨ FIX: Append 'Z' to treat the timestamp as UTC before formatting */}
                            <Typography variant="caption" className="message-timestamp">
-                               {new Date(msg.created_at + 'Z').toLocaleTimeString('ar-EG', { timeZone: 'Africa/Cairo', hour: '2-digit', minute: '2-digit' })}
+                               {new Date(msg.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
                            </Typography>
                         </Box>
                     ))
@@ -76,8 +85,9 @@ const ChatInterface = ({ currentUser, otherUser, onMessageSent }) => {
                     placeholder="اكتب رسالتك..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
+                    autoComplete="off"
                 />
-                <IconButton type="submit" color="primary"><SendIcon /></IconButton>
+                <IconButton type="submit" color="primary" disabled={!newMessage.trim()}><SendIcon /></IconButton>
             </Paper>
         </Box>
     );

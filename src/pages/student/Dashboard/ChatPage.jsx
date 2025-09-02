@@ -2,22 +2,12 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ChatInterface from '../../../components/admin/ChatInterface'; // إعادة استخدام نفس المكون
-import AuthService from '../../../services/authService';
+import { useAuth } from '../../../context/AuthContext'; // ✨ 1. استيراد useAuth
 import './ChatPage.css';
 
 const ChatPage = () => {
-  // نحتاج إلى بيانات المستخدم الحالي لتمريرها
-  const getUserPayload = () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return null;
-      return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-      return null;
-    }
-  };
-
-  const currentUser = getUserPayload();
+  // ✨ 2. استخدام useAuth لجلب بيانات المستخدم الحالي بشكل آمن
+  const { user: currentUser } = useAuth();
 
   // الأدمن دائمًا user_id = 1
   const adminUser = {
@@ -25,8 +15,9 @@ const ChatPage = () => {
       name: 'الدعم الفني'
   };
 
+  // ✨ 3. التحقق من وجود المستخدم قبل عرض أي شيء
   if(!currentUser) {
-      return <Typography>يرجى تسجيل الدخول للوصول لهذه الصفحة.</Typography>
+      return <Typography sx={{ p: 3, textAlign: 'center' }}>يرجى تسجيل الدخول للوصول لهذه الصفحة.</Typography>;
   }
 
   return (
@@ -36,7 +27,8 @@ const ChatPage = () => {
         </Typography>
         <Box className="chat-wrapper">
              <ChatInterface 
-                currentUser={currentUser}
+                // ✨ 4. تمرير بيانات المستخدم الصحيحة
+                currentUser={currentUser} 
                 otherUser={adminUser}
             />
         </Box>

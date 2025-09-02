@@ -143,9 +143,6 @@ const RegisterPage = () => {
       const { confirmPassword, ...apiData } = formData;
       const response = await AuthService.register(apiData);
       
-      // تسجيل الدخول مباشرة بعد التسجيل
-      localStorage.setItem('token', response.data.token);
-      
       setSuccess(`أهلاً بك ${response.data.user.name}! جاري توجيهك إلى لوحة التحكم...`);
 
       setTimeout(() => {
