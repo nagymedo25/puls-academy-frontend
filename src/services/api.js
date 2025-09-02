@@ -6,26 +6,23 @@ const API_BASE_URL = 'http://localhost:5000/api'; // مثال لرابط محل�
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  // ✅ [Security Improvement]
-  // This option is crucial for sending secure, httpOnly cookies automatically with every request.
+  // ✅ [Security Improvement & FIX]
+  // هذا الخيار ضروري لإرسال الكوكيز الآمنة تلقائيًا مع كل طلب
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// We no longer need the request interceptor to manually add the token,
-// as the browser will now handle sending the httpOnly cookie automatically.
+// لم نعد بحاجة إلى معترض الطلبات لإضافة التوكن يدويًا
+// لأن المتصفح سيتعامل الآن مع إرسال الكوكي httpOnly تلقائيًا.
 
-// You can still keep an interceptor for handling responses, for example,
-// to automatically redirect to login if a 401 Unauthorized error is received.
+// يمكنك الاحتفاظ بمعترض الاستجابة للتعامل مع الأخطاء
+// على سبيل المثال، إعادة التوجيه التلقائي لتسجيل الدخول إذا تم تلقي خطأ 401
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Example: If the server responds with 401, it means the session is invalid or expired.
-    // Redirect the user to the login page.
     if (error.response && error.response.status === 401) {
-      // Avoid redirect loops if the error is on the login page itself
       if (window.location.pathname !== '/login') {
         window.location = '/login';
       }
