@@ -1,14 +1,12 @@
 // src/components/common/PrivateRoute.jsx
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 const PrivateRoute = () => {
-  // 1. التحقق من وجود التوكن في التخزين المحلي للمتصفح
-  const isAuthenticated = !!localStorage.getItem('token'); 
+  const { isAuthenticated } = useAuth();
 
-  // 2. إذا كان المستخدم مسجلاً دخوله (التوكن موجود)، اسمح له بالوصول للمحتوى
-  //    مكون <Outlet /> هو الذي يعرض الصفحات الفرعية المحمية (مثل DashboardHomePage)
-  // 3. إذا لم يكن مسجلاً، قم بإعادة توجيهه إلى صفحة تسجيل الدخول
+  // Redirect to login if not authenticated
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 

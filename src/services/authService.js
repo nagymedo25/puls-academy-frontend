@@ -25,11 +25,11 @@ const AuthService = {
   changePassword: (passwordData) => {
     return api.put('/auth/change-password', passwordData);
   },
-
+  
   logout: () => {
-    // يمكنك إضافة طلب للـ API هنا إذا كان لديك endpoint لتسجيل الخروج
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
+    // We no longer need to remove items from localStorage.
+    // The backend will handle invalidating the session.
+    return api.post('/auth/logout');
   },
 };
 

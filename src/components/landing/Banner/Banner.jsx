@@ -1,7 +1,7 @@
 // src/components/landing/Banner/Banner.jsx
 import React from "react";
 import { Box } from "@mui/material";
-import BannerImage from "../../../assets/Banner.png";
+import BannerImage from "../../../assets/Banner.jpg";
 
 const Banner = () => {
   return (

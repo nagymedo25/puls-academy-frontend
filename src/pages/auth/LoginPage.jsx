@@ -6,6 +6,7 @@ import {
 } from '@mui/material';
 import { keyframes } from '@emotion/react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import EmailOutlined from '@mui/icons-material/EmailOutlined';
 import LockOutlined from '@mui/icons-material/LockOutlined';
 import AuthService from '../../services/authService';
@@ -37,13 +38,11 @@ const AbstractShape = ({ sx }) => (
 
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth(); // <-- ٢. استخدام دالة login من السياق
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,23 +55,16 @@ const LoginPage = () => {
 
     try {
       const response = await AuthService.login(formData);
-      const { token, refreshToken } = response.data;
+      const { user } = response.data;
 
-      // 1. تخزين التوكن
-      localStorage.setItem('token', token);
-      if (refreshToken) {
-        localStorage.setItem('refreshToken', refreshToken);
-      }
+      // ٣. تحديث حالة المستخدم في السياق العام
+      login(user); 
 
-      // 2. فك تشفير التوكن للحصول على صلاحية المستخدم
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const userRole = payload.role;
-
-      // 3. التوجيه بناءً على الصلاحية
-      if (userRole === 'admin') {
-        navigate('/admin'); // توجيه الأدمن إلى لوحة تحكم الأدمن
+      // ٤. التوجيه بناءً على الصلاحية
+      if (user.role === 'admin') {
+        navigate('/admin');
       } else {
-        navigate('/dashboard'); // توجيه الطالب إلى لوحة تحكم الطالب
+        navigate('/dashboard');
       }
 
     } catch (err) {

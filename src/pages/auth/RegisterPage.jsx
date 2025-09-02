@@ -1,9 +1,9 @@
-// src/pages/RegisterPage.jsx
-import React, { useState } from 'react';
+// src/pages/auth/RegisterPage.jsx
+import React, { useState, useMemo } from 'react';
 import {
   Box, Button, Typography, Container, TextField,
   Select, MenuItem, FormControl, InputLabel, RadioGroup,
-  FormControlLabel, Radio, CircularProgress, Alert, Link as MuiLink
+  FormControlLabel, Radio, CircularProgress, Alert, Link as MuiLink, LinearProgress
 } from '@mui/material';
 import { keyframes } from '@emotion/react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -13,18 +13,12 @@ import LockOutlined from '@mui/icons-material/LockOutlined';
 import SchoolOutlined from '@mui/icons-material/SchoolOutlined';
 import WcOutlined from '@mui/icons-material/WcOutlined';
 import AuthService from '../../services/authService';
-import Logo from '../../assets/logo1.png';
+import Logo from '../../assets/Logo1.png';
 
 // Keyframes for animations
 const fadeInUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
 const float = keyframes`
@@ -46,6 +40,43 @@ const AbstractShape = ({ sx }) => (
   />
 );
 
+// Helper function to calculate password strength
+const getPasswordStrength = (password) => {
+    let score = 0;
+    if (!password) return 0;
+    if (password.length > 8) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^a-zA-Z0-9]/.test(password)) score++;
+    return score;
+};
+
+const PasswordStrengthBar = ({ password }) => {
+    const strength = getPasswordStrength(password);
+    const color = ['#f44336', '#ff9800', '#ffc107', '#4caf50', '#4caf50'][strength - 1] || 'transparent';
+    const value = (strength / 5) * 100;
+    const label = ['ضعيفة جدًا', 'ضعيفة', 'متوسطة', 'قوية', 'قوية جدًا'][strength - 1] || '';
+
+    return (
+        <Box sx={{ width: '100%', mt: 1 }}>
+            <LinearProgress 
+                variant="determinate" 
+                value={value} 
+                sx={{ 
+                    height: 8, 
+                    borderRadius: 5, 
+                    backgroundColor: '#e0e0e0',
+                    '& .MuiLinearProgress-bar': { backgroundColor: color, transition: 'transform .4s linear' } 
+                }} 
+            />
+            <Typography variant="caption" color={color} sx={{ display: 'block', textAlign: 'right', mt: 0.5, height: '1.2em' }}>
+                {label}
+            </Typography>
+        </Box>
+    );
+};
+
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -58,35 +89,90 @@ const RegisterPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [emailError, setEmailError] = useState('');
   const navigate = useNavigate();
 
+  const validateEmail = (email) => {
+    if (!email) {
+        setEmailError('البريد الإلكتروني مطلوب.');
+        return false;
+    }
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!re.test(String(email).toLowerCase())) {
+        setEmailError('صيغة البريد الإلكتروني غير صحيحة.');
+        return false;
+    }
+    if (/(mailinator|temp-mail|10minutemail)\./.test(email)) {
+         setEmailError('لا يمكن استخدام خدمات البريد الإلكتروني المؤقت.');
+         return false;
+    }
+    setEmailError('');
+    return true;
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+     if (name === 'email') {
+        validateEmail(value);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    if (Object.values(formData).some(field => field === '')) {
+        setError('يرجى ملء جميع الحقول المطلوبة.');
+        return;
+    }
+    if (!validateEmail(formData.email)) return;
     if (formData.password !== formData.confirmPassword) {
-      setError('كلمتا المرور غير متطابقتين');
+      setError('كلمتا المرور غير متطابقتين.');
       return;
     }
-    setError('');
+    if (getPasswordStrength(formData.password) < 3) {
+        setError('كلمة المرور يجب أن تكون "متوسطة" على الأقل.');
+        return;
+    }
+
     setSuccess('');
     setLoading(true);
 
     try {
       const { confirmPassword, ...apiData } = formData;
-      await AuthService.register(apiData);
-      setSuccess('تم إنشاء حسابك بنجاح! جاري تحويلك لصفحة تسجيل الدخول...');
+      const response = await AuthService.register(apiData);
+      
+      // تسجيل الدخول مباشرة بعد التسجيل
+      localStorage.setItem('token', response.data.token);
+      
+      setSuccess(`أهلاً بك ${response.data.user.name}! جاري توجيهك إلى لوحة التحكم...`);
+
       setTimeout(() => {
-        navigate('/login'); // Redirect to login page after a delay
-      }, 2000);
+        navigate('/dashboard', { state: { fromRegistration: true } });
+      }, 2500);
+
     } catch (err) {
-      setError(err.response?.data?.message || 'حدث خطأ ما. يرجى المحاولة مرة أخرى.');
+      setError(err.response?.data?.error || 'حدث خطأ ما. قد يكون البريد الإلكتروني مسجلاً بالفعل.');
     } finally {
       setLoading(false);
     }
   };
+
+  const isButtonDisabled = useMemo(() => {
+    return (
+      loading ||
+      !!emailError ||
+      !formData.name ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword ||
+      !formData.college ||
+      !formData.gender ||
+      formData.password !== formData.confirmPassword ||
+      getPasswordStrength(formData.password) < 3
+    );
+  }, [formData, emailError, loading]);
 
   return (
     <Box
@@ -101,12 +187,11 @@ const RegisterPage = () => {
         py: 5,
       }}
     >
-      {/* Background shapes */}
       <AbstractShape sx={{ width: 250, height: 250, top: '-50px', left: '-80px', animationDuration: '20s' }} />
       <AbstractShape sx={{ width: 150, height: 150, top: '20%', right: '-50px', animationDuration: '18s' }} />
       <AbstractShape sx={{ width: 200, height: 200, bottom: '-70px', right: '20%', animationDuration: '22s' }} />
       <AbstractShape sx={{ width: 100, height: 100, bottom: '10%', left: '-30px', animationDuration: '16s' }} />
-
+      
       <Container maxWidth="sm" sx={{ zIndex: 1 }}>
         <Box
           sx={{
@@ -131,7 +216,7 @@ const RegisterPage = () => {
             </Typography>
           </Box>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
               <TextField
                 label="الاسم الكامل"
@@ -139,9 +224,7 @@ const RegisterPage = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                InputProps={{
-                  startAdornment: <PersonOutline sx={{ mr: 1, color: 'action.active' }} />,
-                }}
+                InputProps={{ startAdornment: <PersonOutline sx={{ mr: 1, color: 'action.active' }} /> }}
               />
               <TextField
                 label="البريد الإلكتروني"
@@ -150,21 +233,23 @@ const RegisterPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                InputProps={{
-                  startAdornment: <EmailOutlined sx={{ mr: 1, color: 'action.active' }} />,
-                }}
+                error={!!emailError}
+                helperText={emailError}
+                InputProps={{ startAdornment: <EmailOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
               />
-              <TextField
-                label="كلمة المرور"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                InputProps={{
-                  startAdornment: <LockOutlined sx={{ mr: 1, color: 'action.active' }} />,
-                }}
-              />
+              <Box>
+                <TextField
+                    label="كلمة المرور"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    InputProps={{ startAdornment: <LockOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
+                />
+                <PasswordStrengthBar password={formData.password} />
+              </Box>
               <TextField
                 label="تأكيد كلمة المرور"
                 name="confirmPassword"
@@ -174,9 +259,7 @@ const RegisterPage = () => {
                 required
                 error={formData.password !== formData.confirmPassword && formData.confirmPassword !== ''}
                 helperText={formData.password !== formData.confirmPassword && formData.confirmPassword !== '' ? 'كلمتا المرور غير متطابقتين' : ''}
-                InputProps={{
-                  startAdornment: <LockOutlined sx={{ mr: 1, color: 'action.active' }} />,
-                }}
+                InputProps={{ startAdornment: <LockOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
               />
               <FormControl fullWidth required>
                 <InputLabel id="college-select-label">الكليّة</InputLabel>
@@ -197,26 +280,20 @@ const RegisterPage = () => {
                    <WcOutlined />
                    <Typography component="legend" variant="body1">النوع</Typography>
                 </Box>
-                <RadioGroup
-                  row
-                  aria-label="gender"
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                >
+                <RadioGroup row name="gender" value={formData.gender} onChange={handleChange}>
                   <FormControlLabel value="male" control={<Radio />} label="ذكر" />
                   <FormControlLabel value="female" control={<Radio />} label="أنثى" />
                 </RadioGroup>
               </FormControl>
 
-              {error && <Alert severity="error">{error}</Alert>}
-              {success && <Alert severity="success">{success}</Alert>}
+              {error && <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert>}
+              {success && <Alert severity="success" sx={{ mt: 1 }}>{success}</Alert>}
 
               <Button
                 type="submit"
                 variant="contained"
                 size="large"
-                disabled={loading}
+                disabled={isButtonDisabled}
                 sx={{
                   py: 1.5,
                   fontSize: '1.1rem',
