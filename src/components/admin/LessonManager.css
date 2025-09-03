@@ -1,0 +1,91 @@
+/* src/components/admin/LessonManager.css */
+.lesson-manager-container {
+    font-family: 'Cairo', sans-serif;
+}
+
+.lesson-manager-error {
+    padding: 12px;
+    background-color: #ffebee;
+    color: #c62828;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #c62828;
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.lessons-list-container {
+    max-height: 250px;
+    overflow-y: auto;
+    margin-bottom: 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.lessons-list-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lesson-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+.lesson-list-item:last-child {
+    border-bottom: none;
+}
+
+.lesson-details p { margin: 0; }
+.lesson-title { font-weight: 600; color: #212121; }
+.lesson-url { font-size: 0.8rem; color: #757575; }
+
+.delete-lesson-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #f44336;
+}
+
+.add-lesson-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-input, .form-textarea {
+    width: 100%;
+    padding: 12px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+.form-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.add-lesson-btn {
+    align-self: flex-start;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background-color: #F91C45;
+    color: white;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.add-lesson-btn:disabled {
+    background-color: #cccccc;
+}

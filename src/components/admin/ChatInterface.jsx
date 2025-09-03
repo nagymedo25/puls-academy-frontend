@@ -1,8 +1,10 @@
 // src/components/admin/ChatInterface.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, TextField, IconButton, Paper, Typography, CircularProgress, Alert } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import MessageService from '../../services/messageService';
+import './Chat.css'; // ✨ استيراد ملف التنسيقات الجديد
+import { formatTimestamp } from '../../utils/formatDate'; // ✨ 1. استيراد الدالة الجديدة
+
 
 const ChatInterface = ({ currentUser, otherUser, onMessageSent }) => {
     const [messages, setMessages] = useState([]);
@@ -43,11 +45,7 @@ const ChatInterface = ({ currentUser, otherUser, onMessageSent }) => {
             };
             const response = await MessageService.sendMessage(messageData);
             
-            // ✨ --- START: التعديل الرئيسي هنا --- ✨
-            // الآن نستخدم كائن الرسالة الكامل العائد من الخادم مباشرة
             setMessages(prevMessages => [...prevMessages, response.data.message]);
-            // ✨ --- END: نهاية التعديل --- ✨
-
             setNewMessage('');
             if (onMessageSent) onMessageSent();
         } catch (err) {
@@ -56,40 +54,52 @@ const ChatInterface = ({ currentUser, otherUser, onMessageSent }) => {
     };
 
     if (!currentUser || !otherUser) {
-        return <Typography sx={{ p: 2, textAlign: 'center' }}>يرجى تحديد محادثة.</Typography>;
+        return <div className="loading-spinner"><p>يرجى تحديد محادثة.</p></div>;
     }
 
     return (
-        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Paper className="chat-header">
-                <Typography variant="h6">{otherUser.name}</Typography>
-            </Paper>
-            <Box className="chat-messages-area">
-                {loading ? <CircularProgress sx={{ display: 'block', margin: 'auto' }} /> : error ? <Alert severity="error">{error}</Alert> : (
+        <div className="chat-window">
+            <header className="chat-header">
+                <h6>{otherUser.name}</h6>
+            </header>
+            
+            <div className="messages-list">
+                {loading ? (
+                    <div className="loading-spinner">
+                        {/* يمكنك إضافة أيقونة تحميل هنا */}
+                        <p>جارٍ تحميل الرسائل...</p> 
+                    </div>
+                ) : error ? (
+                    <div className="error-message">{error}</div>
+                ) : (
                     messages.map(msg => (
-                        <Box key={msg.message_id} className={`message-bubble ${msg.sender_id === currentUser.user_id ? 'sent' : 'received'}`}>
-                           <Typography variant="body2" sx={{fontWeight:'bold', mb:0.5}}>{msg.sender_name}</Typography>
-                           {msg.message_content}
-                           <Typography variant="caption" className="message-timestamp">
-                               {new Date(msg.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })}
-                           </Typography>
-                        </Box>
+                        <div key={msg.message_id} className={`message-item ${msg.sender_id === currentUser.user_id ? 'sent' : 'received'}`}>
+                            <div className="message-bubble">
+                                <p className="message-sender-name">{msg.sender_name}</p>
+                                <p className="message-text">{msg.message_content}</p>
+                            </div>
+                            <span className="message-timestamp">
+                               {formatTimestamp(msg.created_at)}
+                            </span>
+                        </div>
                     ))
                 )}
                 <div ref={messagesEndRef} />
-            </Box>
-            <Paper component="form" onSubmit={handleSendMessage} className="chat-input-area">
-                <TextField
-                    fullWidth
-                    variant="outlined"
+            </div>
+
+            <form onSubmit={handleSendMessage} className="message-input-form">
+                <input
+                    type="text"
                     placeholder="اكتب رسالتك..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     autoComplete="off"
                 />
-                <IconButton type="submit" color="primary" disabled={!newMessage.trim()}><SendIcon /></IconButton>
-            </Paper>
-        </Box>
+                <button type="submit" disabled={!newMessage.trim()}>
+                    <SendIcon />
+                </button>
+            </form>
+        </div>
     );
 };
 

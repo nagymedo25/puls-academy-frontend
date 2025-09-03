@@ -130,7 +130,7 @@ const DashboardLayout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography sx={{mr: 2}} variant="h6" noWrap component="div">
             لوحة تحكم الطالب
           </Typography>
         </Toolbar>

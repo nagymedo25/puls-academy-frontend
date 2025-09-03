@@ -1,175 +1,136 @@
-/* ===== متغيرات الثيم المستخلصة من Theme.js ===== */
-:root {
-  /* اتجاه RTL */
-  direction: rtl;
-  
-  /* الألوان الأساسية */
-  --primary-main: #F91C45;
-  --primary-light: #FF6F8E;
-  --primary-dark: #b80226ff;
-  --secondary-main: #FFFFFF;
-  
-  /* ألوان الخلفية */
-  --bg-default: #F5F5F5;
-  --bg-paper: #FFFFFF;
-  
-  /* ألوان النصوص */
-  --text-primary: #000000;
-  --text-secondary: #757575;
-  
-  /* الطباعة */
-  --font-family: 'Cairo', sans-serif;
-  --h3-font-weight: 700;
-  --h3-font-size: 1.75rem;
-  --h6-font-size: 1.25rem;
-  --body-font-size: 1rem;
+/* شبكة الكليات */
+.colleges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-/* ===== تصميم الصفحة الرئيسي ===== */
-.courses-page-container {
+/* بطاقة الكلية */
+.college-card {
+  background: linear-gradient(145deg, rgba(249, 28, 69, 0.05), rgba(249, 28, 69, 0.15));
+  backdrop-filter: blur(15px);
+  border-radius: 24px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(255, 111, 142, 0.05) 0%, var(--bg-default) 30%);
-  width: 100%;
-  min-height: 100vh;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* ===== تصميم الحاوية الرئيسية ===== */
-.courses-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 24px 16px;
-  animation: fadeInUp 0.8s ease-out;
-  z-index: 1;
-  position: relative;
+.college-card:hover {
+  transform: scale(1.05) rotate(1deg);
+  border-color: #F91C45;
+  box-shadow: 0 0 40px rgba(249, 28, 69, 0.4);
 }
 
-/* ===== تصميم العنوان ===== */
-.courses-page-title {
-  font-family: var(--font-family);
-  font-weight: var(--h3-font-weight);
-  font-size: var(--h3-font-size);
-  color: rgb(54, 54, 54);
-  margin-bottom: 24px;
-  text-align: center;
+.college-card:hover .college-icon {
+  transform: scale(1.15) rotate(5deg);
 }
 
-/* ===== تصميم حالة التحميل ===== */
-.loading-container {
-  display: flex;
-  justify-content: center;
-  margin: 32px 0;
+.college-card:hover .college-title {
+  color: #F91C45;
 }
 
-.loading-spinner {
-  width: 60px;
-  height: 60px;
-  border: 5px solid rgba(249, 28, 69, 0.2);
-  border-radius: 50%;
-  border-top-color: var(--primary-main);
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* ===== تصميم رسالة الخطأ ===== */
-.error-alert {
-  padding: 12px 16px;
-  margin-top: 24px;
-  background-color: rgba(249, 28, 69, 0.1);
-  color: var(--primary-main);
-  border-right: 4px solid var(--primary-main);
-  border-radius: 8px;
-  font-family: var(--font-family);
-  display: flex;
-  align-items: center;
-  animation: slideIn 0.3s ease;
-}
-
-.error-alert::before {
-  content: '⚠️';
-  margin-left: 8px;
-}
-
-/* ===== تصميم شبكة الكورسات ===== */
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 20px;
-  justify-content: center;
-}
-
-.course-grid-item {
-  grid-column: span 12;
-  animation: fadeInUp 0.5s ease-out;
-  animation-fill-mode: both;
-}
-
-/* ===== تصميم رسالة عدم وجود كورسات ===== */
-.no-courses-paper {
-  padding: 24px;
-  border-radius: 16px;
-  text-align: center;
-  margin-top: 16px;
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.no-courses-title {
-  font-family: var(--font-family);
-  font-size: var(--h6-font-size);
-  font-weight: 600;
-  color: var(--text-primary);
+/* أيقونة الكلية */
+.college-icon {
+  font-size: 6rem;
+  color: rgba(33, 33, 33, 0.7);
+  transition: all 0.3s ease;
   margin-bottom: 16px;
 }
 
-.no-courses-subtitle {
-  font-family: var(--font-family);
-  font-size: var(--body-font-size);
-  color: var(--text-secondary);
+/* عنوان الكلية */
+.college-title {
+  font-weight: 700;
+  font-size: 1.75rem;
+  margin: 0 0 8px 0;
+  transition: color 0.3s ease;
+  color: #212121;
 }
 
-/* ===== تأثيرات الحركة ===== */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+/* عنوان فرعي للكلية */
+.college-subtitle {
+  color: #757575;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* شبكة الكورسات */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 30px;
+  margin: 0 auto;
+}
+
+/* حاوية بطاقة الكورس */
+.course-card-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* رسالة عدم وجود كورسات */
+.no-courses-message {
+  grid-column: 1 / -1;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  margin-top: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* تصميم متجاوب */
+@media (max-width: 768px) {
+  .colleges-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .college-card {
+    padding: 30px 20px;
+  }
+  
+  .college-icon {
+    font-size: 5rem;
+  }
+  
+  .college-title {
+    font-size: 1.5rem;
+  }
+  
+  .courses-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
   }
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
+@media (max-width: 480px) {
+  .college-card {
+    padding: 20px;
   }
-  to {
-    transform: translateX(0);
-    opacity: 1;
+  
+  .college-icon {
+    font-size: 4rem;
   }
-}
-
-/* ===== تصميم متجاوب ===== */
-@media (min-width: 768px) {
-  .course-grid-item {
-    grid-column: span 6;
+  
+  .college-title {
+    font-size: 1.25rem;
   }
-}
-
-@media (min-width: 1024px) {
-  .course-grid-item {
-    grid-column: span 4;
+  
+  .courses-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
-}
-
-@media (min-width: 1280px) {
-  .course-grid-item {
-    grid-column: span 3;
+  
+  .no-courses-message {
+    padding: 20px;
   }
 }

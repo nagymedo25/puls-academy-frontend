@@ -1,35 +1,155 @@
-/* حاوية الشبكة الرئيسية للكروت */
-.stats-grid-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px; /* المسافة بين الكروت */
-  margin-top: 16px;
+/* src/pages/admin/AdminDashboard.css */
+
+/* --- 1. Variables & Base Styles --- */
+:root {
+    --primary-color: #0d6efd;
+    --success-color: #198754;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --danger-color: #dc3545;
+    --bg-color: #F7F9FC;
+    --surface-color: #FFFFFF;
+    --text-primary: #212121;
+    --text-secondary: #757575;
+    --border-color: #DEE2E6;
 }
 
-.full-width-card-item {
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 24px; /* نفس قيمة الـ gap للمحافظة على التناسق */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* العنصر الواحد (الكارت) داخل الشبكة */
-.stat-card-item {
-  width: 100%; /* العرض الكامل للشاشة على الهواتف (افتراضي) */
-  box-sizing: border-box;
+.admin-dashboard-page {
+    padding: 24px;
+    background-color: var(--bg-color);
+    font-family: 'Cairo', sans-serif;
+    color: var(--text-primary);
 }
 
-/* للشاشات الصغيرة (Small) فما فوق - مثل الأجهزة اللوحية */
-@media (min-width: 600px) {
-  .stat-card-item {
-    /* كل كارت يأخذ نصف العرض مع حساب المسافة بينهما */
-    width: calc(50% - 12px); 
-  }
+.page-title {
+    font-weight: 700;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.5s ease-out;
 }
 
-/* للشاشات المتوسطة (Medium) فما فوق - مثل شاشات الكمبيوتر */
-@media (min-width: 960px) {
-  .stat-card-item {
-    /* كل كارت يأخذ ربع العرض مع حساب المسافة بينهما */
-    width: calc(25% - 18px);
-  }
-}   
+/* src/pages/admin/AdminDashboard.css */
+
+/* --- 2. Main Dashboard Grid Layout --- */
+.dashboard-grid {
+    display: grid;
+    gap: 24px;
+
+    /* ✨ --- START: The Main Change --- ✨ */
+    /* غيرنا الأعمدة إلى 3 لتوزيع أفضل للكروت العلوية */
+    grid-template-columns: repeat(3, 1fr);
+    /* أضفنا صف جديد payments يمتد على عرض الشبكة بالكامل */
+    grid-template-areas:
+        "card1    card2    card3"
+        "payments payments payments"
+        "table    table    chart";
+    /* ✨ --- END: The Main Change --- ✨ */
+}
+
+/* --- 3. Grid Item Placement --- */
+.grid-item {
+    animation: fadeInUp 0.7s ease-out forwards;
+    opacity: 0;
+}
+/* ✨ تم تعديل أسماء المناطق لتطابق التخطيط الجديد */
+.card1 { grid-area: card1; animation-delay: 0.1s; }
+.card2 { grid-area: card2; animation-delay: 0.2s; }
+.card3 { grid-area: card3; animation-delay: 0.3s; }
+.payments { grid-area: payments; animation-delay: 0.4s; }
+.grid-item-table { grid-area: table; animation-delay: 0.5s; }
+.grid-item-chart { grid-area: chart; animation-delay: 0.6s; }
+
+
+/* --- 4. Responsiveness (Tablet & Mobile) --- */
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        /* ✨ تعديل تخطيط التابلت ليناسب الكروت الثلاثة */
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-areas:
+            "card1 card2"
+            "card3 card3"
+            "payments payments"
+            "table table"
+            "chart chart";
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* عمود واحد فقط */
+        grid-template-areas:
+            "card1"
+            "card2"
+            "card3"
+            "payments"
+            "table"
+            "chart";
+    }
+    .admin-dashboard-page {
+        padding: 16px;
+    }
+}
+
+
+/* --- 5. Modal Styles --- */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background-color: var(--surface-color);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 16px;
+    left: 16px; /* Adjusted for RTL */
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+
+/* --- 6. Loading & Error States --- */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+.error-container {
+    padding: 16px;
+    background-color: var(--danger-color-light);
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+    border-radius: 8px;
+    text-align: center;
+}

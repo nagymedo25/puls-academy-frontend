@@ -1,0 +1,197 @@
+/* src/styles/Chat.css */
+
+/* --- 1. Main Layout & Variables (Light Theme) --- */
+:root {
+    --primary-color: #F91C45; /* Brand Red */
+    --bg-color: #F7F9FC;       
+    --surface-color: #FFFFFF;    
+    --bubble-sent-bg: var(--primary-color);
+    --bubble-received-bg: #E9ECEF; 
+    --text-primary: #212121;      
+    --text-secondary: #757575;     
+    --border-color: #DEE2E6;      
+}
+
+/* --- 2. Student Chat Page --- */
+.student-chat-page {
+    background-color: var(--bg-color);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* --- 3. Admin Chat Page --- */
+.admin-chat-container {
+    font-family: 'Cairo', sans-serif;
+    color: var(--text-primary);
+    background-color: var(--bg-color);
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    direction: rtl;
+}
+
+/* --- 4. Chat Sidebar (Conversations List for Admin) --- */
+.chat-sidebar {
+    width: 320px;
+    background-color: var(--surface-color);
+    border-left: 1px solid var(--border-color);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+.sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-header h3 {
+    margin: 0 0 16px 0;
+    font-size: 1.25rem;
+}
+.search-form {
+    display: flex;
+    position: relative;
+}
+.search-form input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-family: 'Cairo', sans-serif;
+}
+.search-form button {
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none; background: none; cursor: pointer; color: var(--text-secondary);
+}
+
+.conversations-list {
+    list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1;
+}
+.conversation-item {
+    display: flex; align-items: center; padding: 12px 16px; cursor: pointer;
+    transition: background-color 0.2s ease; border-bottom: 1px solid var(--border-color);
+}
+.conversation-item:hover { background-color: #f1f3f5; }
+.conversation-item.active { background-color: #F7F9FC; border-right: 3px solid var(--primary-color); }
+
+.avatar-initials {
+    width: 48px; height: 48px; border-radius: 50%; margin-left: 12px; flex-shrink: 0;
+    display: flex; justify-content: center; align-items: center;
+    background-color: var(--primary-color); color: #fff; font-weight: bold;
+}
+
+.conversation-details {
+    overflow: hidden; /* Important for text-overflow */
+}
+.conversation-details .conversation-name { font-weight: bold; margin: 0; }
+.conversation-details .conversation-preview {
+    font-size: 0.9rem; color: var(--text-secondary); margin: 4px 0 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.conversation-preview.unread {
+    color: var(--text-primary);
+    font-weight: bold;
+}
+.unread-badge {
+    margin-right: auto; background-color: var(--primary-color); color: #fff;
+    width: 22px; height: 22px; border-radius: 50%; font-size: 0.8rem;
+    display: flex; justify-content: center; align-items: center;
+}
+
+
+/* --- 5. Chat Window --- */
+.chat-window-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.chat-window {
+    height: 100%; width: 100%; display: flex; flex-direction: column;
+    background-color: var(--bg-color); font-family: 'Cairo', sans-serif; direction: rtl;
+}
+.chat-header {
+    padding: 12px 16px; background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color); flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.chat-header h6 { margin: 0; font-size: 1.1rem; font-weight: bold; color: var(--text-primary); }
+
+.no-chat-selected {
+    display: flex; justify-content: center; align-items: center; height: 100%;
+    color: var(--text-secondary);
+}
+
+
+/* --- 6. Messages --- */
+.messages-list, .message-item, .message-bubble, .message-sender-name, .message-text, .message-timestamp,
+.message-item.sent, .message-item.received, .message-input-form {
+    /* All message styles from previous version are unchanged */
+    /* ... (pasting them here for completeness) ... */
+    scrollbar-width: thin; scrollbar-color: var(--primary-color) #F0F0F0;
+}
+.messages-list::-webkit-scrollbar { width: 8px; }
+.messages-list::-webkit-scrollbar-track { background: #F0F0F0; }
+.messages-list::-webkit-scrollbar-thumb { background-color: var(--primary-color); border-radius: 4px; }
+.messages-list { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+.message-item { display: flex; flex-direction: column; max-width: 70%; }
+.message-bubble { padding: 10px 16px; border-radius: 18px; width: fit-content; }
+.message-sender-name { font-weight: bold; font-size: 0.85rem; margin-bottom: 4px; }
+.message-text { margin: 0; line-height: 1.6; color: var(--text-primary); overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; }
+.message-timestamp { font-size: 0.75rem; color: var(--text-secondary); margin-top: 6px; display: block; }
+.message-item.sent { align-self: flex-end; align-items: flex-end; }
+.message-item.sent .message-bubble { background-color: var(--bubble-sent-bg); color: #fff; border-bottom-left-radius: 4px; }
+.message-item.sent .message-sender-name { color: rgba(255, 255, 255, 0.9); }
+.message-item.sent .message-text { color: #fff; }
+.message-item.received { align-self: flex-start; align-items: flex-start; }
+.message-item.received .message-bubble { background-color: var(--bubble-received-bg); border-bottom-right-radius: 4px; }
+.message-item.received .message-sender-name { color: var(--text-secondary); }
+.message-input-form { display: flex; padding: 16px; border-top: 1px solid var(--border-color); background-color: var(--surface-color); gap: 12px; box-shadow: 0 -2px 4px rgba(0,0,0,0.05); }
+.message-input-form input { flex-grow: 1; padding: 12px 16px; border-radius: 24px; border: 1px solid var(--border-color); background-color: #FFFFFF; color: var(--text-primary); font-family: 'Cairo', sans-serif; font-size: 1rem; }
+.message-input-form input:focus { outline: none; border-color: var(--primary-color); }
+.message-input-form button { width: 48px; height: 48px; border-radius: 50%; border: none; background-color: var(--primary-color); color: #fff; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: background-color 0.2s ease; flex-shrink: 0; }
+.message-input-form button:hover { background-color: #b80226ff; }
+.message-input-form button:disabled { background-color: #cccccc; cursor: not-allowed; }
+.loading-spinner, .error-message { display: flex; justify-content: center; align-items: center; height: 100%; color: var(--text-secondary); }
+.error-message { background-color: rgba(249, 28, 69, 0.1); color: var(--primary-color); padding: 16px; border-radius: 8px; margin: 20px; }
+
+
+/* --- 7. Responsiveness (Mobile View for Admin) --- */
+.chat-header-mobile-back { display: none; } /* Hide back button by default */
+
+@media (max-width: 768px) {
+    .chat-sidebar {
+        width: 100%;
+        border-left: none;
+    }
+    .chat-window-wrapper {
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        transform: translateX(-100%); /* Start off-screen */
+        transition: transform 0.3s ease-in-out;
+        background-color: var(--bg-color);
+    }
+    .admin-chat-container.chat-view-active .chat-sidebar {
+        transform: translateX(100%); /* Hide sidebar */
+    }
+    .admin-chat-container.chat-view-active .chat-window-wrapper {
+        transform: translateX(0); /* Show chat window */
+    }
+    .chat-header-mobile-back {
+        display: flex; align-items: center;
+        padding: 12px;
+        background-color: var(--surface-color);
+        border-bottom: 1px solid var(--border-color);
+    }
+    .chat-header-mobile-back button {
+        display: flex; align-items: center; background: none; border: none;
+        font-size: 1rem; font-family: 'Cairo', sans-serif; cursor: pointer;
+    }
+    .chat-header-mobile-back button span {
+        margin-right: 8px;
+    }
+}

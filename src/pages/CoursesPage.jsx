@@ -4,11 +4,11 @@ import {
   Box,
   Container,
   Typography,
-  Grid,
   CircularProgress,
   Alert,
   useTheme,
   alpha,
+  Grid,
   Paper,
 } from '@mui/material';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -19,13 +19,13 @@ import CourseService from '../services/courseService';
 import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
 import { keyframes } from '@emotion/react';
+import './CoursesPage.css';
 
 // --- Animations ---
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: translateY(0); }
 `;
-
 const backgroundPan = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -143,7 +143,7 @@ const CoursesList = ({ category, collegeType }) => {
   const theme = useTheme();
   const categoryText = category === 'pharmacy' ? 'الصيدلة' : 'طب الأسنان';
   const collegeText = collegeType === 'male' ? 'البنين' : 'البنات';
-
+  
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true);
@@ -157,10 +157,9 @@ const CoursesList = ({ category, collegeType }) => {
         setLoading(false);
       }
     };
-
     fetchCourses();
   }, [category, collegeType]);
-
+  
   return (
     <Box sx={{
         position: 'relative',
@@ -171,36 +170,34 @@ const CoursesList = ({ category, collegeType }) => {
             <Typography variant="h3" component="h2" sx={{ fontWeight: 700, mb: 4, textAlign: 'center' }}>
                 كورسات {categoryText} - كلية {collegeText}
             </Typography>
+            
         {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress size={60} /></Box>
         ) : error ? (
             <Alert severity="error" sx={{ mt: 3 }}>{error}</Alert>
         ) : (
-            <Grid container spacing={5} justifyContent="center">
+            <div className="courses-grid">
             {courses.length > 0 ? (
                 courses.map((course, index) => (
-                // ✨ --- التعديل الصحيح والنهائي هنا --- ✨
-                // sm={12} : يأخذ الكارت العرض كاملًا على الشاشات الصغيرة (tablets).
-                // md={6} : يأخذ الكارت نصف العرض على الشاشات المتوسطة والكبيرة (desktops).
-                <Grid xs={12} sm={12} md={6} key={course.course_id}>
-                    <Box sx={{ animation: `fadeInUp 0.5s ease-out ${index * 0.1}s`, animationFillMode: 'both' }}>
-                        <CourseCard course={course} />
-                    </Box>
-                </Grid>
+                <div 
+                  key={course.course_id} 
+                  className="course-card-container"
+                  style={{ animation: `fadeInUp 0.5s ease-out ${index * 0.1}s`, animationFillMode: 'both' }}
+                >
+                    <CourseCard course={course} />
+                </div>
                 ))
             ) : (
-                <Grid xs={12}>
-                    <Paper sx={{p: 4, borderRadius: '16px', textAlign: 'center', mt: 2, backgroundColor: alpha(theme.palette.background.paper, 0.7), backdropFilter: 'blur(10px)'}}>
-                        <Typography variant="h6" sx={{mb: 2}}>
-                            لا توجد كورسات متاحة حاليًا
-                        </Typography>
-                        <Typography color="text.secondary">
-                            نعمل على إضافة المزيد من الكورسات قريباً.
-                        </Typography>
-                    </Paper>
-                </Grid>
+                <div className="no-courses-message">
+                    <Typography variant="h6" sx={{mb: 2}}>
+                        لا توجد كورسات متاحة حاليًا
+                    </Typography>
+                    <Typography color="text.secondary">
+                        نعمل على إضافة المزيد من الكورسات قريباً.
+                    </Typography>
+                </div>
             )}
-            </Grid>
+            </div>
         )}
         </Container>
     </Box>
@@ -213,21 +210,21 @@ const CoursesPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const category = searchParams.get('category');
-
+  
   useEffect(() => {
     if (!category || (category !== 'pharmacy' && category !== 'dentistry')) {
         navigate('/');
     }
   }, [category, navigate]);
-
+  
   const handleCollegeSelect = (collegeType) => {
     setSelectedCollege(collegeType);
   };
-
+  
   if (!category) {
       return null; 
   }
-
+  
   return (
     <>
       <Header />

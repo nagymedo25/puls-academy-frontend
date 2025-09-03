@@ -1,17 +1,16 @@
 // src/components/admin/LessonManager.jsx
 import React, { useState, useEffect } from 'react';
-import {
-  Box, Typography, List, ListItem, ListItemText, IconButton, TextField, Button, CircularProgress, Alert, Divider,
-} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import AdminService from '../../services/adminService';
+import './LessonManager.css'; // ✨ استيراد ملف التنسيقات
 
 const LessonManager = ({ courseId }) => {
   const [lessons, setLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [newLesson, setNewLesson] = useState({ title: '', video_url: '' });
+  // ✨ إضافة الوصف للحالة
+  const [newLesson, setNewLesson] = useState({ title: '', description: '', video_url: '' });
   const [isAdding, setIsAdding] = useState(false);
 
   const fetchLessons = async () => {
@@ -36,14 +35,15 @@ const LessonManager = ({ courseId }) => {
     if (window.confirm('هل أنت متأكد من رغبتك في حذف هذا الدرس؟')) {
       try {
         await AdminService.deleteLesson(lessonId);
-        fetchLessons(); // Refresh list after delete
+        fetchLessons();
       } catch (err) {
         setError('فشل في حذف الدرس.');
       }
     }
   };
 
-  const handleAddLesson = async () => {
+  const handleAddLesson = async (e) => {
+    e.preventDefault();
     if (!newLesson.title || !newLesson.video_url) {
       setError('يجب إدخال عنوان ورابط الفيديو.');
       return;
@@ -52,8 +52,8 @@ const LessonManager = ({ courseId }) => {
     setError('');
     try {
       await AdminService.addLessonToCourse(courseId, newLesson);
-      setNewLesson({ title: '', video_url: '' }); // Clear form
-      fetchLessons(); // Refresh list
+      setNewLesson({ title: '', description: '', video_url: '' }); // تفريغ الحقول
+      fetchLessons();
     } catch (err) {
       setError(err.response?.data?.error || 'فشل في إضافة الدرس.');
     } finally {
@@ -65,66 +65,64 @@ const LessonManager = ({ courseId }) => {
     setNewLesson({ ...newLesson, [e.target.name]: e.target.value });
   };
 
-  if (loading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>;
-  }
+  if (loading) return <div>Loading...</div>;
 
   return (
-    <Box>
-      {error && <Alert severity="error" onClose={() => setError('')} sx={{ mb: 2 }}>{error}</Alert>}
-      <Typography variant="h6" gutterBottom>الدروس الحالية</Typography>
-      <List sx={{ maxHeight: 250, overflowY: 'auto', mb: 3 }}>
+    <div className="lesson-manager-container">
+      {error && <div className="lesson-manager-error">{error}</div>}
+      <h6 className="section-title">الدروس الحالية</h6>
+      <div className="lessons-list-container">
         {lessons.length > 0 ? (
-          lessons.map((lesson, index) => (
-            <ListItem
-              key={lesson.lesson_id}
-              secondaryAction={
-                <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(lesson.lesson_id)}>
-                  <DeleteIcon color="error" />
-                </IconButton>
-              }
-              divider
-            >
-              <ListItemText
-                primary={`${index + 1}. ${lesson.title}`}
-                secondary={lesson.video_url}
-              />
-            </ListItem>
-          ))
+          <ul className="lessons-list-ul">
+            {lessons.map((lesson, index) => (
+              <li key={lesson.lesson_id} className="lesson-list-item">
+                <div className="lesson-details">
+                  <p className="lesson-title">{`${index + 1}. ${lesson.title}`}</p>
+                  <p className="lesson-url">{lesson.video_url}</p>
+                </div>
+                <button className="delete-lesson-btn" onClick={() => handleDelete(lesson.lesson_id)}>
+                  <DeleteIcon />
+                </button>
+              </li>
+            ))}
+          </ul>
         ) : (
-          <Typography color="text.secondary">لا توجد دروس مضافة لهذا الكورس بعد.</Typography>
+          <p style={{ padding: '16px' }}>لا توجد دروس مضافة لهذا الكورس بعد.</p>
         )}
-      </List>
+      </div>
 
-      <Divider sx={{ my: 3 }} />
+      <hr style={{ border: 'none', borderTop: '1px solid #e0e0e0', margin: '24px 0' }} />
 
-      <Typography variant="h6" gutterBottom>إضافة درس جديد</Typography>
-      <Box component="form" noValidate autoComplete="off" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <TextField
-          label="عنوان الدرس"
+      <h6 className="section-title">إضافة درس جديد</h6>
+      <form onSubmit={handleAddLesson} className="add-lesson-form">
+        <input
+          type="text"
           name="title"
+          placeholder="عنوان الدرس"
           value={newLesson.title}
           onChange={handleInputChange}
-          fullWidth
+          className="form-input"
         />
-        <TextField
-          label="رابط الفيديو (Bunny.net)"
+        <textarea
+          name="description"
+          placeholder="وصف مختصر للدرس (اختياري)"
+          value={newLesson.description}
+          onChange={handleInputChange}
+          className="form-textarea"
+        />
+        <input
+          type="text"
           name="video_url"
+          placeholder="رابط الفيديو (Bunny.net)"
           value={newLesson.video_url}
           onChange={handleInputChange}
-          fullWidth
+          className="form-input"
         />
-        <Button
-          variant="contained"
-          startIcon={isAdding ? <CircularProgress size={20} /> : <AddIcon />}
-          onClick={handleAddLesson}
-          disabled={isAdding}
-          sx={{ alignSelf: 'flex-start' }}
-        >
-          إضافة الدرس
-        </Button>
-      </Box>
-    </Box>
+        <button type="submit" className="add-lesson-btn" disabled={isAdding}>
+          {isAdding ? 'جاري الإضافة...' : 'إضافة الدرس'}
+        </button>
+      </form>
+    </div>
   );
 };
 

@@ -1,48 +1,47 @@
 // src/components/student/PaymentFormModal.jsx
 import React, { useState, useEffect } from 'react';
-import { Modal, Box, Typography, Button, TextField, Select, MenuItem, FormControl, InputLabel, CircularProgress, Alert } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CourseService from '../../services/courseService';
 import PaymentService from '../../services/paymentService';
-import AuthService from '../../services/authService';
+// ✨ لم نعد بحاجة لـ AuthService هنا
+import './PaymentFormModal.css';
 
-const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', sm: 500 },
-    bgcolor: 'background.paper',
-    borderRadius: '16px',
-    boxShadow: 24,
-    p: 4,
-    maxHeight: '90vh', // ✨ إضافة لضمان إمكانية التمرير
-    overflowY: 'auto', // ✨ إضافة لضمان إمكانية التمرير
-};
+const VODAFONE_CASH_NUMBER = 'sdfgdfgdfg';
+const INSTAPAY_LINK = 'tryrtyrtytryt';
 
-// ✨ إضافة prop جديد: initialCourse
 const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) => {
     const [courses, setCourses] = useState([]);
-    const [selectedCourseId, setSelectedCourseId] = useState(''); // ✨ تغيير الاسم لتمييزه عن الكائن
+    const [selectedCourseId, setSelectedCourseId] = useState('');
     const [amount, setAmount] = useState('');
     const [method, setMethod] = useState('vodafone_cash');
     const [screenshot, setScreenshot] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [step, setStep] = useState(1);
+    const [copySuccess, setCopySuccess] = useState('');
 
     useEffect(() => {
         if (open) {
+            // Reset state on open
+            setStep(1);
+            setMethod('vodafone_cash');
+            setError('');
+            setScreenshot(null);
+
             const fetchCourses = async () => {
                 try {
-                    // ✨ 2. جلب بيانات المستخدم أولاً
-                    const profileRes = await AuthService.getProfile();
-                    const userCollege = profileRes.data.user.college;
+                    // ✨ 1. استدعاء الدالة التي تجلب الكورسات مع حالة الاشتراك
+                    const response = await CourseService.getAvailableCourses(); 
+                    
+                    // ✨ 2. فلترة النتائج لعرض الكورسات المتاحة للشراء فقط
+                    const purchasableCourses = (response.data.courses || []).filter(
+                        course => course.enrollment_status === 'available'
+                    );
 
-                    // ✨ 3. طلب الكورسات بناءً على كلية المستخدم
-                    const response = await CourseService.getAllCourses({ category: userCollege }); 
-                    setCourses(response.data.courses || []);
+                    setCourses(purchasableCourses);
                 } catch (err) {
-                    setError('لا يمكن تحميل قائمة الكورسات.');
+                    setError('لا يمكن تحميل قائمة الكورسات المتاحة للشراء.');
                 }
             };
             fetchCourses();
@@ -50,18 +49,18 @@ const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) =>
             if (initialCourse) {
                 setSelectedCourseId(initialCourse.course_id);
                 setAmount(initialCourse.price);
+                setStep(2);
             } else {
                 setSelectedCourseId('');
                 setAmount('');
             }
-            setScreenshot(null); 
-            setError(''); 
         }
     }, [open, initialCourse]);
 
     const handleCourseChange = (e) => {
-        const courseId = e.target.value;
+        const courseId = parseInt(e.target.value, 10);
         const course = courses.find(c => c.course_id === courseId);
+        
         setSelectedCourseId(courseId);
         if (course) {
             setAmount(course.price);
@@ -76,8 +75,8 @@ const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) =>
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!selectedCourseId || !amount || !method || !screenshot) {
-            setError('يرجى ملء جميع الحقول ورفع صورة الإيصال.');
+        if (!screenshot) {
+            setError('يرجى رفع صورة الإيصال.');
             return;
         }
         
@@ -99,59 +98,97 @@ const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) =>
             setLoading(false);
         }
     };
+    
+    const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text).then(() => {
+            setCopySuccess('تم النسخ بنجاح!');
+            setTimeout(() => setCopySuccess(''), 2000);
+        });
+    };
+
+    if (!open) return null;
 
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={modalStyle} component="form" onSubmit={handleSubmit}>
-                <Typography variant="h5" fontWeight="700" mb={3}>إنشاء طلب دفع جديد</Typography>
+        <div className="payment-modal-backdrop" onClick={onClose}>
+            <div className="payment-modal-content" onClick={(e) => e.stopPropagation()}>
+                <h2 className="modal-title">
+                    {step === 1 ? 'شراء كورس جديد' : `دفع مبلغ ${amount} ج.م`}
+                </h2>
+
+                {step === 1 && (
+                    <div className="modal-step">
+                        {/* ✨ 3. إضافة رسالة في حال عدم وجود كورسات للشراء */}
+                        {courses.length > 0 ? (
+                            <select className="modal-select" value={selectedCourseId} onChange={handleCourseChange} required>
+                                <option value="" disabled>-- اختر الكورس --</option>
+                                {courses.map(course => (
+                                    <option key={course.course_id} value={course.course_id}>
+                                        {course.title} ({course.price} ج.م)
+                                    </option>
+                                ))}
+                            </select>
+                        ) : (
+                            <div className="info-box">
+                                <p>لقد قمت بالاشتراك في جميع الكورسات المتاحة حالياً. شكراً لك!</p>
+                            </div>
+                        )}
+                        <div className="modal-actions">
+                            <button className="btn-secondary" onClick={onClose}>إلغاء</button>
+                            <button className="btn-primary" onClick={() => setStep(2)} disabled={!selectedCourseId || !amount}>
+                                متابعة للدفع
+                            </button>
+                        </div>
+                    </div>
+                )}
                 
-                <FormControl fullWidth margin="normal" required>
-                    <InputLabel>اختر الكورس</InputLabel>
-                    <Select 
-                        value={selectedCourseId} // ✨ استخدام selectedCourseId
-                        label="اختر الكورس" 
-                        onChange={handleCourseChange}
-                        disabled={!!initialCourse} // ✨ تعطيل الاختيار إذا كان الكورس محددًا مسبقًا
-                    >
-                        {courses.map(course => (
-                            <MenuItem key={course.course_id} value={course.course_id}>
-                                {course.title} ({course.price} ج.م)
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                {step === 2 && (
+                     <form className="modal-step" onSubmit={handleSubmit}>
+                        <div className="payment-methods">
+                            <button type="button" className={method === 'vodafone_cash' ? 'active' : ''} onClick={() => setMethod('vodafone_cash')}>فودافون كاش</button>
+                            <button type="button" className={method === 'instapay' ? 'active' : ''} onClick={() => setMethod('instapay')}>إنستا باي</button>
+                        </div>
 
-                <TextField 
-                    label="المبلغ" 
-                    value={amount} 
-                    fullWidth 
-                    margin="normal" 
-                    InputProps={{ readOnly: true }} // المبلغ للقراءة فقط
-                />
+                        <div className="payment-instructions">
+                            {method === 'vodafone_cash' ? (
+                                <div className="info-box">
+                                    <p>1. قم بتحويل المبلغ إلى الرقم التالي:</p>
+                                    <div className="copy-field">
+                                        <span>{VODAFONE_CASH_NUMBER || "الرقم غير متوفر"}</span>
+                                        <button type="button" onClick={() => copyToClipboard(VODAFONE_CASH_NUMBER)} aria-label="Copy number">
+                                            <ContentCopyIcon fontSize="small" />
+                                            {copySuccess && <span className="copy-tooltip">{copySuccess}</span>}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="info-box">
+                                    <p>1. قم بالدفع باستخدام رابط إنستا باي التالي:</p>
+                                    <a href={INSTAPAY_LINK} target="_blank" rel="noopener noreferrer" className="instapay-link">
+                                        {INSTAPAY_LINK ? "اضغط هنا للانتقال إلى إنستا باي" : "الرابط غير متوفر"}
+                                    </a>
+                                </div>
+                            )}
+                            <p className="instruction-step">2. بعد إتمام الدفع، قم برفع صورة الإيصال (سكرين شوت).</p>
+                        </div>
 
-                <FormControl fullWidth margin="normal" required>
-                    <InputLabel>طريقة الدفع</InputLabel>
-                    <Select value={method} label="طريقة الدفع" onChange={(e) => setMethod(e.target.value)}>
-                        <MenuItem value="vodafone_cash">فودافون كاش</MenuItem>
-                        <MenuItem value="instapay">إنستا باي</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <Button variant="outlined" component="label" fullWidth sx={{ mt: 2, py: 1.5 }} startIcon={<UploadFileIcon />}>
-                    {screenshot ? screenshot.name : 'رفع صورة الإيصال'}
-                    <input type="file" hidden onChange={handleFileChange} accept="image/*" />
-                </Button>
-
-                {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-
-                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                    <Button onClick={onClose} color="inherit">إلغاء</Button>
-                    <Button type="submit" variant="contained" disabled={loading}>
-                        {loading ? <CircularProgress size={24} /> : 'إرسال الطلب'}
-                    </Button>
-                </Box>
-            </Box>
-        </Modal>
+                        <label className="upload-button">
+                            <UploadFileIcon />
+                            <span>{screenshot ? screenshot.name : 'اختر صورة الإيصال'}</span>
+                            <input type="file" hidden onChange={handleFileChange} accept="image/*" required />
+                        </label>
+                        
+                        {error && <div className="modal-error">{error}</div>}
+                        
+                        <div className="modal-actions">
+                            {!initialCourse && <button type="button" className="btn-secondary" onClick={() => setStep(1)}>عودة</button>}
+                            <button type="submit" className="btn-primary" disabled={loading}>
+                                {loading ? 'جاري الإرسال...' : 'تأكيد ورفع الإيصال'}
+                            </button>
+                        </div>
+                    </form>
+                )}
+            </div>
+        </div>
     );
 };
 

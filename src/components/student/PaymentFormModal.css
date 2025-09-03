@@ -1,0 +1,222 @@
+/* src/components/student/PaymentFormModal.css */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px) scale(0.98); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.payment-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 1300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.payment-modal-content {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 500px;
+    animation: slideUp 0.4s ease-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-title {
+    padding: 20px 24px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #212121;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-step {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* --- Step 1: Course Selection --- */
+.modal-select {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    font-family: 'Cairo', sans-serif;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+}
+
+/* --- Step 2: Payment Details --- */
+.payment-methods {
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+}
+.payment-methods button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+.payment-methods button:first-of-type {
+    border-left: 1px solid #ccc;
+}
+.payment-methods button.active {
+    background-color: #F91C45;
+    color: white;
+    font-weight: bold;
+}
+
+.payment-instructions {
+    font-size: 0.95rem;
+    color: #616161;
+}
+.info-box {
+    background-color: #f7f9fc;
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid #e0e0e0;
+}
+.info-box p { margin: 0 0 10px 0; }
+.instruction-step { margin-top: 16px; font-weight: bold; }
+
+.copy-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e9ecef;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+.copy-field span {
+    font-weight: bold;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+.copy-field button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #757575;
+}
+
+.instapay-link {
+    display: block;
+    text-align: center;
+    padding: 12px;
+    background-color: #F91C45;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.upload-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.upload-button:hover {
+    border-color: #F91C45;
+    background-color: #fff8f9;
+}
+.upload-button span {
+    color: #616161;
+}
+
+/* --- General --- */
+.modal-error {
+    padding: 10px;
+    background-color: #ffebee;
+    color: #c62828;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: #F91C45;
+    color: white;
+}
+.btn-primary:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+.btn-secondary {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.copy-field {
+    /* ... (التنسيقات السابقة هنا) ... */
+    position: relative; /* ✨ إضافة لجعل الـ tooltip يعمل بشكل صحيح */
+}
+
+/* ✨ أضف هذا الكود الجديد في نهاية الملف */
+.copy-tooltip {
+    position: absolute;
+    left: 50%;
+    top: -35px; /* يظهر فوق زر النسخ */
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    animation: fadeIn 0.3s;
+}
+
+.copy-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}

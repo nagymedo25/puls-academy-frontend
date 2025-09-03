@@ -1,183 +1,277 @@
 // src/pages/student/CourseWatchPage.jsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-// ✨ --- START: التعديل الرئيسي هنا --- ✨
-// تم إضافة ListItemIcon إلى قائمة الاستيراد لحل الخطأ
-import { Box, Typography, List, ListItem, ListItemButton, ListItemText, CircularProgress, Alert, Paper, IconButton, useMediaQuery, useTheme, Divider, Button, ListItemIcon } from '@mui/material';
-// ✨ --- END: التعديل الرئيسي هنا --- ✨
-import MenuIcon from '@mui/icons-material/Menu';
-import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
-import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
-import CourseService from '../../services/courseService';
-import './CourseWatchPage.css';
 
-const CourseWatchPage = () => {
-    const { courseId } = useParams();
-    const navigate = useNavigate();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+import React, { useState, useEffect, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-    const [course, setCourse] = useState(null);
-    const [lessons, setLessons] = useState([]);
-    const [currentLesson, setCurrentLesson] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
+// Icons
+import MenuIcon from "@mui/icons-material/Menu";
+import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
+import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import VisibilityOffOutlinedIcon from "@mui/icons-material/VisibilityOffOutlined";
+import Logo from "../../assets/logo2.png";
 
-    const getBunnyEmbedUrl = useCallback((playUrl) => {
-        if (!playUrl || !playUrl.includes('mediadelivery.net/play')) {
-            return '';
-        }
-        try {
-            const embedUrl = new URL(playUrl.replace('/play/', '/embed/'));
-            embedUrl.searchParams.set('autoplay', 'true');
-            return embedUrl.toString();
-        } catch (e) {
-            console.error("Could not parse Bunny.net URL", e);
-            return '';
-        }
-    }, []);
+// Services
+import CourseService from "../../services/courseService";
 
-    useEffect(() => {
-        const fetchCourseData = async () => {
-            try {
-                setLoading(true);
-                const [courseRes, lessonsRes] = await Promise.all([
-                    CourseService.getCourseById(courseId),
-                    CourseService.getCourseLessons(courseId)
-                ]);
-                
-                setCourse(courseRes.data.course);
-                const fetchedLessons = lessonsRes.data.lessons;
-                setLessons(fetchedLessons);
+// CSS
+import "./CourseWatchPage.css";
 
-                if (fetchedLessons && fetchedLessons.length > 0) {
-                    setCurrentLesson(fetchedLessons[0]);
-                }
-            } catch (err) {
-                setError(err.response?.data?.error || 'فشل في تحميل بيانات الكورس. قد لا يكون لديك صلاحية الوصول.');
-            } finally {
-                setLoading(false);
-            }
-        };
+// ====================================================================
+// 🛡️ --- START: Content Security System (Manual Resume) --- 🛡️
+// ====================================================================
+const useContentSecurity = () => {
+  const [isBlocked, setIsBlocked] = useState(false);
 
-        fetchCourseData();
-
-        const handleContextMenu = (e) => e.preventDefault();
-        document.addEventListener('contextmenu', handleContextMenu);
-        return () => document.removeEventListener('contextmenu', handleContextMenu);
-    }, [courseId]);
-
-    useEffect(() => {
-        setSidebarOpen(!isMobile);
-    }, [isMobile]);
-
-    const handleLessonClick = (lesson) => {
-        setCurrentLesson(lesson);
-        if (isMobile) {
-            setSidebarOpen(false);
-        }
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      // This function ONLY blocks the content and does not unblock it automatically.
+      if (document.hidden) {
+        setIsBlocked(true);
+      }
     };
 
-    if (loading) {
-        return (
-            <Box className="watch-page-loading">
-                <CircularProgress />
-                <Typography sx={{ mt: 2 }}>جارٍ تحميل الكورس والدروس...</Typography>
-            </Box>
-        );
-    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    if (error) {
-        return (
-            <Box className="watch-page-error">
-                <Alert severity="error">{error}</Alert>
-                <Button variant="contained" onClick={() => navigate('/dashboard')} sx={{ mt: 2 }}>
-                    العودة للوحة التحكم
-                </Button>
-            </Box>
-        );
-    }
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
+  // Expose the setter function so the UI can use it.
+  return { isBlocked, setIsBlocked };
+};
+// ====================================================================
+// --- END: Content Security System ---
+// ====================================================================
+
+const Loader = () => (
+  <div className="cw-page-loader-container">
+    <div className="loader-spinner"></div>
+    <p>جارٍ تحميل الكورس والدروس...</p>
+  </div>
+);
+
+const SecurityWarning = ({ message, onAcknowledge }) => (
+  <div className="security-warning-inline">
+    <VisibilityOffOutlinedIcon style={{ fontSize: "5rem", color: "#A0A0A0" }} />
+    <h2>تم إيقاف العرض مؤقتاً</h2>
+    <p>{message}</p>
+    <button onClick={onAcknowledge}>استئناف الدرس</button>
+  </div>
+);
+
+// Main Component
+const CourseWatchPage = () => {
+  const { isBlocked, setIsBlocked } = useContentSecurity();
+  const [showInitialPopup, setShowInitialPopup] = useState(true);
+
+  const { courseId } = useParams();
+  const navigate = useNavigate();
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
+  const [course, setCourse] = useState(null);
+  const [lessons, setLessons] = useState([]);
+  const [currentLesson, setCurrentLesson] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 900);
+
+  const getBunnyEmbedUrl = useCallback((playUrl) => {
+    if (!playUrl || !playUrl.includes("mediadelivery.net/play")) return "";
+    try {
+      const embedUrl = new URL(playUrl.replace("/play/", "/embed/"));
+      embedUrl.searchParams.set("autoplay", "true");
+      return embedUrl.toString();
+    } catch (e) {
+      console.error("Could not parse Bunny.net URL", e);
+      return "";
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      try {
+        setLoading(true);
+        const [courseRes, lessonsRes] = await Promise.all([
+          CourseService.getCourseById(courseId),
+          CourseService.getCourseLessons(courseId),
+        ]);
+        setCourse(courseRes.data.course);
+        const fetchedLessons = lessonsRes.data.lessons;
+        setLessons(fetchedLessons);
+        if (fetchedLessons?.length > 0) {
+          setCurrentLesson(fetchedLessons[0]);
+        }
+      } catch (err) {
+        setError(
+          err.response?.data?.error ||
+            "فشل في تحميل بيانات الكورس. قد لا يكون لديك صلاحية الوصول."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourseData();
+    const handleContextMenu = (e) => e.preventDefault();
+    document.addEventListener("contextmenu", handleContextMenu);
+    return () => document.removeEventListener("contextmenu", handleContextMenu);
+  }, [courseId]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 900;
+      setIsMobile(mobile);
+      if (!mobile && !sidebarOpen) {
+        setSidebarOpen(true);
+      } else if (mobile && sidebarOpen) {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [sidebarOpen]);
+
+  const handleLessonClick = (lesson) => {
+    setCurrentLesson(lesson);
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
+  };
+
+  if (loading) return <Loader />;
+
+  if (error) {
     return (
-        <Box className="course-watch-container">
-            {isMobile && (
-                <IconButton 
-                    onClick={() => setSidebarOpen(!sidebarOpen)} 
-                    className="sidebar-toggle-button"
-                    sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1100, backgroundColor: 'rgba(255,255,255,0.8)' }}
-                >
-                    <MenuIcon />
-                </IconButton>
-            )}
-
-            <Paper className={`sidebar ${sidebarOpen ? 'open' : ''}`} elevation={3}>
-                <Typography variant="h6" className="sidebar-course-title" noWrap>
-                    {course?.title}
-                </Typography>
-                <Divider sx={{ mb: 2 }} />
-                <List className="lesson-list">
-                    {lessons.length > 0 ? lessons.map((lesson) => (
-                        <ListItem key={lesson.lesson_id} disablePadding>
-                            <ListItemButton
-                                selected={currentLesson?.lesson_id === lesson.lesson_id}
-                                onClick={() => handleLessonClick(lesson)}
-                                className="lesson-list-item"
-                            >
-                                <ListItemIcon>
-                                    {currentLesson?.lesson_id === lesson.lesson_id ? (
-                                        <PlayCircleFilledWhiteIcon color="primary" />
-                                    ) : (
-                                        <CircleOutlinedIcon color="action" />
-                                    )}
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={lesson.title}
-                                    sx={{ '& .MuiListItemText-primary': { fontWeight: currentLesson?.lesson_id === lesson.lesson_id ? 'bold' : 'normal' } }}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    )) : (
-                        <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
-                            لا توجد دروس في هذا الكورس بعد.
-                        </Typography>
-                    )}
-                </List>
-            </Paper>
-
-            <Box className="main-content">
-                {currentLesson ? (
-                    <>
-                        <Typography variant="h5" component="h1" className="current-lesson-title">
-                            {currentLesson.title}
-                        </Typography>
-                        <Divider sx={{ my: 2 }} />
-                        <div className="video-player-wrapper">
-                            <iframe
-                                src={getBunnyEmbedUrl(currentLesson.video_url)}
-                                loading="eager"
-                                title={currentLesson.title}
-                                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-                                allowFullScreen={true}
-                            ></iframe>
-                        </div>
-                        <Paper elevation={1} sx={{ p: 3, mt: 3, borderRadius: '12px' }}>
-                            <Typography variant="h6" fontWeight={700} gutterBottom>وصف الدرس</Typography>
-                            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
-                                {'لا يوجد وصف لهذا الدرس.'}
-                            </Typography>
-                        </Paper>
-                    </>
-                ) : (
-                    <Paper sx={{ p: 4, textAlign: 'center', mt: 4 }}>
-                        <Typography variant="h6" color="text.secondary">
-                            يرجى اختيار درس للبدء بالمشاهدة.
-                        </Typography>
-                    </Paper>
-                )}
-            </Box>
-        </Box>
+      <div className="cw-page-error-container">
+        <div className="error-alert">
+          <p>{error}</p>
+        </div>
+        <button className="btn-primary" onClick={() => navigate("/dashboard")}>
+          العودة للوحة التحكم
+        </button>
+      </div>
     );
+  }
+
+  return (
+    <div className="cw-page-scoped-container">
+      {showInitialPopup && (
+        <div className="security-overlay">
+          <div className="security-message-box">
+            <InfoOutlinedIcon style={{ fontSize: "5rem", color: "#3399FF" }} />
+            <h2>مرحباً بك في الدرس</h2>
+            <p>
+              للحفاظ على تركيزك وحماية المحتوى، سيتم إيقاف الفيديو مؤقتاً عند
+              الانتقال إلى نافذة أخرى.
+            </p>
+            <button onClick={() => setShowInitialPopup(false)}>
+              حسناً، فهمت
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isMobile && (
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="sidebar-toggle-button"
+          aria-label="Toggle sidebar"
+        >
+          <MenuIcon />
+        </button>
+      )}
+
+      <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+        <div
+          className="sidebar-header"
+          onClick={() => navigate("/dashboard")}
+          role="button"
+        >
+          <img src={Logo} alt="Logo" className="sidebar-logo" />
+        </div>
+        <div className="sidebar-course-info">
+          <h2 className="sidebar-course-title">{course?.title}</h2>
+          {lessons.length > 0 && (
+            <p className="lesson-count">{lessons.length} درس</p>
+          )}
+        </div>
+        <ul className="lesson-list">
+          {lessons.length > 0 ? (
+            lessons.map((lesson) => (
+              <li
+                key={lesson.lesson_id}
+                className={`lesson-list-item ${
+                  currentLesson?.lesson_id === lesson.lesson_id
+                    ? "selected"
+                    : ""
+                }`}
+                onClick={() => handleLessonClick(lesson)}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="lesson-details">
+                  <span className="lesson-icon">
+                    {currentLesson?.lesson_id === lesson.lesson_id ? (
+                      <PlayCircleFilledWhiteIcon style={{ color: "#F91C45" }} />
+                    ) : (
+                      <CircleOutlinedIcon />
+                    )}
+                  </span>
+                  <span className="lesson-title-text">{lesson.title}</span>
+                </div>
+                <span className="lesson-duration"></span>
+              </li>
+            ))
+          ) : (
+            <p className="no-lessons-message">
+              لا توجد دروس في هذا الكورس بعد.
+            </p>
+          )}
+        </ul>
+        <div className="sidebar-footer">
+          <button
+            className="back-to-dashboard-btn"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowBackIcon />
+            <span>العودة إلى لوحة التحكم</span>
+          </button>
+        </div>
+      </aside>
+
+      <main className="main-content">
+        {isBlocked ? (
+          <SecurityWarning
+            message="لقد غادرت الصفحة. لاستئناف المشاهدة، يرجى الضغط على الزر أدناه."
+            onAcknowledge={() => setIsBlocked(false)}
+          />
+        ) : currentLesson ? (
+          <>
+            <h1 className="current-lesson-title">{currentLesson.title}</h1>
+            <div className="video-player-wrapper">
+              <iframe
+                src={getBunnyEmbedUrl(currentLesson.video_url)}
+                loading="eager"
+                title={currentLesson.title}
+                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                allowFullScreen={true}
+              ></iframe>
+            </div>
+            <div className="lesson-description-box">
+              <h3>وصف الدرس</h3>
+              <p>{currentLesson.description || "لا يوجد وصف لهذا الدرس."}</p>
+            </div>
+          </>
+        ) : (
+          <div className="no-lesson-selected">
+            <h6>يرجى اختيار درس للبدء بالمشاهدة.</h6>
+          </div>
+        )}
+      </main>
+    </div>
+  );
 };
 
 export default CourseWatchPage;

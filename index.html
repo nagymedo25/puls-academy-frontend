@@ -1,70 +1,27 @@
 <!doctype html>
-<html lang="ar" dir="rtl"> <!-- تغيير اللغة إلى العربية والاتجاه إلى اليمين -->
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <!-- تحسين الأيقونة -->
-    <link rel="icon" type="image/png" href="/src/assets/Logo1.png" /> <!-- استخدام لوجو Puls Academy -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/src/assets/Logo1.png"> <!-- للأجهزة المحمولة -->
-    
-    <!-- تحسين العرض والتوافق -->
+    <link rel="icon" type="image/png" href="/src/assets/Logo1.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/src/assets/Logo1.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    
-    <!-- تحسين محركات البحث (SEO) -->
     <meta name="description" content="Puls Academy: بوابتك للتفوق في عالم الصيدلة وطب الأسنان. كورسات متخصصة ومحتوى علمي دقيق." />
     <meta name="keywords" content="صيدلة, طب الأسنان, كورسات, تعليم, Puls Academy" />
     <meta name="author" content="Puls Academy" />
-    
-    <!-- Open Graph Meta Tags (لمشاركة أفضل في وسائل التواصل الاجتماعي) -->
     <meta property="og:title" content="Puls Academy - التعليم الطبي المتخصص" />
     <meta property="og:description" content="Puls Academy: بوابتك للتفوق في عالم الصيدلة وطب الأسنان. كورسات متخصصة ومحتوى علمي دقيق." />
-    <meta property="og:image" content="/src/assets/Banner.png" /> <!-- صورة مميزة -->
-    <meta property="og:url" content="https://www.pulsacademy.com" /> <!-- رابط الموقع -->
+    <meta property="og:image" content="/src/assets/Banner.png" />
+    <meta property="og:url" content="https://www.pulsacademy.com" />
     <meta property="og:type" content="website" />
-    
-    <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Puls Academy - التعليم الطبي المتخصص">
     <meta name="twitter:description" content="Puls Academy: بوابتك للتفوق في عالم الصيدلة وطب الأسنان. كورسات متخصصة ومحتوى علمي دقيق.">
     <meta name="twitter:image" content="/src/assets/Banner.png">
-    
-    <!-- العنوان -->
     <title>Puls Academy - بوابة التعليم الطبي المتخصصة</title>
-    
-    <!-- تحسين الأداء: Preload للخط الأساسي (إذا كان متوفرًا محليًا) -->
-    <!--
-    <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin>
-    -->
-    
-    <!-- تحسين الأمان -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   </head>
   <body>
-    <!-- محتوى التطبيق -->
-    <div id="root">
-      <!-- Loading Spinner (اختياري) -->
-      <div id="loading-spinner" style="display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f5f5f5;">
-        <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #E50000; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-      </div>
-      <style>
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      </style>
-    </div>
-    
-    <!-- تحميل السكريبت الرئيسي -->
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    
-    <!-- ملاحظة: يمكن إضافة سكريبتات تحليلات (مثل Google Analytics) هنا -->
-    <!--
-    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'GA_MEASUREMENT_ID');
-    </script>
-    -->
   </body>
 </html>

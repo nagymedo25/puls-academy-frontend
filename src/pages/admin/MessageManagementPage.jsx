@@ -1,15 +1,12 @@
 // src/pages/admin/MessageManagementPage.jsx
+
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-    Box, Grid, List, ListItem, ListItemText, ListItemAvatar,
-    Avatar, Typography, Paper, CircularProgress, Alert, InputBase, 
-    IconButton, ListItemButton // ✨ 1. Import ListItemButton
-} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // أيقونة للعودة في وضع الموبايل
 import ChatInterface from '../../components/admin/ChatInterface';
 import MessageService from '../../services/messageService';
 import { useAuth } from '../../context/AuthContext';
-import './MessageManagement.css';
+import '../../components/admin/Chat.css'; // ✨ استخدام نفس ملف التنسيقات الموحد
 
 const MessageManagementPage = () => {
     const [conversations, setConversations] = useState([]);
@@ -47,67 +44,76 @@ const MessageManagementPage = () => {
         conversation.student_name && conversation.student_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (loading) return <CircularProgress sx={{ display: 'block', margin: 'auto', mt: 4 }} />;
-    if (error) return <Alert severity="error">{error}</Alert>;
+    if (loading) return <div className="loading-spinner"><p>جارٍ تحميل المحادثات...</p></div>;
+    if (error) return <div className="error-message">{error}</div>;
 
     return (
-        <Grid container component={Paper} className="chat-container">
-            <Grid item xs={12} md={4} className="conversations-list-grid">
-                <Box sx={{ p: 2, borderBottom: '1px solid #ddd' }}>
-                     <Typography variant="h6" gutterBottom>
-                        المحادثات
-                    </Typography>
-                    <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }}>
-                        <InputBase
-                            sx={{ ml: 1, flex: 1, direction: 'rtl' }}
+        // ✨ أضفنا كلاس للتحكم في العرض على الموبايل
+        <div className={`admin-chat-container ${selectedConversation ? 'chat-view-active' : ''}`}>
+            {/* Conversations Sidebar */}
+            <aside className="chat-sidebar">
+                <div className="sidebar-header">
+                    <h3>المحادثات</h3>
+                    <form className="search-form">
+                        <input
+                            type="text"
                             placeholder="بحث عن طالب..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <IconButton type="submit" sx={{ p: '10px' }}><SearchIcon /></IconButton>
-                    </Paper>
-                </Box>
-                <List className="conversations-list">
+                        <button type="submit" onClick={(e) => e.preventDefault()}><SearchIcon /></button>
+                    </form>
+                </div>
+                <ul className="conversations-list">
                     {filteredConversations.map((conversation) => (
-                        // ✨ 2. Use ListItemButton instead of ListItem button
-                        <ListItem key={conversation.student_id} disablePadding>
-                            <ListItemButton
-                                onClick={() => handleSelectConversation(conversation)}
-                                selected={selectedConversation?.user_id === conversation.student_id}
-                            >
-                                <ListItemAvatar>
-                                    <Avatar sx={{ bgcolor: 'primary.main' }}>
-                                        {conversation.student_name ? conversation.student_name.charAt(0).toUpperCase() : '?'}
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary={<Typography noWrap>{conversation.student_name || 'طالب محذوف'}</Typography>}
-                                    secondary={<Typography noWrap color={conversation.unread_count > 0 ? 'primary' : 'textSecondary'}>{conversation.last_message || 'لا توجد رسائل'}</Typography>}
-                                />
-                                {conversation.unread_count > 0 && (
-                                    <Box className="unread-badge">
-                                        {conversation.unread_count}
-                                    </Box>
-                                )}
-                            </ListItemButton>
-                        </ListItem>
+                        <li 
+                            key={conversation.student_id} 
+                            className={`conversation-item ${selectedConversation?.user_id === conversation.student_id ? 'active' : ''}`}
+                            onClick={() => handleSelectConversation(conversation)}
+                        >
+                            <div className="avatar-initials">
+                                {conversation.student_name ? conversation.student_name.charAt(0).toUpperCase() : '?'}
+                            </div>
+                            <div className="conversation-details">
+                                <p className="conversation-name">{conversation.student_name || 'طالب محذوف'}</p>
+                                <p className={`conversation-preview ${conversation.unread_count > 0 ? 'unread' : ''}`}>
+                                    {conversation.last_message || 'لا توجد رسائل'}
+                                </p>
+                            </div>
+                            {conversation.unread_count > 0 && (
+                                <span className="unread-badge">
+                                    {conversation.unread_count}
+                                </span>
+                            )}
+                        </li>
                     ))}
-                </List>
-            </Grid>
-            <Grid item xs={12} md={8} className="chat-interface-grid">
+                </ul>
+            </aside>
+
+            {/* Main Chat Window */}
+            <main className="chat-window-wrapper">
                 {selectedConversation ? (
-                    <ChatInterface
-                        currentUser={currentUser}
-                        otherUser={selectedConversation}
-                        onMessageSent={fetchConversations}
-                    />
+                    <>
+                        {/* زر العودة (يظهر فقط في الموبايل) */}
+                        <div className="chat-header-mobile-back">
+                            <button onClick={() => setSelectedConversation(null)}>
+                                <ArrowBackIcon />
+                                <span>عودة</span>
+                            </button>
+                        </div>
+                        <ChatInterface
+                            currentUser={currentUser}
+                            otherUser={selectedConversation}
+                            onMessageSent={fetchConversations}
+                        />
+                    </>
                 ) : (
-                    <Box className="no-chat-selected">
-                        <Typography variant="h6">الرجاء تحديد محادثة لعرض الرسائل</Typography>
-                    </Box>
+                    <div className="no-chat-selected">
+                        <p>الرجاء تحديد محادثة لعرض الرسائل</p>
+                    </div>
                 )}
-            </Grid>
-        </Grid>
+            </main>
+        </div>
     );
 };
 
