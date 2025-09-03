@@ -4,7 +4,7 @@ import { Box, Typography, Paper, CircularProgress, Alert, List, ListItem, ListIt
 import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
 import NotificationService from '../../../services/notificationService';
-import './Notifications.css'; // استيراد ملف التنسيق
+import './Notifications.css';
 
 const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
