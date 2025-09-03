@@ -1,137 +1,143 @@
-// src/pages/CourseDetailPage.jsx
+// src/pages/CoursesPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Container, Typography, Button, CircularProgress, Alert } from '@mui/material';
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import LockIcon from '@mui/icons-material/Lock';
-
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import Header from '../components/common/Header/Header';
 import Footer from '../components/common/Footer/Footer';
+import CourseCard from '../components/courses/CourseCard';
 import CourseService from '../services/courseService';
-import AuthRedirectModal from '../components/common/AuthRedirectModal';
+import ManIcon from '@mui/icons-material/Man';
+import WomanIcon from '@mui/icons-material/Woman';
 
+// استيراد ملف التصميم الجديد المعتمد على CSS النقي
 import './CourseDetailPage.css';
 
-const CourseDetailPage = () => {
-  const { courseId } = useParams();
-  const navigate = useNavigate();
-  const [course, setCourse] = useState(null);
-  // ✨ تم حذف `lessons` state لأننا لن نطلبها هنا
+// --- College Selection Component (nested & refactored) ---
+const CollegeSelection = ({ onSelect, category }) => {
+    const categoryText = category === 'pharmacy' ? 'الصيدلة' : 'طب الأسنان';
+    const choices = [
+      { type: 'male', label: 'كلية البنين', icon: <ManIcon style={{ fontSize: '5rem' }} /> },
+      { type: 'female', label: 'كلية البنات', icon: <WomanIcon style={{ fontSize: '5rem' }} /> }
+    ];
+  
+    return (
+      <section className="college-selection-container">
+        <div className="college-selection-content">
+          <header className="college-selection-header">
+            <h1>اختر مسارك في قسم {categoryText}</h1>
+            <p>تجربتك التعليمية تبدأ من هنا. اختر كليتك لاستعراض الكورسات المتاحة لك.</p>
+          </header>
+  
+          <div className="college-choices-grid">
+            {choices.map((choice, index) => (
+              <div
+                key={choice.type}
+                className="college-choice-card"
+                onClick={() => onSelect(choice.type)}
+                style={{ animationDelay: `${0.2 + index * 0.2}s` }}
+              >
+                <div className="choice-card-icon">{choice.icon}</div>
+                <h2 className="choice-card-title">{choice.label}</h2>
+                <p className="choice-card-subtitle">اضغط هنا لعرض الكورسات المخصصة</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+};
+
+// --- Courses List Component (nested & refactored) ---
+const CoursesList = ({ category, collegeType }) => {
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const categoryText = category === 'pharmacy' ? 'الصيدلة' : 'طب الأسنان';
+  const collegeText = collegeType === 'male' ? 'البنين' : 'البنات';
 
   useEffect(() => {
-    const fetchCourseData = async () => {
+    const fetchCourses = async () => {
+      setLoading(true);
+      setError('');
       try {
-        setLoading(true);
-        // ✨ الآن نطلب فقط بيانات الكورس الأساسية
-        const courseRes = await CourseService.getCourseById(courseId);
-        setCourse(courseRes.data.course);
+        const response = await CourseService.getAllCourses({ category });
+        setCourses(response.data.courses || []);
       } catch (err) {
-        setError('فشل في تحميل بيانات الكورس. يرجى التأكد من الرابط والمحاولة مرة أخرى.');
+        setError('حدث خطأ أثناء جلب الكورسات. يرجى المحاولة مرة أخرى.');
       } finally {
         setLoading(false);
       }
     };
-    fetchCourseData();
-  }, [courseId]);
+    fetchCourses();
+  }, [category, collegeType]);
 
-  if (loading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  }
+  return (
+    <section className="courses-list-section">
+      <div className="courses-list-container">
+        <h2 className="courses-list-header">
+          كورسات {categoryText} - كلية {collegeText}
+        </h2>
 
-  if (error || !course) {
-    return <Alert severity="error">{error || 'لم يتم العثور على الكورس.'}</Alert>;
-  }
+        {loading ? (
+          <div className="centered-message-container">
+            <div className="loader-spinner"></div>
+          </div>
+        ) : error ? (
+          <div className="alert-message">{error}</div>
+        ) : (
+          <div className="courses-grid">
+            {courses.length > 0 ? (
+              courses.map((course, index) => (
+                <div key={course.course_id} className="course-card-wrapper" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <CourseCard course={course} />
+                </div>
+              ))
+            ) : (
+              <div className="no-courses-message">
+                <h3>لا توجد كورسات متاحة حاليًا</h3>
+                <p>نعمل على إضافة المزيد من الكورسات قريباً.</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
 
-  const getBunnyEmbedUrl = (playUrl) => {
-    if (!playUrl || !playUrl.includes('mediadelivery.net/play')) {
-      console.error("Invalid Bunny.net URL provided in database:", playUrl);
-      return '';
+// --- Main Page Component ---
+const CoursesPage = () => {
+  const [selectedCollege, setSelectedCollege] = useState(null);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const category = searchParams.get('category');
+
+  useEffect(() => {
+    if (!category || (category !== 'pharmacy' && category !== 'dentistry')) {
+      navigate('/');
     }
-    try {
-      const embedUrl = new URL(playUrl.replace('/play/', '/embed/'));
-      embedUrl.searchParams.set('autoplay', 'false');
-      return embedUrl.toString();
-    } catch (e) {
-      console.error("Could not parse Bunny.net URL", e);
-      return '';
-    }
-  }
+  }, [category, navigate]);
 
-  const embedSrc = getBunnyEmbedUrl(course.preview_url);
+  const handleCollegeSelect = (collegeType) => {
+    setSelectedCollege(collegeType);
+  };
+
+  if (!category) {
+    return null; 
+  }
 
   return (
     <>
       <Header />
-      <main className="course-detail-page">
-        <Container maxWidth="lg">
-          <div className="page-grid">
-            <div className="video-column">
-              
-              <div className="video-player-wrapper">
-                {embedSrc ? (
-                  <iframe
-                    src={embedSrc}
-                    loading="lazy"
-                    title={course.title}
-                    style={{ border: 'none', position: 'absolute', top: 0, left: 0, height: '100%', width: '100%' }}
-                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-                    allowFullScreen={true}
-                  ></iframe>
-                ) : (
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                     <Typography color="white">فشل تحميل الفيديو. الرابط غير صالح.</Typography>
-                  </Box>
-                )}
-              </div>
-
-              <div className="course-meta">
-                <h1>{course.title}</h1>
-                <p>{course.description}</p>
-              </div>
-            </div>
-
-            <div className="content-column">
-              <Button 
-                variant="contained" 
-                size="large" 
-                className="unlock-button"
-                onClick={() => navigate('/register')}
-              >
-                افتح الكورس الآن ({course.price} ج.م)
-              </Button>
-              {/* ✨ تم تعديل هذا الجزء لعرض مثال توضيحي بدلًا من قائمة الدروس الحقيقية */}
-              <ul className="lessons-list">
-                <h2>الدروس الخاصة بالكورس :</h2>
-                  <li className="lesson-item unlocked">
-                    <PlayCircleIcon className="lesson-icon" />
-                    <Typography variant="body1" fontWeight={600}>
-                      الدرس الأول: مقدمة (متاح للمعاينة)
-                    </Typography>
-                  </li>
-                  <li className="lesson-item locked" onClick={() => setIsModalOpen(true)}>
-                    <LockIcon className="lesson-icon" />
-                    <Typography variant="body1" fontWeight={400}>
-                      الدرس الثاني: ... (مغلق)
-                    </Typography>
-                  </li>
-                   <li className="lesson-item locked" onClick={() => setIsModalOpen(true)}>
-                    <LockIcon className="lesson-icon" />
-                    <Typography variant="body1" fontWeight={400}>
-                      الدرس الثالث: ... (مغلق)
-                    </Typography>
-                  </li>
-              </ul>
-            </div>
-          </div>
-        </Container>
+      <main>
+        {!selectedCollege ? (
+          <CollegeSelection onSelect={handleCollegeSelect} category={category} />
+        ) : (
+          <CoursesList category={category} collegeType={selectedCollege} />
+        )}
       </main>
       <Footer />
-      <AuthRedirectModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   );
 };
 
-export default CourseDetailPage;
+export default CoursesPage;
