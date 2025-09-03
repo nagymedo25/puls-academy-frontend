@@ -10,6 +10,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import CloseIcon from '@mui/icons-material/Close'; // ✨ أيقونة للإغلاق
 import AdminService from '../../services/adminService';
 
+const API_BASE_URL = 'http://localhost:5000';
+
 const PaymentsManagementPage = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,11 +38,15 @@ const PaymentsManagementPage = () => {
     fetchPayments();
   }, []);
 
-  // ✨ 3. دوال لفتح وإغلاق النافذة
-  const handleOpenImageModal = (imageUrl) => {
-    setSelectedImage(imageUrl);
+  // ✅ 2. Fix the function that opens the image modal
+  const handleOpenImageModal = (imageRelativePath) => {
+    // The path from the database is now like "/uploads/screenshot-123.png"
+    // We construct the full, valid URL here.
+    const fullImageUrl = `${API_BASE_URL}${imageRelativePath}`;
+    setSelectedImage(fullImageUrl);
     setIsImageModalOpen(true);
   };
+  
 
   const handleCloseImageModal = () => {
     setIsImageModalOpen(false);

@@ -1,192 +1,132 @@
-/* src/pages/CoursesPage.css */
-
-/* --- General Variables --- */
-:root {
-  --page-bg-light: #f9fafb;
-  --brand-primary-dark: #b80226;
-  --brand-primary-main: #F91C45;
-  --brand-primary-light: #FF6F8E;
-  --text-primary-dark: #212121;
-  --text-secondary-light: #757575;
-  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-  --font-main: 'Cairo', sans-serif;
+/*
+ * Course Detail Page Styles
+ */
+.course-detail-page {
+  padding: 48px 0;
+  background-color: #f9fafb;
 }
 
-/* --- Keyframe Animations --- */
-@keyframes fadeInUp-page {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
+.page-grid {
+  display: flex;
+  flex-direction: row-reverse; /* Video on left, content on right for RTL */
+  gap: 40px;
 }
 
-@keyframes background-pan-page {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.video-column {
+  flex: 3; /* Takes more space */
+  min-width: 0;
 }
 
-/* --- College Selection Section --- */
-.college-selection-container {
-  min-height: calc(100vh - 80px);
+.content-column {
+  flex: 2; /* Takes less space */
+  min-width: 0;
+}
+
+/* --- START: Video Player Styling --- */
+
+/* This is the main container for the video player */
+.video-player-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio (9 / 16 * 100) */
+  background-color: #000; /* Black background for loading */
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+/* This targets the iframe inside the wrapper */
+.video-player-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none; /* Removes the default iframe border */
+}
+
+/* --- END: Video Player Styling --- */
+
+
+/* Course Metadata */
+.course-meta {
+  margin-top: 24px;
+}
+
+.course-meta h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #333;
+  line-height: 1.3;
+}
+
+.course-meta p {
+  font-size: 1.1rem;
+  color: #616161;
+  margin-top: 16px;
+  line-height: 1.7;
+}
+
+/* Unlock Button */
+.unlock-button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 24px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.unlock-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(249, 28, 69, 0.2);
+}
+
+/* Lessons List */
+.lessons-list {
+  margin-top: 32px;
+  list-style: none;
+  padding: 0;
+}
+
+.lesson-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 64px 24px;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--page-bg-light), rgba(255, 111, 142, 0.1));
-  background-size: 200% 200%;
-  animation: background-pan-page 15s ease infinite;
-}
-
-.college-selection-content {
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  animation: fadeInUp-page 0.8s ease-out;
-  z-index: 1;
-}
-
-.college-selection-header h1 {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: 800;
-  color: var(--brand-primary-dark);
-  margin: 0 0 16px;
-}
-
-.college-selection-header p {
-  font-size: clamp(1rem, 3vw, 1.25rem);
-  color: var(--text-secondary-light);
-  max-width: 600px;
-  margin: 0 auto 64px;
-}
-
-.college-choices-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 40px;
-}
-
-.college-choice-card {
-  flex: 1;
-  min-width: 300px;
-  max-width: 450px;
-  padding: 32px;
-  border-radius: 24px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  box-shadow: var(--card-shadow);
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.college-choice-card:hover {
-  transform: scale(1.05) rotate(1deg);
-  box-shadow: 0 0 40px rgba(249, 28, 69, 0.2);
-}
-
-.choice-card-icon {
-  margin-bottom: 16px;
-  color: rgba(33, 33, 33, 0.7);
-  transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.college-choice-card:hover .choice-card-icon {
-  transform: scale(1.15) rotate(5deg);
-}
-
-.choice-card-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--text-primary-dark);
-  transition: color 0.3s ease;
-}
-
-.choice-card-subtitle {
-  color: var(--text-secondary-light);
-  margin-top: 8px;
-}
-
-/* --- Courses List Section --- */
-.courses-list-section {
-  padding: 48px 24px;
-  background: linear-gradient(180deg, rgba(255, 111, 142, 0.05), var(--page-bg-light) 30%);
-}
-
-.courses-list-container {
-  max-width: 1400px; /* Wider container for 3 cards */
-  margin: 0 auto;
-  animation: fadeInUp-page 0.8s ease-out;
-}
-
-.courses-list-header {
-  font-size: clamp(2rem, 4vw, 2.5rem);
-  font-weight: 700;
-  margin-bottom: 32px;
-  text-align: center;
-  color: var(--text-primary-dark);
-}
-
-.courses-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 40px;
-}
-
-.course-card-wrapper {
-  animation: fadeInUp-page 0.5s ease-out forwards;
-  opacity: 0;
-}
-
-/* States: Loading, Error, No Courses */
-.centered-message-container {
-  display: flex;
-  justify-content: center;
-  padding: 40px 0;
-}
-
-.no-courses-message {
-  grid-column: 1 / -1; /* Span full width of the grid */
-  padding: 32px;
-  border-radius: 16px;
-  text-align: center;
-  margin-top: 16px;
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.no-courses-message h3 {
-  margin: 0 0 16px;
-  font-size: 1.2rem;
-}
-
-.no-courses-message p {
-  color: var(--text-secondary-light);
-}
-
-.alert-message {
+  gap: 16px;
   padding: 16px;
-  border-radius: 8px;
-  background-color: #ffcdd2;
-  color: #c62828;
-  text-align: center;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
 }
 
-/* Spinner for loading state */
-.loader-spinner {
-  width: 60px;
-  height: 60px;
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid var(--brand-primary-main);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.lesson-item.unlocked {
+  border-color: #F91C45;
+  background-color: #fff8f9;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.lesson-item.locked {
+  color: #9e9e9e;
+  cursor: pointer;
+}
+.lesson-item.locked:hover {
+  background-color: #f5f5f5;
+  border-color: #bdbdbd;
+}
+
+.lesson-icon {
+  font-size: 2rem !important;
+  color: #757575;
+}
+
+.lesson-item.unlocked .lesson-icon {
+  color: #F91C45;
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+  .page-grid {
+    flex-direction: column; /* Stack columns on smaller screens */
+  }
 }

@@ -76,6 +76,16 @@ const AdminService = {
   resetRevenue: () => {
     return api.delete("/admin/revenue/reset");
   },
+
+  // --- Payments ---
+  getPendingPayments: () => {
+    return api.get("/payments/pending");
+  },
+
+  // FIX: Replaced approvePayment and rejectPayment with a single unified function
+  updatePaymentStatus: (paymentId, status) => {
+    return api.put(`/payments/${paymentId}/status`, { status });
+  },
 };
 
 export default AdminService;

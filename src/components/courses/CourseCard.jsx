@@ -7,19 +7,33 @@ import './CourseCard.css';
 
 const CourseCard = ({ course }) => {
   const navigate = useNavigate();
-  const handleCardClick = () => {
+  
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    navigate(`/course/${course.course_id}`);
+  };
+
+  const handleButtonClick = (e) => {
+    e.stopPropagation(); // منع انتشار الحدث للعناصر الأصل
     navigate(`/course/${course.course_id}`);
   };
 
   return (
     <div className="course-card-reimagined">
-      <a 
-        href={`/course/${course.course_id}`} 
-        onClick={(e) => { e.preventDefault(); handleCardClick(); }} 
-        className="card-link-wrapper"
+      {/* قسم المحتوى القابل للنقر */}
+      <div 
+        className="card-clickable-area"
+        onClick={handleCardClick}
+        role="button"
+        tabIndex={0}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            handleCardClick(e);
+          }
+        }}
       >
         <figure className="card-thumbnail-container">
-          <img src={course.thumbnail_url} alt={course.title} className="card-thumbnail" />
+          <img src={course.thumbnail_url} alt={course.title} className="card-thumbnail"/>
           <div className="thumbnail-overlay-gradient" />
           <div className="category-chip">
             {course.category === 'pharmacy' ? <SchoolIcon /> : <MedicalServicesIcon />}
@@ -42,12 +56,14 @@ const CourseCard = ({ course }) => {
             </div>
           </div>
         </div>
-      </a>
+      </div>
       
+      {/* زر الإجراء (منفصل عن المنطقة القابلة للنقر) */}
       <div className="card-action-button-container">
         <button
           className="card-action-button"
-          onClick={handleCardClick}
+          onClick={handleButtonClick}
+          aria-label={`تفاصيل ومعاينة ${course.title}`}
         >
           <VisibilityIcon />
           تفاصيل ومعاينة
