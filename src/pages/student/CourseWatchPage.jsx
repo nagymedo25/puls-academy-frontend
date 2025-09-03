@@ -1,33 +1,36 @@
 // src/pages/student/CourseWatchPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+// ✨ --- START: التعديل الرئيسي هنا --- ✨
+// تم إضافة ListItemIcon إلى قائمة الاستيراد لحل الخطأ
+import { Box, Typography, List, ListItem, ListItemButton, ListItemText, CircularProgress, Alert, Paper, IconButton, useMediaQuery, useTheme, Divider, Button, ListItemIcon } from '@mui/material';
+// ✨ --- END: التعديل الرئيسي هنا --- ✨
+import MenuIcon from '@mui/icons-material/Menu';
+import PlayCircleFilledWhiteIcon from '@mui/icons-material/PlayCircleFilledWhite';
+import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 import CourseService from '../../services/courseService';
 import './CourseWatchPage.css';
-
-// --- MUI Icons ---
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import MenuIcon from '@mui/icons-material/Menu';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const CourseWatchPage = () => {
     const { courseId } = useParams();
     const navigate = useNavigate();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     const [course, setCourse] = useState(null);
     const [lessons, setLessons] = useState([]);
     const [currentLesson, setCurrentLesson] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
 
     const getBunnyEmbedUrl = useCallback((playUrl) => {
-        if (!playUrl || !playUrl.includes('mediadelivery.net/play')) return '';
+        if (!playUrl || !playUrl.includes('mediadelivery.net/play')) {
+            return '';
+        }
         try {
             const embedUrl = new URL(playUrl.replace('/play/', '/embed/'));
             embedUrl.searchParams.set('autoplay', 'true');
-            embedUrl.searchParams.set('preload', 'true');
             return embedUrl.toString();
         } catch (e) {
             console.error("Could not parse Bunny.net URL", e);
@@ -49,7 +52,6 @@ const CourseWatchPage = () => {
                 setLessons(fetchedLessons);
 
                 if (fetchedLessons && fetchedLessons.length > 0) {
-                    // Start with the first lesson if available
                     setCurrentLesson(fetchedLessons[0]);
                 }
             } catch (err) {
@@ -61,113 +63,120 @@ const CourseWatchPage = () => {
 
         fetchCourseData();
 
-        // Prevent right-click for security
         const handleContextMenu = (e) => e.preventDefault();
         document.addEventListener('contextmenu', handleContextMenu);
         return () => document.removeEventListener('contextmenu', handleContextMenu);
     }, [courseId]);
 
+    useEffect(() => {
+        setSidebarOpen(!isMobile);
+    }, [isMobile]);
+
     const handleLessonClick = (lesson) => {
-        // Since the user is on this page, they have access.
-        // The API already filtered inaccessible lessons.
         setCurrentLesson(lesson);
+        if (isMobile) {
+            setSidebarOpen(false);
+        }
     };
 
     if (loading) {
         return (
-            <div className="watch-page-loader">
-                <div className="spinner"></div>
-                <p>جارٍ تحضير بيئة التعلم الخاصة بك...</p>
-            </div>
+            <Box className="watch-page-loading">
+                <CircularProgress />
+                <Typography sx={{ mt: 2 }}>جارٍ تحميل الكورس والدروس...</Typography>
+            </Box>
         );
     }
 
     if (error) {
         return (
-            <div className="watch-page-error">
-                <h2>حدث خطأ</h2>
-                <p>{error}</p>
-                <button onClick={() => navigate('/dashboard')} className="back-button">
+            <Box className="watch-page-error">
+                <Alert severity="error">{error}</Alert>
+                <Button variant="contained" onClick={() => navigate('/dashboard')} sx={{ mt: 2 }}>
                     العودة للوحة التحكم
-                </button>
-            </div>
+                </Button>
+            </Box>
         );
     }
 
     return (
-        <main className={`watch-page-container ${sidebarOpen ? 'sidebar-visible' : ''}`}>
-            {/* --- Animated Aurora Background --- */}
-            <div className="aurora aurora-1"></div>
-            <div className="aurora aurora-2"></div>
-            <div className="aurora aurora-3"></div>
+        <Box className="course-watch-container">
+            {isMobile && (
+                <IconButton 
+                    onClick={() => setSidebarOpen(!sidebarOpen)} 
+                    className="sidebar-toggle-button"
+                    sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1100, backgroundColor: 'rgba(255,255,255,0.8)' }}
+                >
+                    <MenuIcon />
+                </IconButton>
+            )}
 
-            {/* --- Mobile Sidebar Toggle Button --- */}
-            <button className="sidebar-toggle-button" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                <MenuIcon />
-            </button>
-            
-            {/* --- Main Content (Player and Description) --- */}
-            <section className="main-content-area">
-                <header className="main-content-header">
-                    <h1 className="current-lesson-title">{currentLesson?.title || 'اختر درسًا للبدء'}</h1>
-                    <button className="back-to-dashboard-btn" onClick={() => navigate('/dashboard')}>
-                        <ArrowBackIcon />
-                        <span>العودة للوحة التحكم</span>
-                    </button>
-                </header>
-
-                <div className="video-player-wrapper">
-                    <div className="video-glow-border"></div>
-                    {currentLesson ? (
-                        <iframe
-                            key={currentLesson.lesson_id} // Add key to force re-render on lesson change
-                            src={getBunnyEmbedUrl(currentLesson.video_url)}
-                            loading="eager"
-                            title={currentLesson.title}
-                            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-                            allowFullScreen={true}
-                        ></iframe>
-                    ) : (
-                        <div className="video-placeholder">
-                            <LockOutlinedIcon className="icon" />
-                            <h2>هذا الدرس مقفل</h2>
-                            <p>أكمل الدروس السابقة أو تأكد من اشتراكك في الكورس.</p>
-                        </div>
-                    )}
-                </div>
-                <div className="lesson-description-panel">
-                    <h3>عن هذا الدرس</h3>
-                    <p>{currentLesson?.description || 'لا يوجد وصف متاح لهذا الدرس حاليًا. ركز في محتوى الفيديو لتحقيق أقصى استفادة.'}</p>
-                </div>
-            </section>
-
-            {/* --- Sidebar with Lessons Playlist --- */}
-            <aside className="sidebar-lessons">
-                <div className="sidebar-header">
-                    <h2>{course?.title}</h2>
-                    <p>{lessons.length} درس</p>
-                </div>
-                <ul className="lesson-list">
-                    {lessons.length > 0 ? lessons.map((lesson, index) => (
-                        <li
-                            key={lesson.lesson_id}
-                            className={`lesson-item ${currentLesson?.lesson_id === lesson.lesson_id ? 'active' : ''}`}
-                            onClick={() => handleLessonClick(lesson)}
-                        >
-                            <div className="lesson-icon">
-                               {currentLesson?.lesson_id === lesson.lesson_id ? <PlayCircleOutlineIcon /> : <RadioButtonUncheckedIcon />}
-                            </div>
-                            <div className="lesson-details">
-                                <span className="lesson-number">الدرس {index + 1}</span>
-                                <span className="lesson-title">{lesson.title}</span>
-                            </div>
-                        </li>
+            <Paper className={`sidebar ${sidebarOpen ? 'open' : ''}`} elevation={3}>
+                <Typography variant="h6" className="sidebar-course-title" noWrap>
+                    {course?.title}
+                </Typography>
+                <Divider sx={{ mb: 2 }} />
+                <List className="lesson-list">
+                    {lessons.length > 0 ? lessons.map((lesson) => (
+                        <ListItem key={lesson.lesson_id} disablePadding>
+                            <ListItemButton
+                                selected={currentLesson?.lesson_id === lesson.lesson_id}
+                                onClick={() => handleLessonClick(lesson)}
+                                className="lesson-list-item"
+                            >
+                                <ListItemIcon>
+                                    {currentLesson?.lesson_id === lesson.lesson_id ? (
+                                        <PlayCircleFilledWhiteIcon color="primary" />
+                                    ) : (
+                                        <CircleOutlinedIcon color="action" />
+                                    )}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={lesson.title}
+                                    sx={{ '& .MuiListItemText-primary': { fontWeight: currentLesson?.lesson_id === lesson.lesson_id ? 'bold' : 'normal' } }}
+                                />
+                            </ListItemButton>
+                        </ListItem>
                     )) : (
-                        <p className="no-lessons-message">لا توجد دروس متاحة في هذا الكورس بعد.</p>
+                        <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
+                            لا توجد دروس في هذا الكورس بعد.
+                        </Typography>
                     )}
-                </ul>
-            </aside>
-        </main>
+                </List>
+            </Paper>
+
+            <Box className="main-content">
+                {currentLesson ? (
+                    <>
+                        <Typography variant="h5" component="h1" className="current-lesson-title">
+                            {currentLesson.title}
+                        </Typography>
+                        <Divider sx={{ my: 2 }} />
+                        <div className="video-player-wrapper">
+                            <iframe
+                                src={getBunnyEmbedUrl(currentLesson.video_url)}
+                                loading="eager"
+                                title={currentLesson.title}
+                                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                                allowFullScreen={true}
+                            ></iframe>
+                        </div>
+                        <Paper elevation={1} sx={{ p: 3, mt: 3, borderRadius: '12px' }}>
+                            <Typography variant="h6" fontWeight={700} gutterBottom>وصف الدرس</Typography>
+                            <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                                {'لا يوجد وصف لهذا الدرس.'}
+                            </Typography>
+                        </Paper>
+                    </>
+                ) : (
+                    <Paper sx={{ p: 4, textAlign: 'center', mt: 4 }}>
+                        <Typography variant="h6" color="text.secondary">
+                            يرجى اختيار درس للبدء بالمشاهدة.
+                        </Typography>
+                    </Paper>
+                )}
+            </Box>
+        </Box>
     );
 };
 

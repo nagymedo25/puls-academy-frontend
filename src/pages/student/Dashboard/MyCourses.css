@@ -1,0 +1,115 @@
+/* src/pages/student/Dashboard/MyCourses.css */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.enrolled-course-card {
+    background: #fff;
+    border-radius: 15px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0; /* Initial state for animation */
+    cursor: pointer; /* Added for entire card click behavior if needed, or just for specific parts */
+}
+
+.enrolled-course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card-thumbnail-wrapper {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    cursor: pointer; /* Added for thumbnail click */
+}
+
+.card-thumbnail-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.enrolled-course-card:hover .card-thumbnail-wrapper img {
+    transform: scale(1.05);
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0));
+}
+
+.card-status-chip {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 2;
+}
+
+.card-content-wrapper {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.course-title {
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    margin-bottom: 8px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.course-category {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #757575;
+    font-size: 0.9rem !important;
+    margin-bottom: 15px;
+}
+
+.course-category .MuiSvgIcon-root {
+    font-size: 1rem;
+}
+
+.card-footer {
+    margin-top: auto; /* Push footer to the bottom */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.lessons-count {
+    font-size: 0.9rem !important;
+    color: #616161;
+    font-weight: 500;
+}
+
+/* Adjustments for responsive design */
+@media (max-width: 600px) {
+    .enrolled-course-card {
+        margin-bottom: 20px;
+    }
+}

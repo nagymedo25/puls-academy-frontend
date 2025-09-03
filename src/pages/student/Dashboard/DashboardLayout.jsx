@@ -1,6 +1,7 @@
-// src/pages/student/Dashboard/DashboardLayout.jsx
+// src/pages/Student/Dashboard/DashboardLayout.jsx
 import React, { useState } from "react";
 import {
+  AppBar,
   Box,
   CssBaseline,
   Drawer,
@@ -10,11 +11,10 @@ import {
   ListItemIcon,
   ListItemText,
   Toolbar,
+  Typography,
   useTheme,
   useMediaQuery,
   ListItemButton,
-  Avatar, // لاستخدامه في الهيدر الجديد
-  Typography, // لاستخدامه في الهيدر الجديد
 } from "@mui/material";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -22,23 +22,28 @@ import SchoolIcon from "@mui/icons-material/School";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
-import ChatIcon from '@mui/icons-material/Chat';
-import PaymentIcon from "@mui/icons-material/Payment";
+import ChatIcon from '@mui/icons-material/Chat'; 
+import PaymentIcon from "@mui/icons-material/Payment"; // ✨ 1. استيراد الأيقونة الجديدة
 import Logo from "../../../assets/Logo1.png";
 import AuthService from "../../../services/authService";
-import { useAuth } from "../../../context/AuthContext"; // لجلب بيانات المستخدم
-
-// --- استيراد ملف التصميم الجديد ---
-import './DashboardLayout.css';
 
 const drawerWidth = 260;
 
+// ✨ 2. إضافة الرابط الجديد في هذه القائمة
 const menuItems = [
   { text: "كورساتي", icon: <SchoolIcon />, path: "/dashboard" },
   { text: "مدفوعاتي", icon: <PaymentIcon />, path: "/dashboard/payments" },
-  { text: "الإشعارات", icon: <NotificationsIcon />, path: "/dashboard/notifications" },
-  { text: "ملفي الشخصي", icon: <AccountCircleIcon />, path: "/dashboard/profile" },
-  { text: "الدعم الفني", icon: <ChatIcon />, path: "/dashboard/chat" },
+  {
+    text: "الإشعارات",
+    icon: <NotificationsIcon />,
+    path: "/dashboard/notifications",
+  },
+  {
+    text: "ملفي الشخصي",
+    icon: <AccountCircleIcon />,
+    path: "/dashboard/profile",
+  },
+  { text: "الدعم الفني", icon: <ChatIcon />, path: "/dashboard/chat" }, // ✨ إضافة الرابط الجديد
 ];
 
 const DashboardLayout = () => {
@@ -47,7 +52,6 @@ const DashboardLayout = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth(); // جلب بيانات المستخدم الحالي
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -75,8 +79,12 @@ const DashboardLayout = () => {
                 "&.Mui-selected": {
                   backgroundColor: "primary.main",
                   color: "white",
-                  "&:hover": { backgroundColor: "primary.dark" },
-                  "& .MuiListItemIcon-root": { color: "white" },
+                  "&:hover": {
+                    backgroundColor: "primary.dark",
+                  },
+                  "& .MuiListItemIcon-root": {
+                    color: "white",
+                  },
                 },
               }}
             >
@@ -100,36 +108,33 @@ const DashboardLayout = () => {
   );
 
   return (
-    <Box className="dashboard-root">
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      
-      {/* --- الهيدر الجديد بتصميم CSS --- */}
-      <header className="dashboard-app-bar">
-        <div className="toolbar-content">
-          <div className="header-left">
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              className="menu-button"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap component="div" className="header-title">
-              لوحة تحكم الطالب
-            </Typography>
-          </div>
-          <div className="header-right">
-            <Typography className="user-name">{user?.name}</Typography>
-            <Avatar className="user-avatar">
-              {user?.name ? user.name.charAt(0).toUpperCase() : <AccountCircleIcon />}
-            </Avatar>
-          </div>
-        </div>
-      </header>
-      {/* --- نهاية الهيدر الجديد --- */}
-
+      <AppBar
+        position="fixed"
+        sx={{
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+          mr: { md: `${drawerWidth}px` },
+          backgroundColor: "background.paper",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+          color: "text.primary",
+        }}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            sx={{ mr: 2, display: { md: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap component="div">
+            لوحة تحكم الطالب
+          </Typography>
+        </Toolbar>
+      </AppBar>
       <Box
         component="nav"
         sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
@@ -140,13 +145,14 @@ const DashboardLayout = () => {
           open={isMobile ? mobileOpen : true}
           onClose={handleDrawerToggle}
           anchor="right"
-          ModalProps={{ keepMounted: true }}
+          ModalProps={{
+            keepMounted: true,
+          }}
           sx={{
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
               width: drawerWidth,
               borderLeft: "1px solid #eee",
-              zIndex: 1200,
             },
           }}
         >
@@ -155,9 +161,15 @@ const DashboardLayout = () => {
       </Box>
       <Box
         component="main"
-        className="dashboard-main-content"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { md: `calc(100% - ${drawerWidth}px)` },
+          backgroundColor: "#f9fafb",
+          minHeight: "100vh",
+        }}
       >
-        <div className="toolbar-spacer" /> {/* عنصر لإعطاء مسافة بنفس ارتفاع الهيدر */}
+        <Toolbar />
         <Outlet />
       </Box>
     </Box>

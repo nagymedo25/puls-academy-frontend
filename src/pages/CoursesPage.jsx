@@ -19,7 +19,6 @@ import CourseService from '../services/courseService';
 import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
 import { keyframes } from '@emotion/react';
-import './CoursesPage.css';
 
 // --- Animations ---
 const fadeInUp = keyframes`
@@ -163,51 +162,48 @@ const CoursesList = ({ category, collegeType }) => {
   }, [category, collegeType]);
 
   return (
-    <div className="courses-page-container">
-      <div className="courses-container">
-        <h2 className="courses-page-title">
-          كورسات {categoryText} - كلية {collegeText}
-        </h2>
-        
+    <Box sx={{
+        position: 'relative',
+        overflow: 'hidden',
+        background: `linear-gradient(180deg, ${alpha(theme.palette.primary.light, 0.05)}, ${theme.palette.background.default} 30%)`,
+    }}>
+        <Container maxWidth="xl" sx={{ py: 6, animation: `${fadeInUp} 0.8s ease-out`, zIndex: 1, position: 'relative' }}>
+            <Typography variant="h3" component="h2" sx={{ fontWeight: 700, mb: 4, textAlign: 'center' }}>
+                كورسات {categoryText} - كلية {collegeText}
+            </Typography>
         {loading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-          </div>
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}><CircularProgress size={60} /></Box>
         ) : error ? (
-          <div className="error-alert">
-            {error}
-          </div>
+            <Alert severity="error" sx={{ mt: 3 }}>{error}</Alert>
         ) : (
-          <div className="courses-grid">
+            <Grid container spacing={5} justifyContent="center">
             {courses.length > 0 ? (
-              courses.map((course, index) => (
-                <div 
-                  className="course-grid-item"
-                  key={course.course_id}
-                  style={{
-                    animation: `fadeInUp 0.5s ease-out ${index * 0.1}s`,
-                    animationFillMode: 'both'
-                  }}
-                >
-                  <CourseCard course={course} />
-                </div>
-              ))
+                courses.map((course, index) => (
+                // ✨ --- التعديل الصحيح والنهائي هنا --- ✨
+                // sm={12} : يأخذ الكارت العرض كاملًا على الشاشات الصغيرة (tablets).
+                // md={6} : يأخذ الكارت نصف العرض على الشاشات المتوسطة والكبيرة (desktops).
+                <Grid xs={12} sm={12} md={6} key={course.course_id}>
+                    <Box sx={{ animation: `fadeInUp 0.5s ease-out ${index * 0.1}s`, animationFillMode: 'both' }}>
+                        <CourseCard course={course} />
+                    </Box>
+                </Grid>
+                ))
             ) : (
-              <div className="course-grid-item">
-                <div className="no-courses-paper">
-                  <h3 className="no-courses-title">
-                    لا توجد كورسات متاحة حاليًا
-                  </h3>
-                  <p className="no-courses-subtitle">
-                    نعمل على إضافة المزيد من الكورسات قريباً.
-                  </p>
-                </div>
-              </div>
+                <Grid xs={12}>
+                    <Paper sx={{p: 4, borderRadius: '16px', textAlign: 'center', mt: 2, backgroundColor: alpha(theme.palette.background.paper, 0.7), backdropFilter: 'blur(10px)'}}>
+                        <Typography variant="h6" sx={{mb: 2}}>
+                            لا توجد كورسات متاحة حاليًا
+                        </Typography>
+                        <Typography color="text.secondary">
+                            نعمل على إضافة المزيد من الكورسات قريباً.
+                        </Typography>
+                    </Paper>
+                </Grid>
             )}
-          </div>
+            </Grid>
         )}
-      </div>
-    </div>
+        </Container>
+    </Box>
   );
 };
 

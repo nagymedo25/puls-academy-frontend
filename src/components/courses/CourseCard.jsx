@@ -1,75 +1,85 @@
+// src/components/courses/CourseCard.jsx
 import React from 'react';
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+  Box,
+  Button,
+  alpha,
+  useTheme,
+  Chip,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SchoolIcon from '@mui/icons-material/School';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+
+// ✨ 1. استيراد ملف الـ CSS المحدث
 import './CourseCard.css';
 
 const CourseCard = ({ course }) => {
   const navigate = useNavigate();
-  
-  const handleCardClick = (e) => {
-    e.preventDefault();
-    navigate(`/course/${course.course_id}`);
-  };
+  const theme = useTheme();
 
-  const handleButtonClick = (e) => {
-    e.stopPropagation(); // منع انتشار الحدث للعناصر الأصل
+  const imageUrl = course.thumbnail_url;
+
+  const handleCardClick = () => {
     navigate(`/course/${course.course_id}`);
   };
 
   return (
-    <div className="course-card-reimagined">
-      {/* قسم المحتوى القابل للنقر */}
-      <div 
-        className="card-clickable-area"
-        onClick={handleCardClick}
-        role="button"
-        tabIndex={0}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            handleCardClick(e);
-          }
-        }}
-      >
-        <figure className="card-thumbnail-container">
-          <img src={course.thumbnail_url} alt={course.title} className="card-thumbnail"/>
-          <div className="thumbnail-overlay-gradient" />
-          <div className="category-chip">
-            {course.category === 'pharmacy' ? <SchoolIcon /> : <MedicalServicesIcon />}
-            {course.category === 'pharmacy' ? 'صيدلة' : 'طب أسنان'}
-          </div>
-        </figure>
-        
-        <div className="card-content-area">
-          <h3 className="card-title">
+    // ✨ 2. تطبيق الكلاس الرئيسي المحدث
+    <Card className="course-card-enhanced">
+      <CardActionArea onClick={handleCardClick} className="course-card-action-area">
+        <Box className="course-card-thumbnail-wrapper">
+          <Box
+            component="img"
+            src={imageUrl}
+            alt={course.title}
+            className="course-card-thumbnail"
+          />
+           <div className="thumbnail-overlay" />
+          <Chip
+            icon={course.category === 'pharmacy' ? <SchoolIcon /> : <MedicalServicesIcon />}
+            label={course.category === 'pharmacy' ? 'صيدلة' : 'طب أسنان'}
+            color="primary"
+            className="course-card-category-chip"
+            sx={{
+              backgroundColor: alpha(theme.palette.primary.dark, 0.9),
+              backdropFilter: 'blur(8px)',
+            }}
+          />
+        </Box>
+        <CardContent className="course-card-content">
+          <Typography gutterBottom variant="h5" component="h3" className="course-card-title">
             {course.title}
-          </h3>
-          
-          <div className="card-details-row">
-            <div className="card-price">
+          </Typography>
+          <Box className="course-card-details">
+            <Typography variant="h4" color="primary.dark" className="course-card-price">
               {course.price}
               <span className="currency"> جنيه</span>
-            </div>
-            <div className="card-lessons">
-              {course.lessons_count || 0} درس
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* زر الإجراء (منفصل عن المنطقة القابلة للنقر) */}
-      <div className="card-action-button-container">
-        <button
-          className="card-action-button"
-          onClick={handleButtonClick}
-          aria-label={`تفاصيل ومعاينة ${course.title}`}
+            </Typography>
+             <Typography variant="body1" color="text.secondary" className="course-card-lessons">
+                {course.lessons_count || 0} درس
+            </Typography>
+          </Box>
+        </CardContent>
+      </CardActionArea>
+      <Box sx={{ p: { xs: 2, sm: 3 }, pt: 0 }}>
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          startIcon={<VisibilityIcon />}
+          onClick={handleCardClick}
+          className="course-card-button"
         >
-          <VisibilityIcon />
           تفاصيل ومعاينة
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Card>
   );
 };
 
