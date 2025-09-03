@@ -4,6 +4,7 @@ import { Modal, Box, Typography, Button, TextField, Select, MenuItem, FormContro
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CourseService from '../../services/courseService';
 import PaymentService from '../../services/paymentService';
+import AuthService from '../../services/authService';
 
 const modalStyle = {
     position: 'absolute',
@@ -33,7 +34,12 @@ const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) =>
         if (open) {
             const fetchCourses = async () => {
                 try {
-                    const response = await CourseService.getAllCourses(); 
+                    // ✨ 2. جلب بيانات المستخدم أولاً
+                    const profileRes = await AuthService.getProfile();
+                    const userCollege = profileRes.data.user.college;
+
+                    // ✨ 3. طلب الكورسات بناءً على كلية المستخدم
+                    const response = await CourseService.getAllCourses({ category: userCollege }); 
                     setCourses(response.data.courses || []);
                 } catch (err) {
                     setError('لا يمكن تحميل قائمة الكورسات.');
@@ -41,19 +47,17 @@ const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) =>
             };
             fetchCourses();
             
-            // ✨ تعبئة الحقول إذا تم تمرير initialCourse
             if (initialCourse) {
                 setSelectedCourseId(initialCourse.course_id);
                 setAmount(initialCourse.price);
             } else {
-                // ✨ تفريغ الحقول إذا لم يتم تمرير initialCourse
                 setSelectedCourseId('');
                 setAmount('');
             }
-            setScreenshot(null); // إعادة تعيين صورة الإيصال
-            setError(''); // مسح الأخطاء السابقة
+            setScreenshot(null); 
+            setError(''); 
         }
-    }, [open, initialCourse]); // ✨ إضافة initialCourse إلى dependencies
+    }, [open, initialCourse]);
 
     const handleCourseChange = (e) => {
         const courseId = e.target.value;
