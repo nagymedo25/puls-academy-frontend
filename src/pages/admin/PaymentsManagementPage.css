@@ -1,0 +1,67 @@
+/* src/pages/admin/PaymentsManagementPage.css */
+
+/* Animation for cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Base styles for mobile card */
+.payment-card {
+  border-radius: 16px !important;
+  display: flex;
+  flex-direction: column;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.payment-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.payment-card-body {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-item .label {
+  font-size: 0.8rem;
+  color: #757575;
+  margin-bottom: 4px;
+}
+
+.detail-item .value {
+  font-weight: 600;
+}
+
+.payment-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  border-top: 1px solid #eee;
+  background-color: #f9fafb;
+}
+
+/* Hide table on mobile */
+@media (max-width: 960px) {
+  .MuiTableContainer-root {
+    display: none;
+  }  
+}

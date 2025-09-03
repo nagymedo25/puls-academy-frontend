@@ -1,24 +1,34 @@
 // src/pages/admin/PaymentsManagementPage.jsx
 import React, { useState, useEffect } from 'react';
 import {
-  Box, Typography, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Paper, Button, CircularProgress, Alert,
-  Modal, Fade, Backdrop, IconButton // ✨ 1. استيراد المكونات الجديدة
+  Box, Typography, Paper, Button, CircularProgress, Alert,
+  Modal, Fade, Backdrop, IconButton, Avatar, useTheme, useMediaQuery, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import CloseIcon from '@mui/icons-material/Close'; // ✨ أيقونة للإغلاق
+import CloseIcon from '@mui/icons-material/Close';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import AdminService from '../../services/adminService';
+import SuccessPaymentModal from '../../components/admin/SuccessPaymentModal';
+import './PaymentsManagementPage.css';
+
+// المسار الصحيح لملف الصوت في مجلد public
+const CHING_CHING_SOUND = `/ching_ching.mp3`;
 
 const PaymentsManagementPage = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [processingId, setProcessingId] = useState(null);
-
-  // ✨ 2. حالات جديدة للتحكم في النافذة المنبثقة والصورة المعروضة
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // تهيئة كائن الصوت مرة واحدة لتجنب إعادة إنشائه مع كل render
+  const audio = React.useMemo(() => new Audio(CHING_CHING_SOUND), []);
 
   const fetchPayments = async () => {
     setLoading(true);
@@ -36,7 +46,6 @@ const PaymentsManagementPage = () => {
     fetchPayments();
   }, []);
 
-  // ✨ 3. دوال لفتح وإغلاق النافذة
   const handleOpenImageModal = (imageUrl) => {
     setSelectedImage(imageUrl);
     setIsImageModalOpen(true);
@@ -47,35 +56,78 @@ const PaymentsManagementPage = () => {
     setSelectedImage('');
   };
 
-
   const handleAction = async (paymentId, action) => {
     setProcessingId(paymentId);
     try {
       if (action === 'approve') {
         await AdminService.approvePayment(paymentId);
+        
+        // ✨ 1. تشغيل الصوت فوراً
+        audio.play();
+
+        // ✨ 2. تأخير ظهور النافذة المنبثقة لنصف ثانية
+        setTimeout(() => {
+            setIsSuccessModalOpen(true);
+            setTimeout(() => {
+                setIsSuccessModalOpen(false);
+            }, 3000); // إغلاق النافذة بعد 3 ثوانٍ
+        }, 500); // تأخير 500ms
+
       } else {
         await AdminService.rejectPayment(paymentId);
       }
-      fetchPayments();
+      fetchPayments(); // تحديث القائمة
     } catch (err) {
-      setError(`فشل في ${action === 'approve' ? 'الموافقة على' : 'رفض'} الدفعة.`);
+      setError(err.response?.data?.error || `فشل في ${action === 'approve' ? 'الموافقة على' : 'رفض'} الدفعة.`);
     } finally {
       setProcessingId(null);
     }
   };
 
-  if (loading) {
-    return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Box>;
-  }
+  // Mobile Card View Component
+  const MobileCard = ({ payment }) => (
+    <Paper className="payment-card" elevation={3}>
+      <Box className="payment-card-header">
+        <Avatar sx={{ bgcolor: 'primary.light' }}>{payment.user_name.charAt(0)}</Avatar>
+        <Box>
+          <Typography fontWeight="600">{payment.user_name}</Typography>
+          <Typography variant="body2" color="text.secondary">{payment.course_title}</Typography>
+        </Box>
+      </Box>
+      <Box className="payment-card-body">
+        <div className="detail-item">
+            <span className="label">المبلغ</span>
+            <span className="value">{payment.amount} ج.م</span>
+        </div>
+        <div className="detail-item">
+            <span className="label">التاريخ</span>
+            <span className="value">{new Date(payment.created_at).toLocaleDateString('ar-EG')}</span>
+        </div>
+      </Box>
+      <Box className="payment-card-footer">
+        <Button 
+            variant="outlined" 
+            size="small"
+            startIcon={<VisibilityIcon />}
+            onClick={() => handleOpenImageModal(payment.screenshot_path)}
+        >
+            عرض الإيصال
+        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+            <IconButton color="success" onClick={() => handleAction(payment.payment_id, 'approve')} disabled={processingId === payment.payment_id}>
+                {processingId === payment.payment_id ? <CircularProgress size={20} color="success" /> : <CheckCircleIcon />}
+            </IconButton>
+            <IconButton color="error" onClick={() => handleAction(payment.payment_id, 'reject')} disabled={processingId === payment.payment_id}>
+                {processingId === payment.payment_id ? <CircularProgress size={20} color="error" /> : <CancelIcon />}
+            </IconButton>
+        </Box>
+      </Box>
+    </Paper>
+  );
 
-  return (
-    <Box>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-        معالجة المدفوعات
-      </Typography>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      
-      <TableContainer component={Paper} sx={{ borderRadius: '16px' }}>
+  // Desktop Table View
+  const DesktopTable = () => (
+     <TableContainer component={Paper} sx={{ borderRadius: '16px' }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -94,9 +146,8 @@ const PaymentsManagementPage = () => {
                   <TableCell>{payment.user_name}</TableCell>
                   <TableCell>{payment.course_title}</TableCell>
                   <TableCell>
-                    {/* ✨ 4. تحويل الرابط إلى زر يفتح النافذة */}
-                    <Button 
-                      variant="outlined" 
+                    <Button
+                      variant="outlined"
                       size="small"
                       onClick={() => handleOpenImageModal(payment.screenshot_path)}
                     >
@@ -141,8 +192,32 @@ const PaymentsManagementPage = () => {
           </TableBody>
         </Table>
       </TableContainer>
+  );
 
-      {/* ✨ 5. إضافة النافذة المنبثقة لعرض الصورة */}
+  if (loading) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5 }}><CircularProgress /></Box>;
+  }
+
+  return (
+    <Box>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
+        معالجة المدفوعات
+      </Typography>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+      {isMobile ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {payments.length > 0 ? (
+                  payments.map(p => <MobileCard key={p.payment_id} payment={p} />)
+              ) : (
+                  <Typography sx={{textAlign: 'center', p: 4}}>لا توجد مدفوعات معلقة حاليًا.</Typography>
+              )}
+          </Box>
+      ) : (
+          <DesktopTable />
+      )}
+
+      {/* Image Modal */}
       <Modal
         open={isImageModalOpen}
         onClose={handleCloseImageModal}
@@ -165,14 +240,14 @@ const PaymentsManagementPage = () => {
             borderRadius: '16px',
             boxShadow: 24,
           }}>
-             <IconButton 
-                onClick={handleCloseImageModal} 
-                sx={{ 
-                    position: 'absolute', 
-                    top: -15, 
-                    right: -15, 
-                    zIndex: 1, 
-                    color: 'white', 
+             <IconButton
+                onClick={handleCloseImageModal}
+                sx={{
+                    position: 'absolute',
+                    top: -15,
+                    right: -15,
+                    zIndex: 1,
+                    color: 'white',
                     backgroundColor: 'primary.main',
                     '&:hover': {
                         backgroundColor: 'primary.dark'
@@ -181,19 +256,25 @@ const PaymentsManagementPage = () => {
             >
                 <CloseIcon />
             </IconButton>
-            <img 
-                src={selectedImage} 
-                alt="إيصال الدفع" 
-                style={{ 
-                    maxHeight: '85vh', 
-                    maxWidth: '85vw', 
+            <img
+                src={selectedImage}
+                alt="إيصال الدفع"
+                style={{
+                    maxHeight: '85vh',
+                    maxWidth: '85vw',
                     display: 'block',
-                    borderRadius: '12px' 
-                }} 
+                    borderRadius: '12px'
+                }}
             />
           </Box>
         </Fade>
       </Modal>
+
+      {/* Success Payment Modal */}
+      <SuccessPaymentModal
+        open={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+      />
     </Box>
   );
 };

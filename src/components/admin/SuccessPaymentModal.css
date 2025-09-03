@@ -1,0 +1,77 @@
+/* src/components/admin/SuccessPaymentModal.css */
+
+.success-modal-box {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    outline: none;
+    border: 3px solid #4CAF50;
+}
+
+/* --- ✨ Checkmark animation (IMPROVED) ✨ --- */
+.checkmark-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0fdf4; /* Light green background */
+    transform: scale(0);
+    animation: scaleIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+.checkmark-icon {
+    width: 50px;
+    height: 50px;
+    position: relative;
+    transform: rotate(45deg);
+}
+
+.checkmark-icon .stem,
+.checkmark-icon .kick {
+    position: absolute;
+    background-color: #4CAF50;
+    border-radius: 2px;
+}
+
+.checkmark-icon .stem {
+    width: 5px;
+    height: 0;
+    left: 22.5px;
+    top: 50px;
+    animation: stemAnimation 0.3s ease-out 0.4s forwards;
+}
+
+.checkmark-icon .kick {
+    width: 0;
+    height: 5px;
+    left: 0;
+    top: 45px;
+    animation: kickAnimation 0.3s ease-out 0.7s forwards;
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes stemAnimation {
+    from { height: 0; }
+    to { height: 25px; }
+}
+
+@keyframes kickAnimation {
+    from { width: 0; }
+    to { width: 50px; }
+}

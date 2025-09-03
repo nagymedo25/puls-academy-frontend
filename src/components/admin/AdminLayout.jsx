@@ -24,8 +24,8 @@ import SchoolIcon from "@mui/icons-material/School";
 import PeopleIcon from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MessageIcon from "@mui/icons-material/Message"; // ✨ إضافة أيقونة الرسائل
-import Logo from "../../assets/Logo1.png";
 import AuthService from "../../services/authService";
+import Logo from "../../assets/logo2.png";
 
 const drawerWidth = 260;
 
@@ -124,7 +124,7 @@ const AdminLayout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography sx={{mr: 2}} variant="h6" noWrap component="div">
             لوحة تحكم الأدمن
           </Typography>
         </Toolbar>

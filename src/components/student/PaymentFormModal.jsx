@@ -4,11 +4,10 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CourseService from '../../services/courseService';
 import PaymentService from '../../services/paymentService';
-// ✨ لم نعد بحاجة لـ AuthService هنا
 import './PaymentFormModal.css';
 
-const VODAFONE_CASH_NUMBER = 'sdfgdfgdfg';
-const INSTAPAY_LINK = 'tryrtyrtytryt';
+const VODAFONE_CASH_NUMBER = '01012345678'; // تم وضع رقم افتراضي
+const INSTAPAY_NUMBER = 'user@instapay'; // تم وضع حساب افتراضي
 
 const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) => {
     const [courses, setCourses] = useState([]);
@@ -31,14 +30,10 @@ const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) =>
 
             const fetchCourses = async () => {
                 try {
-                    // ✨ 1. استدعاء الدالة التي تجلب الكورسات مع حالة الاشتراك
                     const response = await CourseService.getAvailableCourses(); 
-                    
-                    // ✨ 2. فلترة النتائج لعرض الكورسات المتاحة للشراء فقط
                     const purchasableCourses = (response.data.courses || []).filter(
                         course => course.enrollment_status === 'available'
                     );
-
                     setCourses(purchasableCourses);
                 } catch (err) {
                     setError('لا يمكن تحميل قائمة الكورسات المتاحة للشراء.');
@@ -117,7 +112,6 @@ const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) =>
 
                 {step === 1 && (
                     <div className="modal-step">
-                        {/* ✨ 3. إضافة رسالة في حال عدم وجود كورسات للشراء */}
                         {courses.length > 0 ? (
                             <select className="modal-select" value={selectedCourseId} onChange={handleCourseChange} required>
                                 <option value="" disabled>-- اختر الكورس --</option>
@@ -162,10 +156,14 @@ const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) =>
                                 </div>
                             ) : (
                                 <div className="info-box">
-                                    <p>1. قم بالدفع باستخدام رابط إنستا باي التالي:</p>
-                                    <a href={INSTAPAY_LINK} target="_blank" rel="noopener noreferrer" className="instapay-link">
-                                        {INSTAPAY_LINK ? "اضغط هنا للانتقال إلى إنستا باي" : "الرابط غير متوفر"}
-                                    </a>
+                                    <p>1. قم بتحويل المبلغ إلى حساب إنستا باي التالي:</p>
+                                    <div className="copy-field">
+                                        <span>{INSTAPAY_NUMBER || "الحساب غير متوفر"}</span>
+                                        <button type="button" onClick={() => copyToClipboard(INSTAPAY_NUMBER)} aria-label="Copy Instapay account">
+                                            <ContentCopyIcon fontSize="small" />
+                                            {copySuccess && <span className="copy-tooltip">{copySuccess}</span>}
+                                        </button>
+                                    </div>
                                 </div>
                             )}
                             <p className="instruction-step">2. بعد إتمام الدفع، قم برفع صورة الإيصال (سكرين شوت).</p>
