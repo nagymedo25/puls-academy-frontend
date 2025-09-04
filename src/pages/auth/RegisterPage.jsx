@@ -3,7 +3,7 @@ import React, { useState, useMemo } from 'react';
 import {
   Box, Button, Typography, Container, TextField,
   Select, MenuItem, FormControl, InputLabel, RadioGroup,
-  FormControlLabel, Radio, CircularProgress, Alert, Link as MuiLink, LinearProgress
+  FormControlLabel, Radio, CircularProgress, Alert, Link as MuiLink, LinearProgress, InputAdornment
 } from '@mui/material';
 import { keyframes } from '@emotion/react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ import EmailOutlined from '@mui/icons-material/EmailOutlined';
 import LockOutlined from '@mui/icons-material/LockOutlined';
 import SchoolOutlined from '@mui/icons-material/SchoolOutlined';
 import WcOutlined from '@mui/icons-material/WcOutlined';
+import PhoneOutlined from '@mui/icons-material/PhoneOutlined';
 import AuthService from '../../services/authService';
 import Logo from '../../assets/Logo1.png';
 
@@ -85,6 +86,8 @@ const RegisterPage = () => {
     confirmPassword: '',
     college: '',
     gender: '',
+    phone: '',
+    countryCode: '+20',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -141,6 +144,7 @@ const RegisterPage = () => {
 
     try {
       const { confirmPassword, ...apiData } = formData;
+      apiData.phone = `${apiData.countryCode}${apiData.phone}`;
       const response = await AuthService.register(apiData);
       
       setSuccess(`أهلاً بك ${response.data.user.name}! جاري توجيهك إلى لوحة التحكم...`);
@@ -166,6 +170,7 @@ const RegisterPage = () => {
       !formData.confirmPassword ||
       !formData.college ||
       !formData.gender ||
+      !formData.phone ||
       formData.password !== formData.confirmPassword ||
       getPasswordStrength(formData.password) < 3
     );
@@ -234,6 +239,32 @@ const RegisterPage = () => {
                 helperText={emailError}
                 InputProps={{ startAdornment: <EmailOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
               />
+               <Box sx={{ display: 'flex', gap: 2 }}>
+                <FormControl sx={{ minWidth: 120 }}>
+                  <InputLabel id="country-code-select-label">الرمز</InputLabel>
+                  <Select
+                    labelId="country-code-select-label"
+                    name="countryCode"
+                    value={formData.countryCode}
+                    label="الرمز"
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="+20">🇪🇬 +20</MenuItem>
+                    <MenuItem value="+966">🇸🇦 +966</MenuItem>
+                    <MenuItem value="+971">🇦🇪 +971</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  label="رقم الهاتف"
+                  name="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  fullWidth
+                  InputProps={{ startAdornment: <PhoneOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
+                />
+              </Box>
               <Box>
                 <TextField
                     label="كلمة المرور"

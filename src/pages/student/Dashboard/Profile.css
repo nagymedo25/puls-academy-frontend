@@ -26,8 +26,10 @@
     height: 100%;
     animation: fadeInUp 0.6s ease-out;
     animation-fill-mode: both;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05) !important;
 }
 
+/* تأخير ظهور البطاقة الثانية لإعطاء تأثير أفضل */
 .profile-paper:nth-of-type(2) {
     animation-delay: 0.1s;
 }

@@ -30,6 +30,10 @@ const StudentTable = ({ students, onDetails, onEdit, onDelete }) => {
             <Chip label={student.college === 'pharmacy' ? 'صيدلة' : 'طب أسنان'} size="small" />
         </div>
         <div className="student-card-detail">
+            <span className="label">رقم الهاتف</span>
+            <span>{student.phone || 'غير متوفر'}</span>
+        </div>
+        <div className="student-card-detail">
             <span className="label">تاريخ التسجيل</span>
             <span>{new Date(student.created_at).toLocaleDateString('ar-EG')}</span>
         </div>
@@ -52,6 +56,7 @@ const StudentTable = ({ students, onDetails, onEdit, onDelete }) => {
           <TableRow>
             <TableCell>الطالب</TableCell>
             <TableCell>الكلية</TableCell>
+            <TableCell>رقم الهاتف</TableCell>
             <TableCell>تاريخ التسجيل</TableCell>
             <TableCell align="center">الإجراءات</TableCell>
           </TableRow>
@@ -71,6 +76,7 @@ const StudentTable = ({ students, onDetails, onEdit, onDelete }) => {
               <TableCell>
                  <Chip label={student.college === 'pharmacy' ? 'صيدلة' : 'طب أسنان'} size="small" />
               </TableCell>
+              <TableCell>{student.phone || 'غير متوفر'}</TableCell>
               <TableCell>{new Date(student.created_at).toLocaleDateString('ar-EG')}</TableCell>
               <TableCell align="center">
                 <IconButton onClick={() => onDetails(student)} color="default"><VisibilityIcon /></IconButton>

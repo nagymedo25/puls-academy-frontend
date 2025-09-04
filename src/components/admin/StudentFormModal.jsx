@@ -20,9 +20,8 @@ const style = {
 };
 
 const StudentFormModal = ({ open, onClose, onSave, student, loading }) => {
-  // ✨ 1. إضافة الحقول الجديدة للحالة الأولية
   const [formData, setFormData] = useState({
-    name: '', email: '', college: '', gender: '', password: ''
+    name: '', email: '', college: '', gender: '', password: '', phone: ''
   });
 
   useEffect(() => {
@@ -32,7 +31,8 @@ const StudentFormModal = ({ open, onClose, onSave, student, loading }) => {
         email: student.email || '',
         college: student.college || 'pharmacy',
         gender: student.gender || 'male',
-        password: '', // اترك كلمة المرور فارغة دائمًا عند فتح النافذة
+        password: '',
+        phone: student.phone || '',
       });
     }
   }, [student, open]);
@@ -43,7 +43,6 @@ const StudentFormModal = ({ open, onClose, onSave, student, loading }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // إرسال البيانات بدون حقل كلمة المرور إذا كان فارغًا
     const dataToSend = { ...formData };
     if (!dataToSend.password) {
       delete dataToSend.password;
@@ -58,13 +57,15 @@ const StudentFormModal = ({ open, onClose, onSave, student, loading }) => {
           تعديل بيانات الطالب
         </Typography>
         <form onSubmit={handleSubmit}>
-          {/* ✨ 2. إضافة الحقول الجديدة للنموذج */}
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <TextField name="name" label="الاسم الكامل" value={formData.name} onChange={handleChange} fullWidth required />
             </Grid>
             <Grid item xs={12}>
               <TextField name="email" label="البريد الإلكتروني" type="email" value={formData.email} onChange={handleChange} fullWidth required />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField name="phone" label="رقم الهاتف" value={formData.phone} onChange={handleChange} fullWidth />
             </Grid>
              <Grid item xs={12} sm={6}>
                 <FormControl fullWidth required>
