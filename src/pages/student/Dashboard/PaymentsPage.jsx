@@ -9,7 +9,6 @@ import PaymentService from '../../../services/paymentService';
 import PaymentFormModal from '../../../components/student/PaymentFormModal';
 import './PaymentsPage.css';
 
-// مكون شريحة الحالة
 const PaymentStatusChip = ({ status }) => {
   const statusConfig = {
     approved: { 
@@ -43,7 +42,6 @@ const PaymentStatusChip = ({ status }) => {
   );
 };
 
-// مكون الشكل المجرد
 const AbstractShape = ({ style }) => (
   <div className="abstract-shape" style={style} />
 );
@@ -79,11 +77,9 @@ const PaymentsPage = () => {
   
   return (
     <div className="payments-page-container">
-      {/* الأشكال المجردة للخلفية */}
       <AbstractShape style={{ width: '200px', height: '200px', top: '5%', right: '-80px' }} />
       <AbstractShape style={{ width: '150px', height: '150px', bottom: '10%', left: '-70px', animationDuration: '25s' }} />
       
-      {/* رأس الصفحة */}
       <div className="payments-header">
         <h1 className="payments-title">سجل المدفوعات</h1>
         <button 
@@ -95,9 +91,7 @@ const PaymentsPage = () => {
         </button>
       </div>
       
-      {/* ورقة المدفوعات */}
       <div className="payments-paper">
-        {/* تبويبات التصفية */}
         <div className="payments-tabs">
           <button 
             className={`payment-tab ${activeTab === 'all' ? 'active' : ''}`}
@@ -125,7 +119,6 @@ const PaymentsPage = () => {
           </button>
         </div>
         
-        {/* محتوى المدفوعات */}
         {loading ? (
           <div className="page-loader">
             <div className="page-loader-spinner"></div>
@@ -163,9 +156,10 @@ const PaymentsPage = () => {
                         year: 'numeric' 
                       })}
                     </p>
-                    {payment.screenshot_path && (
+                    {/* ✨ FIX: Use screenshot_url instead of screenshot_path */}
+                    {payment.screenshot_url && (
                       <a 
-                        href={payment.screenshot_path} 
+                        href={payment.screenshot_url} 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="receipt-link"
@@ -188,7 +182,6 @@ const PaymentsPage = () => {
         )}
       </div>
       
-      {/* مودال إضافة دفع جديد */}
       <PaymentFormModal 
         open={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
@@ -198,4 +191,4 @@ const PaymentsPage = () => {
   );
 };
 
-export default PaymentsPage;  
+export default PaymentsPage;

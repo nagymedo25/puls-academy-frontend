@@ -12,7 +12,6 @@ import AdminService from '../../services/adminService';
 import SuccessPaymentModal from '../../components/admin/SuccessPaymentModal';
 import './PaymentsManagementPage.css';
 
-// المسار الصحيح لملف الصوت في مجلد public
 const CHING_CHING_SOUND = `/ching_ching.mp3`;
 
 const PaymentsManagementPage = () => {
@@ -27,7 +26,6 @@ const PaymentsManagementPage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // تهيئة كائن الصوت مرة واحدة لتجنب إعادة إنشائه مع كل render
   const audio = React.useMemo(() => new Audio(CHING_CHING_SOUND), []);
 
   const fetchPayments = async () => {
@@ -61,22 +59,17 @@ const PaymentsManagementPage = () => {
     try {
       if (action === 'approve') {
         await AdminService.approvePayment(paymentId);
-        
-        // ✨ 1. تشغيل الصوت فوراً
         audio.play();
-
-        // ✨ 2. تأخير ظهور النافذة المنبثقة لنصف ثانية
         setTimeout(() => {
             setIsSuccessModalOpen(true);
             setTimeout(() => {
                 setIsSuccessModalOpen(false);
-            }, 3000); // إغلاق النافذة بعد 3 ثوانٍ
-        }, 500); // تأخير 500ms
-
+            }, 3000);
+        }, 500);
       } else {
         await AdminService.rejectPayment(paymentId);
       }
-      fetchPayments(); // تحديث القائمة
+      fetchPayments();
     } catch (err) {
       setError(err.response?.data?.error || `فشل في ${action === 'approve' ? 'الموافقة على' : 'رفض'} الدفعة.`);
     } finally {
@@ -84,7 +77,6 @@ const PaymentsManagementPage = () => {
     }
   };
 
-  // Mobile Card View Component
   const MobileCard = ({ payment }) => (
     <Paper className="payment-card" elevation={3}>
       <Box className="payment-card-header">
@@ -105,11 +97,12 @@ const PaymentsManagementPage = () => {
         </div>
       </Box>
       <Box className="payment-card-footer">
+        {/* ✨ FIX: Use screenshot_url instead of screenshot_path */}
         <Button 
             variant="outlined" 
             size="small"
             startIcon={<VisibilityIcon />}
-            onClick={() => handleOpenImageModal(payment.screenshot_path)}
+            onClick={() => handleOpenImageModal(payment.screenshot_url)}
         >
             عرض الإيصال
         </Button>
@@ -125,7 +118,6 @@ const PaymentsManagementPage = () => {
     </Paper>
   );
 
-  // Desktop Table View
   const DesktopTable = () => (
      <TableContainer component={Paper} sx={{ borderRadius: '16px' }}>
         <Table>
@@ -146,10 +138,11 @@ const PaymentsManagementPage = () => {
                   <TableCell>{payment.user_name}</TableCell>
                   <TableCell>{payment.course_title}</TableCell>
                   <TableCell>
+                    {/* ✨ FIX: Use screenshot_url instead of screenshot_path */}
                     <Button
                       variant="outlined"
                       size="small"
-                      onClick={() => handleOpenImageModal(payment.screenshot_path)}
+                      onClick={() => handleOpenImageModal(payment.screenshot_url)}
                     >
                       عرض الصورة
                     </Button>
@@ -217,7 +210,6 @@ const PaymentsManagementPage = () => {
           <DesktopTable />
       )}
 
-      {/* Image Modal */}
       <Modal
         open={isImageModalOpen}
         onClose={handleCloseImageModal}
@@ -270,7 +262,6 @@ const PaymentsManagementPage = () => {
         </Fade>
       </Modal>
 
-      {/* Success Payment Modal */}
       <SuccessPaymentModal
         open={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
