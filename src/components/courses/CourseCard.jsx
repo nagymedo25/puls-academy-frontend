@@ -4,14 +4,25 @@ import { useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import SchoolIcon from '@mui/icons-material/School';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import { useAuth } from '../../context/AuthContext'; // ١. استيراد useAuth
 import './CourseCard.css';
 
 const CourseCard = ({ course }) => {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth(); // ٢. الحصول على حالة المصادقة والمستخدم
   const imageUrl = course.thumbnail_url;
   
   const handleCardClick = () => {
-    navigate(`/course/${course.course_id}`);
+    // ٣. التحقق من حالة المصادقة وتوجيه المستخدم
+    if (isAuthenticated) {
+      if (user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
+    } else {
+      navigate(`/course/${course.course_id}`);
+    }
   };
   
   return (
@@ -49,7 +60,7 @@ const CourseCard = ({ course }) => {
         onClick={handleCardClick}
       >
         <VisibilityIcon />
-        تفاصيل ومعاينة
+        {isAuthenticated ? 'الذهاب إلى لوحة التحكم' : 'تفاصيل ومعاينة'}
       </button>
     </div>
   );

@@ -12,6 +12,7 @@ import EmailOutlined from '@mui/icons-material/EmailOutlined';
 import LockOutlined from '@mui/icons-material/LockOutlined';
 import SchoolOutlined from '@mui/icons-material/SchoolOutlined';
 import WcOutlined from '@mui/icons-material/WcOutlined';
+import PhoneOutlined from '@mui/icons-material/PhoneOutlined'; // إضافة أيقونة الهاتف
 import AuthService from '../../services/authService';
 import Logo from '../../assets/Logo1.png';
 
@@ -81,6 +82,7 @@ const RegisterPage = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '', // إضافة حقل الهاتف
     password: '',
     confirmPassword: '',
     college: '',
@@ -90,24 +92,35 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [phoneError, setPhoneError] = useState(''); // إضافة حالة لخطأ الهاتف
   const navigate = useNavigate();
 
   const validateEmail = (email) => {
     if (!email) {
-        setEmailError('البريد الإلكتروني مطلوب.');
-        return false;
+        setEmailError('');
+        return true;
     }
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!re.test(String(email).toLowerCase())) {
         setEmailError('صيغة البريد الإلكتروني غير صحيحة.');
         return false;
     }
-    if (/(mailinator|temp-mail|10minutemail)\./.test(email)) {
-         setEmailError('لا يمكن استخدام خدمات البريد الإلكتروني المؤقت.');
-         return false;
-    }
     setEmailError('');
     return true;
+  };
+
+  const validatePhone = (phone) => {
+      if (!phone) {
+          setPhoneError('');
+          return true;
+      }
+      const re = /^01[0-2,5]{1}[0-9]{8}$/;
+      if(!re.test(phone)) {
+          setPhoneError('رقم الهاتف يجب أن يكون رقم مصري صحيح.');
+          return false;
+      }
+      setPhoneError('');
+      return true;
   };
 
   const handleChange = (e) => {
@@ -116,17 +129,25 @@ const RegisterPage = () => {
      if (name === 'email') {
         validateEmail(value);
     }
+    if (name === 'phone') {
+        validatePhone(value);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
+    if (!(formData.email || formData.phone)) {
+        setError('يرجى إدخال البريد الإلكتروني أو رقم الهاتف.');
+        return;
+    }
+
     if (Object.values(formData).some(field => field === '')) {
         setError('يرجى ملء جميع الحقول المطلوبة.');
         return;
     }
-    if (!validateEmail(formData.email)) return;
+    if (!validateEmail(formData.email) || !validatePhone(formData.phone)) return;
     if (formData.password !== formData.confirmPassword) {
       setError('كلمتا المرور غير متطابقتين.');
       return;
@@ -150,7 +171,7 @@ const RegisterPage = () => {
       }, 2500);
 
     } catch (err) {
-      setError(err.response?.data?.error || 'حدث خطأ ما. قد يكون البريد الإلكتروني مسجلاً بالفعل.');
+      setError(err.response?.data?.error || 'حدث خطأ ما. قد يكون البريد الإلكتروني أو رقم الهاتف مسجلاً بالفعل.');
     } finally {
       setLoading(false);
     }
@@ -160,8 +181,9 @@ const RegisterPage = () => {
     return (
       loading ||
       !!emailError ||
+      !!phoneError ||
       !formData.name ||
-      !formData.email ||
+      !(formData.email || formData.phone) ||
       !formData.password ||
       !formData.confirmPassword ||
       !formData.college ||
@@ -169,7 +191,7 @@ const RegisterPage = () => {
       formData.password !== formData.confirmPassword ||
       getPasswordStrength(formData.password) < 3
     );
-  }, [formData, emailError, loading]);
+  }, [formData, emailError, phoneError, loading]);
 
   return (
     <Box
@@ -224,15 +246,25 @@ const RegisterPage = () => {
                 InputProps={{ startAdornment: <PersonOutline sx={{ mr: 1, color: 'action.active' }} /> }}
               />
               <TextField
-                label="البريد الإلكتروني"
+                label="البريد الإلكتروني (اختياري)"
                 name="email"
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                required
                 error={!!emailError}
                 helperText={emailError}
                 InputProps={{ startAdornment: <EmailOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
+              />
+                <TextField
+                label="رقم الهاتف"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                error={!!phoneError}
+                helperText={phoneError}
+                InputProps={{ startAdornment: <PhoneOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
               />
               <Box>
                 <TextField

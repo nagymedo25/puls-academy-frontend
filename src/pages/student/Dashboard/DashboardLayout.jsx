@@ -23,13 +23,12 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ChatIcon from '@mui/icons-material/Chat'; 
-import PaymentIcon from "@mui/icons-material/Payment"; // ✨ 1. استيراد الأيقونة الجديدة
+import PaymentIcon from "@mui/icons-material/Payment";
 import Logo from "../../../assets/Logo1.png";
-import AuthService from "../../../services/authService";
+import { useAuth } from "../../../context/AuthContext"; // ١. استيراد useAuth
 
 const drawerWidth = 260;
 
-// ✨ 2. إضافة الرابط الجديد في هذه القائمة
 const menuItems = [
   { text: "كورساتي", icon: <SchoolIcon />, path: "/dashboard" },
   { text: "مدفوعاتي", icon: <PaymentIcon />, path: "/dashboard/payments" },
@@ -43,7 +42,7 @@ const menuItems = [
     icon: <AccountCircleIcon />,
     path: "/dashboard/profile",
   },
-  { text: "الدعم الفني", icon: <ChatIcon />, path: "/dashboard/chat" }, // ✨ إضافة الرابط الجديد
+  { text: "الدعم الفني", icon: <ChatIcon />, path: "/dashboard/chat" },
 ];
 
 const DashboardLayout = () => {
@@ -52,14 +51,14 @@ const DashboardLayout = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout } = useAuth(); // ٢. الحصول على دالة الخروج من السياق
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
   const handleLogout = () => {
-    AuthService.logout();
-    navigate("/login");
+    logout(); // ٣. استدعاء دالة الخروج من السياق
   };
 
   const drawer = (

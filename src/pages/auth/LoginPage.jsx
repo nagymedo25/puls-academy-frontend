@@ -12,7 +12,6 @@ import LockOutlined from '@mui/icons-material/LockOutlined';
 import AuthService from '../../services/authService';
 import Logo from '../../assets/Logo1.png';
 
-// ... (الـ Keyframes و AbstractShape تبقى كما هي) ...
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -38,11 +37,11 @@ const AbstractShape = ({ sx }) => (
 
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ emailOrPhone: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth(); // <-- ٢. استخدام دالة login من السياق
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,10 +56,8 @@ const LoginPage = () => {
       const response = await AuthService.login(formData);
       const { user } = response.data;
 
-      // ٣. تحديث حالة المستخدم في السياق العام
       login(user); 
 
-      // ٤. التوجيه بناءً على الصلاحية
       if (user.role === 'admin') {
         navigate('/admin');
       } else {
@@ -68,7 +65,7 @@ const LoginPage = () => {
       }
 
     } catch (err) {
-      setError(err.response?.data?.error || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+      setError(err.response?.data?.error || 'البيانات المدخلة غير صحيحة.');
     } finally {
       setLoading(false);
     }
@@ -87,7 +84,6 @@ const LoginPage = () => {
         py: 5,
       }}
     >
-      {/* ... (باقي كود JSX يبقى كما هو بدون تغيير) ... */}
       <AbstractShape sx={{ width: 250, height: 250, top: '-50px', right: '-80px', animationDuration: '20s' }} />
       <AbstractShape sx={{ width: 150, height: 150, top: '30%', left: '-50px', animationDuration: '18s' }} />
       <AbstractShape sx={{ width: 200, height: 200, bottom: '-70px', left: '20%', animationDuration: '22s' }} />
@@ -119,10 +115,9 @@ const LoginPage = () => {
           <form onSubmit={handleSubmit}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
               <TextField
-                label="البريد الإلكتروني"
-                name="email"
-                type="email"
-                value={formData.email}
+                label="البريد الإلكتروني أو رقم الهاتف"
+                name="emailOrPhone"
+                value={formData.emailOrPhone}
                 onChange={handleChange}
                 required
                 InputProps={{

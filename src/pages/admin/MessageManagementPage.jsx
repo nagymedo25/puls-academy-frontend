@@ -3,10 +3,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'; // أيقونة للعودة في وضع الموبايل
+import DeleteIcon from '@mui/icons-material/Delete'; // ✨ 1. استيراد أيقونة الحذف
 import ChatInterface from '../../components/admin/ChatInterface';
 import MessageService from '../../services/messageService';
 import { useAuth } from '../../context/AuthContext';
-import '../../components/admin/Chat.css'; // ✨ استخدام نفس ملف التنسيقات الموحد
+import ConfirmationModal from '../../components/common/ConfirmationModal'; // ✨ 2. استيراد نافذة التأكيد
+import '../../components/admin/Chat.css'; 
 
 const MessageManagementPage = () => {
     const [conversations, setConversations] = useState([]);
@@ -15,6 +17,12 @@ const MessageManagementPage = () => {
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const { user: currentUser } = useAuth();
+    
+    // ✨ 3. حالات جديدة لنافذة الحذف
+    const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+    const [conversationToDelete, setConversationToDelete] = useState(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+
 
     const fetchConversations = useCallback(async () => {
         setLoading(true);
@@ -39,6 +47,32 @@ const MessageManagementPage = () => {
             name: conversation.student_name,
         });
     };
+
+    // ✨ 4. دوال جديدة للتعامل مع الحذف
+    const handleDeleteRequest = (e, conversation) => {
+        e.stopPropagation(); // منع فتح المحادثة عند الضغط على زر الحذف
+        setConversationToDelete(conversation);
+        setConfirmModalOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!conversationToDelete) return;
+        setDeleteLoading(true);
+        try {
+            await MessageService.deleteConversation(conversationToDelete.student_id);
+            // إذا كانت المحادثة المحذوفة هي المفتوحة حالياً، قم بإغلاقها
+            if (selectedConversation?.user_id === conversationToDelete.student_id) {
+                setSelectedConversation(null);
+            }
+            fetchConversations(); // إعادة تحميل المحادثات
+        } catch (err) {
+            setError('فشل في حذف المحادثة.');
+        } finally {
+            setDeleteLoading(false);
+            setConfirmModalOpen(false);
+            setConversationToDelete(null);
+        }
+    };
     
     const filteredConversations = conversations.filter(conversation =>
         conversation.student_name && conversation.student_name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -48,7 +82,6 @@ const MessageManagementPage = () => {
     if (error) return <div className="error-message">{error}</div>;
 
     return (
-        // ✨ أضفنا كلاس للتحكم في العرض على الموبايل
         <div className={`admin-chat-container ${selectedConversation ? 'chat-view-active' : ''}`}>
             {/* Conversations Sidebar */}
             <aside className="chat-sidebar">
@@ -80,11 +113,17 @@ const MessageManagementPage = () => {
                                     {conversation.last_message || 'لا توجد رسائل'}
                                 </p>
                             </div>
-                            {conversation.unread_count > 0 && (
-                                <span className="unread-badge">
-                                    {conversation.unread_count}
-                                </span>
-                            )}
+                            {/* ✨ 5. إضافة زر الحذف */}
+                            <div className="conversation-actions">
+                                {conversation.unread_count > 0 && (
+                                    <span className="unread-badge">
+                                        {conversation.unread_count}
+                                    </span>
+                                )}
+                                <button className="delete-conversation-btn" onClick={(e) => handleDeleteRequest(e, conversation)}>
+                                    <DeleteIcon />
+                                </button>
+                            </div>
                         </li>
                     ))}
                 </ul>
@@ -94,7 +133,6 @@ const MessageManagementPage = () => {
             <main className="chat-window-wrapper">
                 {selectedConversation ? (
                     <>
-                        {/* زر العودة (يظهر فقط في الموبايل) */}
                         <div className="chat-header-mobile-back">
                             <button onClick={() => setSelectedConversation(null)}>
                                 <ArrowBackIcon />
@@ -113,6 +151,16 @@ const MessageManagementPage = () => {
                     </div>
                 )}
             </main>
+
+            {/* ✨ 6. إضافة نافذة تأكيد الحذف */}
+            <ConfirmationModal
+                open={confirmModalOpen}
+                onClose={() => setConfirmModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="تأكيد حذف المحادثة"
+                message={`هل أنت متأكد من رغبتك في حذف المحادثة مع "${conversationToDelete?.student_name}"؟ سيتم حذف جميع الرسائل للطرفين بشكل نهائي.`}
+                loading={deleteLoading}
+            />
         </div>
     );
 };

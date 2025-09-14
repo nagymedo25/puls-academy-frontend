@@ -17,10 +17,10 @@ import {
   Stack,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom'; // 1. استيراد Hooks
+import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import Logo from "../../../assets/Logo1.png";
+import { useAuth } from "../../../context/AuthContext"; // ١. استيراد useAuth
 
-// 2. تحديث روابط التنقل
 const navLinks = [
   { title: "الرئيسية", path: "/" },
   { title: "الكورسات", path: "/courses" },
@@ -34,8 +34,9 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const location = useLocation(); // 3. الحصول على المسار الحالي
+  const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth(); // ٢. الحصول على حالة المصادقة والمستخدم
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -48,7 +49,6 @@ const Header = () => {
   const handleLinkClick = (link) => {
     if (drawerOpen) handleDrawerToggle();
     
-    // إذا كان المسار الحالي هو الصفحة الرئيسية، قم بالتمرير
     if (link.id && location.pathname === '/') {
       const element = document.getElementById(link.id);
       if (element) {
@@ -58,10 +58,8 @@ const Header = () => {
         window.scrollTo({ top: offsetPosition, behavior: "smooth" });
       }
     } else if (link.path) {
-      // إذا كان مسارًا لصفحة، انتقل إليه
       navigate(link.path);
     } else if (link.id) {
-        // إذا كان ID وموجود في صفحة أخرى، انتقل للرئيسية ثم مرر (للتطوير المستقبلي)
         navigate('/#' + link.id);
     }
   };
@@ -78,8 +76,14 @@ const Header = () => {
           </ListItem>
         ))}
         <Stack component="div" gap={2} sx={{ mt: 2 }}>
-          <Button component={RouterLink} to="/login" variant="outlined" color="primary" fullWidth>تسجيل الدخول</Button>
-          <Button component={RouterLink} to="/register" variant="contained" color="primary" fullWidth>إنشاء حساب</Button>
+          {isAuthenticated ? (
+            <Button component={RouterLink} to={user?.role === 'admin' ? '/admin' : '/dashboard'} variant="contained" color="primary" fullWidth>لوحة التحكم</Button>
+          ) : (
+            <>
+              <Button component={RouterLink} to="/login" variant="outlined" color="primary" fullWidth>تسجيل الدخول</Button>
+              <Button component={RouterLink} to="/register" variant="contained" color="primary" fullWidth>إنشاء حساب</Button>
+            </>
+          )}
         </Stack>
       </List>
     </Box>
@@ -109,7 +113,6 @@ const Header = () => {
             <>
               <Box sx={{ display: "flex", gap: 1 }}>
                 {navLinks.map((link) => {
-                  // 4. تحديد إذا كان الرابط هو الرابط النشط
                   const isActive = location.pathname === link.path;
                   return (
                     <Button
@@ -140,8 +143,16 @@ const Header = () => {
               </Box>
 
               <Stack direction="row" gap={1.5}>
-                <Button component={RouterLink} to="/login" variant="outlined" color="primary">تسجيل الدخول</Button>
-                <Button component={RouterLink} to="/register" variant="contained" color="primary" disableElevation>إنشاء حساب</Button>
+                {isAuthenticated ? (
+                  <Button component={RouterLink} to={user?.role === 'admin' ? '/admin' : '/dashboard'} variant="contained" color="primary" disableElevation>
+                    الذهاب إلى لوحة التحكم
+                  </Button>
+                ) : (
+                  <>
+                    <Button component={RouterLink} to="/login" variant="outlined" color="primary">تسجيل الدخول</Button>
+                    <Button component={RouterLink} to="/register" variant="contained" color="primary" disableElevation>إنشاء حساب</Button>
+                  </>
+                )}
               </Stack>
             </>
           )}

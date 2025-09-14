@@ -1,13 +1,13 @@
 // src/pages/student/Dashboard/ProfilePage.jsx
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, CircularProgress, Alert, Grid, TextField, Button, Divider } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, Alert, Grid, TextField, Button } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import AuthService from '../../../services/authService';
-import './Profile.css'; // استيراد ملف التنسيق
+import './Profile.css';
 
 const ProfilePage = () => {
-  const [profile, setProfile] = useState({ name: '', email: '' });
+  const [profile, setProfile] = useState({ name: '', email: '', phone: '' });
   const [password, setPassword] = useState({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,7 +43,7 @@ const ProfilePage = () => {
       setError('');
       setSuccess('');
       try {
-          await AuthService.updateProfile({ name: profile.name, email: profile.email });
+          await AuthService.updateProfile({ name: profile.name, email: profile.email, phone: profile.phone });
           setSuccess('تم تحديث بياناتك بنجاح!');
       } catch (err) {
           setError(err.response?.data?.error || 'فشل تحديث البيانات.');
@@ -88,7 +88,8 @@ const ProfilePage = () => {
                 <Typography variant="h6" gutterBottom>تعديل البيانات الشخصية</Typography>
                 <form onSubmit={handleProfileSubmit}>
                     <TextField label="الاسم الكامل" name="name" value={profile.name} onChange={handleProfileChange} fullWidth margin="normal" required />
-                    <TextField label="البريد الإلكتروني" name="email" type="email" value={profile.email} onChange={handleProfileChange} fullWidth margin="normal" required />
+                    <TextField label="البريد الإلكتروني" name="email" type="email" value={profile.email || ''} onChange={handleProfileChange} fullWidth margin="normal" />
+                    <TextField label="رقم الهاتف" name="phone" value={profile.phone || ''} onChange={handleProfileChange} fullWidth margin="normal" />
                     <Button type="submit" variant="contained" startIcon={<SaveIcon />} disabled={isSaving} sx={{ mt: 2 }}>
                         {isSaving ? <CircularProgress size={24} /> : 'حفظ التغييرات'}
                     </Button>
