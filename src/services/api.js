@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // قم بتغيير هذا الرابط ليتناسب مع رابط الباك إند الفعلي عند النشر
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://puls-academy-backend-production.up.railway.app/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
