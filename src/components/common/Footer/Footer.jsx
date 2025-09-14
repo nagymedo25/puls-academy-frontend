@@ -11,7 +11,6 @@ import Logo from '../../../assets/logo2.png';
 // 1. تحديث الروابط
 const quickLinks = [
     { title: 'الرئيسية', path: '/' },
-    { title: 'الكورسات', path: '/courses' },
     { title: 'من نحن', path: '/#about-us' }, // روابط الأقسام تعمل بشكل أفضل من الصفحة الرئيسية
     { title: 'تواصل معنا', path: '/#contact' },
 ];
@@ -29,20 +28,6 @@ const Footer = () => {
             </Typography>
           </Grid>
 
-          {/* Column 2: Quick Links */}
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h6" gutterBottom>
-              روابط سريعة
-            </Typography>
-            <Stack spacing={1}>
-              {quickLinks.map(link => (
-                <Link component={RouterLink} to={link.path} color="inherit" underline="hover" key={link.title}>
-                  {link.title}
-                </Link>
-              ))}
-            </Stack>
-          </Grid>
-
           {/* Column 3: Contact */}
           <Grid item xs={12} sm={6} md={4}>
             <Typography variant="h6" gutterBottom>
@@ -51,14 +36,14 @@ const Footer = () => {
             <Stack spacing={2}>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                     <EmailIcon />
-                    <Link href="mailto:contact@pulsacademy.com" color="inherit" underline="hover">
-                        contact@pulsacademy.com
+                    <Link href="mailto:alaae5607@gmail.com" color="inherit" underline="hover">
+                        alaae5607@gmail.com
                     </Link>
                 </Box>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                     <WhatsAppIcon />
-                    <Link href="https://wa.me/201000000000" color="inherit" underline="hover">
-                        +20 100 000 0000
+                    <Link sx={{direction : 'ltr'}} href="https://wa.me/201558963676" color="inherit" underline="hover">
+                        1558963676 20+
                     </Link>
                 </Box>
             </Stack>
@@ -82,8 +67,7 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} Puls Academy. جميع الحقوق محفوظة.
           </Typography>
           <Stack direction="row" spacing={1}>
-            <IconButton href="#" target="_blank" color="inherit"><FacebookIcon /></IconButton>
-            <IconButton href="#" target="_blank" color="inherit"><InstagramIcon /></IconButton>
+            <IconButton sx={{scale: 1.5}} href="https://www.facebook.com/profile.php?id=61580315197378" target="_blank" color="inherit"><FacebookIcon /></IconButton>
           </Stack>
         </Box>
       </Container>

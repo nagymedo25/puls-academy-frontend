@@ -249,14 +249,14 @@ const ContactFormSection = () => {
                 <EmailIcon className="icon" style={{ fontSize: 32 }} />
                 <div>
                   <h3>البريد الإلكتروني</h3>
-                  <p>contact@pulsacademy.com</p>
+                  <p>alaae5607@gmail.com</p>
                 </div>
               </div>
               <div className="info-card-pure">
                 <WhatsAppIcon className="icon" style={{ fontSize: 32 }} />
                 <div>
                   <h3>واتساب</h3>
-                  <p>+20 100 123 4567</p>
+                  <p>+20 15 58963676</p>
                 </div>
               </div>
             </div>

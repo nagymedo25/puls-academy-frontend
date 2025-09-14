@@ -6,8 +6,8 @@ import CourseService from '../../services/courseService';
 import PaymentService from '../../services/paymentService';
 import './PaymentFormModal.css';
 
-const VODAFONE_CASH_NUMBER = '01012345678'; // تم وضع رقم افتراضي
-const INSTAPAY_NUMBER = 'user@instapay'; // تم وضع حساب افتراضي
+const VODAFONE_CASH_NUMBER = '01556822066';
+const INSTAPAY_NUMBER = 'drmahmoudalaainstapay@instapay'; 
 
 const PaymentFormModal = ({ open, onClose, onPaymentSuccess, initialCourse }) => {
     const [courses, setCourses] = useState([]);

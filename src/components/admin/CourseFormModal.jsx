@@ -79,11 +79,6 @@ const CourseFormModal = ({ open, onClose, onSave, course, loading }) => {
             </div>
 
             <TextField name="preview_url" label="رابط فيديو المعاينة" value={formData.preview_url} onChange={handleChange} fullWidth required />
-            
-            <Paper variant="outlined" sx={{ p: 2, textAlign: 'center', borderStyle: 'dashed', borderColor: 'grey.400', backgroundColor: '#f9fafb' }}>
-                <UploadFileIcon sx={{ fontSize: 40, color: 'grey.500', mb: 1 }}/>
-                <Typography>منطقة رفع باقي دروس الكورس (سيتم تفعيلها لاحقًا)</Typography>
-            </Paper>
 
             <div className="form-actions">
               <Button onClick={onClose} color="inherit">إلغاء</Button>

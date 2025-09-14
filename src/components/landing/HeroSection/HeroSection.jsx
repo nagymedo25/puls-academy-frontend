@@ -1,6 +1,5 @@
-// src/components/landing/HeroSection/HeroSection.jsx
 import React from 'react';
-import { Box, Button, Typography, Container,  useTheme, Grid, alpha, Paper } from '@mui/material';
+import { Box, Typography, Container, useTheme, Grid, alpha, Paper } from '@mui/material';
 import { keyframes } from '@emotion/react';
 import { Link } from 'react-router-dom';
 import LocalPharmacyIcon from '@mui/icons-material/LocalPharmacy';
@@ -18,17 +17,11 @@ const fadeInUp = keyframes`
   }
 `;
 
-// --- Animations ---
-const fadeInUpCards = keyframes`
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
 const backgroundPan = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `;
-
 
 const float = keyframes`
   0% { transform: translate(0, 0); }
@@ -43,19 +36,17 @@ const AbstractShape = ({ sx }) => (
       position: 'absolute',
       borderRadius: '50%',
       background: (theme) => alpha(theme.palette.primary.light, 0.1),
-      // This animation runs continuously and is not tied to a hover state.
       animation: `${float} 8s ease-in-out infinite`,
       ...sx,
     }}
   />
 );
 
-const CollegeSelection = ({ onSelect, category }) => {
+const DepartmentSelection = () => {
   const theme = useTheme();
-  const categoryText = category === 'pharmacy' ? 'الصيدلة' : 'طب الأسنان';
   const choices = [
-    { type: 'male', label: 'قسم الصيدلة', icon: <LocalPharmacyIcon sx={{ fontSize: '5rem' }} />, color: theme.palette.primary.dark },
-    { type: 'female', label: 'قسم الاسنان', icon: <MedicalServicesIcon sx={{ fontSize: '5rem' }} />, color: theme.palette.primary.main }
+    { type: 'pharmacy', label: 'قسم الصيدلة', link: '/courses?category=pharmacy', icon: <LocalPharmacyIcon sx={{ fontSize: '5rem' }} />, color: theme.palette.primary.dark },
+    { type: 'dentistry', label: 'قسم الاسنان', link: '/courses?category=dentistry', icon: <MedicalServicesIcon sx={{ fontSize: '5rem' }} />, color: theme.palette.primary.main }
   ];
 
   return (
@@ -75,65 +66,66 @@ const CollegeSelection = ({ onSelect, category }) => {
       <Container maxWidth="lg" sx={{ zIndex: 1 }}>
         <Grid container spacing={{ xs: 4, md: 8 }} justifyContent="center">
           {choices.map((choice, index) => (
-            <Grid xs={12} md={5} key={choice.type} sx={{
+            <Grid item xs={12} md={5} key={choice.type} sx={{
               animation: `${fadeInUp} 0.8s ease-out ${0.2 + index * 0.2}s`,
               animationFillMode: 'both',
             }}>
-              <Paper
-                onClick={() => onSelect(choice.type)}
-                elevation={4}
-                sx={{
-                  p: 4,
-                  textAlign: 'center',
-                  borderRadius: '24px',
-                  cursor: 'pointer',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  border: '2px solid transparent',
-                  background: `linear-gradient(145deg, ${alpha(choice.color, 0.05)}, ${alpha(choice.color, 0.15)})`,
-                  backdropFilter: 'blur(15px)',
-                  transition: 'transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.05) rotate(1deg)',
-                    borderColor: choice.color,
-                    boxShadow: `0 0 40px ${alpha(choice.color, 0.4)}`,
-                    '& .choice-icon': {
-                      transform: 'scale(1.15) rotate(5deg)',
-                      color: choice.color,
-                    },
-                    '& .choice-title': {
+              <Link to={choice.link} style={{ textDecoration: 'none' }}>
+                <Paper
+                  elevation={4}
+                  sx={{
+                    p: 4,
+                    textAlign: 'center',
+                    borderRadius: '24px',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    border: '2px solid transparent',
+                    background: `linear-gradient(145deg, ${alpha(choice.color, 0.05)}, ${alpha(choice.color, 0.15)})`,
+                    backdropFilter: 'blur(15px)',
+                    transition: 'transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
+                    '&:hover': {
+                      transform: 'scale(1.05) rotate(1deg)',
+                      borderColor: choice.color,
+                      boxShadow: `0 0 40px ${alpha(choice.color, 0.4)}`,
+                      '& .choice-icon': {
+                        transform: 'scale(1.15) rotate(5deg)',
                         color: choice.color,
-                    }
-                  },
-                }}
-              >
-                <Box
-                  className="choice-icon"
-                  sx={{
-                    fontSize: '6rem',
-                    color: alpha(theme.palette.text.primary, 0.7),
-                    transition: 'transform 0.3s ease, color 0.3s ease',
-                    mb: 2,
+                      },
+                      '& .choice-title': {
+                          color: choice.color,
+                      }
+                    },
                   }}
                 >
-                  {choice.icon}
-                </Box>
-                <Typography
-                  className="choice-title"
-                  variant="h3"
-                  component="h2"
-                  sx={{
-                    fontWeight: 700,
-                    transition: 'color 0.3s ease',
-                    color: 'text.primary',
-                  }}
-                >
-                  {choice.label}
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
-                  اضغط هنا لعرض الكورسات المخصصة
-                </Typography>
-              </Paper>
+                  <Box
+                    className="choice-icon"
+                    sx={{
+                      fontSize: '6rem',
+                      color: alpha(theme.palette.text.primary, 0.7),
+                      transition: 'transform 0.3s ease, color 0.3s ease',
+                      mb: 2,
+                    }}
+                  >
+                    {choice.icon}
+                  </Box>
+                  <Typography
+                    className="choice-title"
+                    variant="h3"
+                    component="h2"
+                    sx={{
+                      fontWeight: 700,
+                      transition: 'color 0.3s ease',
+                      color: 'text.primary',
+                    }}
+                  >
+                    {choice.label}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mt: 1 }}>
+                    اضغط هنا لعرض الكورسات المخصصة
+                  </Typography>
+                </Paper>
+              </Link>
             </Grid>
           ))}
         </Grid>
@@ -141,7 +133,6 @@ const CollegeSelection = ({ onSelect, category }) => {
     </Box>
   );
 };
-
 
 const HeroSection = () => {
   return (
@@ -179,11 +170,11 @@ const HeroSection = () => {
             >
               المنصة الاولى الخاصة بطلاب جامعة الازهر
             </Typography>
-            <Typography 
-              variant="h5" 
-              component="p" 
-              sx={{ 
-                my: 4, 
+            <Typography
+              variant="h5"
+              component="p"
+              sx={{
+                my: 4,
                 maxWidth: '700px',
                 mx: 'auto',
                 lineHeight: 1.8,
@@ -194,7 +185,7 @@ const HeroSection = () => {
             >
               كورسات تفاعلية ومحتوى مُبسط يواكب أحدث المناهج لضمان تفوقك في كليات الصيدلة وطب الاسنان.
             </Typography>
-              <CollegeSelection />
+            <DepartmentSelection />
           </Grid>
         </Grid>
       </Container>
