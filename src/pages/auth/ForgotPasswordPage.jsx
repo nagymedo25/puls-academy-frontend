@@ -44,7 +44,6 @@ const AbstractShape = ({ sx, animation, duration, delay }) => (
 
 const ForgotPasswordPage = () => {
   // الرقم الخاص بالدعم الفني (يمكنك تغييره)
-  const supportPhoneNumber = '+201558963676';
   const whatsappLink = `https://wa.me/201558963676`;
 
   return (
@@ -129,7 +128,7 @@ const ForgotPasswordPage = () => {
               color="text.secondary" 
               sx={{ mt: 3, direction: 'ltr' }}
             >
-              <strong>رقم الدعم:</strong> +{supportPhoneNumber}
+              <strong>رقم الدعم:</strong> <span>+201558963676</span>
             </Typography>
 
           </Paper>

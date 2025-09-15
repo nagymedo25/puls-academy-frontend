@@ -42,8 +42,8 @@ const Footer = () => {
                 </Box>
                 <Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
                     <WhatsAppIcon />
-                    <Link sx={{direction : 'ltr'}} href="https://wa.me/201558963676" color="inherit" underline="hover">
-                        1558963676 20+
+                    <Link href="https://wa.me/201558963676" color="inherit" underline="hover">
+                        201558963676+
                     </Link>
                 </Box>
             </Stack>
