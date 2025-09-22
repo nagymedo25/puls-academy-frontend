@@ -26,6 +26,8 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import PaymentsPage from "./pages/student/Dashboard/PaymentsPage";
 import CourseWatchPage from "./pages/student/CourseWatchPage";
 import ChatPage from "./pages/student/Dashboard/ChatPage"; // استيراد صفحة الدردشة الجديدة
+import ViolationsPage from "./pages/admin/ViolationsPage";
+import DeviceRequestsPage from "./pages/admin/DeviceRequestsPage";
 
 function App() {
   return (
@@ -62,6 +64,8 @@ function App() {
             <Route path="courses" element={<CourseManagementPage />} />
             <Route path="students" element={<StudentManagementPage />} />
             <Route path="messages" element={<MessageManagementPage />} />{" "}
+            <Route path="device-requests" element={<DeviceRequestsPage />} />
+            <Route path="violations" element={<ViolationsPage />} />
             {/* إضافة مسار الرسائل للأدمن */}
           </Route>
         </Route>

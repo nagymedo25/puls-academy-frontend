@@ -1,7 +1,6 @@
 // src/services/api.js
 import axios from 'axios';
 
-// The new base URL points to the proxy path on the SAME domain
 const API_BASE_URL = '/api';
 
 const api = axios.create({
@@ -11,5 +10,16 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+api.interceptors.response.use(
+  (response) => response, // إذا كان الرد ناجحًا، قم بتمريره كما هو
+  (error) => {
+    if (error.response && error.response.status === 401 && error.response.data.error.includes('الجلسة غير صالحة')) {
+      alert("تم تسجيل الدخول من جهاز آخر. سيتم تسجيل خروجك الآن.");
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;

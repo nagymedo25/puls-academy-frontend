@@ -9,7 +9,6 @@ export default defineConfig({
       '/api': {
         target: 'https://puls-academy-backend-production.up.railway.app', // Your backend URL
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
     },
   },

@@ -1,5 +1,5 @@
-// src/pages/Auth/LoginPage.jsx
-import React, { useState } from 'react';
+// src/pages/auth/LoginPage.jsx
+import React, { useState, useEffect } from 'react';
 import {
   Box, Button, Typography, Container, TextField,
   CircularProgress, Alert, Link as MuiLink, Checkbox, FormControlLabel
@@ -11,7 +11,9 @@ import EmailOutlined from '@mui/icons-material/EmailOutlined';
 import LockOutlined from '@mui/icons-material/LockOutlined';
 import AuthService from '../../services/authService';
 import Logo from '../../assets/Logo1.png';
+import Fingerprint2 from 'fingerprintjs2'; // <-- 1. استيراد المكتبة
 
+// ... (الأنيميشن والأشكال تبقى كما هي)
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -34,14 +36,28 @@ const AbstractShape = ({ sx }) => (
     }}
   />
 );
+// ... (نهاية الأنيميشن)
 
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ emailOrPhone: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [deviceFingerprint, setDeviceFingerprint] = useState(''); // <-- 2. حالة جديدة لتخزين بصمة الجهاز
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  // <-- 3. हुक لتوليد بصمة الجهاز عند تحميل الصفحة
+  useEffect(() => {
+    const getFingerprint = async () => {
+      const components = await Fingerprint2.getPromise();
+      const values = components.map(component => component.value);
+      const murmur = Fingerprint2.x64hash128(values.join(''), 31);
+      setDeviceFingerprint(murmur);
+    };
+    getFingerprint();
+  }, []);
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,8 +68,15 @@ const LoginPage = () => {
     setError('');
     setLoading(true);
 
+    if (!deviceFingerprint) {
+        setError("لا يمكن تحديد معرّف الجهاز. يرجى تحديث الصفحة والمحاولة مرة أخرى.");
+        setLoading(false);
+        return;
+    }
+
     try {
-      const response = await AuthService.login(formData);
+      // <-- 4. إرسال بصمة الجهاز مع بيانات الدخول
+      const response = await AuthService.login({ ...formData, deviceFingerprint });
       const { user } = response.data;
 
       login(user); 
@@ -65,7 +88,12 @@ const LoginPage = () => {
       }
 
     } catch (err) {
-      setError(err.response?.data?.error || 'البيانات المدخلة غير صحيحة.');
+      // <-- 5. التعامل مع الأخطاء الجديدة
+      if (err.response?.status === 403) {
+          setError('هذا جهاز جديد. تم إرسال طلب للمشرف للموافقة على تسجيل دخولك. سيتم إشعارك عند الموافقة.');
+      } else {
+          setError(err.response?.data?.error || 'البيانات المدخلة غير صحيحة.');
+      }
     } finally {
       setLoading(false);
     }
@@ -152,7 +180,7 @@ const LoginPage = () => {
                 type="submit"
                 variant="contained"
                 size="large"
-                disabled={loading}
+                disabled={loading || !deviceFingerprint} // تعطيل الزر حتى يتم توليد البصمة
                 sx={{
                   py: 1.5,
                   fontSize: '1.1rem',

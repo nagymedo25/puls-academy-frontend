@@ -24,6 +24,8 @@ import SchoolIcon from "@mui/icons-material/School";
 import PeopleIcon from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MessageIcon from "@mui/icons-material/Message";
+import PhonelinkLockIcon from '@mui/icons-material/PhonelinkLock'; // أيقونة لطلبات الأجهزة
+import GppMaybeIcon from '@mui/icons-material/GppMaybe'; // أيقونة للمخالفات
 import Logo from "../../assets/logo2.png";
 import { useAuth } from "../../context/AuthContext"; // ١. استيراد useAuth
 
@@ -35,6 +37,8 @@ const menuItems = [
   { text: "إدارة الكورسات", icon: <SchoolIcon />, path: "/admin/courses" },
   { text: "إدارة الطلاب", icon: <PeopleIcon />, path: "/admin/students" },
   { text: "الرسائل", icon: <MessageIcon />, path: "/admin/messages" },
+  { text: "طلبات الأجهزة", icon: <PhonelinkLockIcon />, path: "/admin/device-requests" },
+  { text: "الطلاب المخالفون", icon: <GppMaybeIcon />, path: "/admin/violations" },
 ];
 
 const AdminLayout = () => {
@@ -124,7 +128,7 @@ const AdminLayout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography sx={{mr: 2}} variant="h6" noWrap component="div">
+          <Typography sx={{ mr: 2 }} variant="h6" noWrap component="div">
             لوحة تحكم الأدمن
           </Typography>
         </Toolbar>
