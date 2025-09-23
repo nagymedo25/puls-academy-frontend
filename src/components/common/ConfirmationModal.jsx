@@ -1,51 +1,49 @@
+// src/components/common/ConfirmationModal.jsx
 import React from 'react';
-import { Modal, Box, Typography, Button, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
+import {
+  Modal, Box, Typography, Button, Divider
+} from '@mui/material';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
-// ✨ --- START: The Fix --- ✨
-// The component now accepts `confirmText` and `confirmButtonColor` to be truly generic.
-const ConfirmationModal = ({
-  open,
-  onClose,
-  onConfirm,
-  title,
-  message,
-  confirmText = 'تأكيد',
-  confirmButtonColor = 'primary'
-}) => {
-// ✨ --- END: The Fix --- ✨
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '90%', sm: 450 },
+  bgcolor: 'background.paper',
+  borderRadius: '16px',
+  boxShadow: 24,
+  p: 4,
+  textAlign: 'center',
+};
+
+const ConfirmationModal = ({ open, onClose, onConfirm, title, message, confirmText = "حذف", loading = false }) => {
   return (
     <Modal open={open} onClose={onClose}>
-      <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          borderRadius: '16px',
-          boxShadow: 24,
-          p: 4,
-          textAlign: 'center'
-      }}>
-        <IconButton onClick={onClose} sx={{ position: 'absolute', top: 8, right: 8 }}>
-          <CloseIcon />
-        </IconButton>
-        <WarningAmberRoundedIcon sx={{ fontSize: 56, color: `${confirmButtonColor}.main`, mb: 2 }} />
-        <Typography variant="h6" component="h2" fontWeight="bold">
+      <Box sx={style}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <WarningAmberIcon sx={{ fontSize: 50, color: 'warning.main' }} />
+        </Box>
+        <Typography id="confirmation-modal-title" variant="h5" component="h2" fontWeight="700">
           {title}
         </Typography>
-        <Typography sx={{ mt: 2, color: 'text.secondary' }}>
+        <Typography id="confirmation-modal-description" sx={{ mt: 2, color: 'text.secondary' }}>
           {message}
         </Typography>
-        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center', gap: 2 }}>
-          <Button variant="outlined" color="secondary" onClick={onClose} sx={{ px: 4 }}>
+        <Divider sx={{ my: 3 }} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+          <Button onClick={onClose} variant="outlined" color="inherit" sx={{ width: '100px' }}>
             إلغاء
           </Button>
-          {/* ✨ The button now uses the props for its text and color */}
-          <Button variant="contained" color={confirmButtonColor} onClick={onConfirm} sx={{ px: 4 }}>
-            {confirmText}
+          <Button 
+            onClick={onConfirm} 
+            variant="contained" 
+            color="error" 
+            sx={{ width: '100px' }}
+            disabled={loading}
+          >
+            {loading ? 'جاري الحذف...' : confirmText}
           </Button>
         </Box>
       </Box>

@@ -304,6 +304,23 @@ const RegisterPage = () => {
                   <MenuItem value="dentistry">طب الأسنان</MenuItem>
                 </Select>
               </FormControl>
+
+              {formData.college === 'pharmacy' && (
+                <FormControl fullWidth required>
+                  <InputLabel id="pharmacy-type-select-label">التخصص</InputLabel>
+                  <Select
+                    labelId="pharmacy-type-select-label"
+                    name="pharmacy_type"
+                    value={formData.pharmacy_type}
+                    label="التخصص"
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="pharm-d">Pharm-D</MenuItem>
+                    <MenuItem value="clinical">Clinical</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+
               <FormControl component="fieldset" required>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, color: 'text.secondary' }}>
                    <WcOutlined />

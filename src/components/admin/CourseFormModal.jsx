@@ -12,7 +12,7 @@ import './CourseFormModal.css';
 const CourseFormModal = ({ open, onClose, onSave, course, loading }) => {
   const [formData, setFormData] = useState({
     title: '', description: '', category: 'pharmacy', college_type: 'male', 
-    price: '', preview_url: '', thumbnail_url: ''
+    pharmacy_type: 'pharm-d', price: '', preview_url: '', thumbnail_url: ''
   });
 
   useEffect(() => {
@@ -22,6 +22,7 @@ const CourseFormModal = ({ open, onClose, onSave, course, loading }) => {
         description: course.description || '',
         category: course.category || 'pharmacy',
         college_type: course.college_type || 'male',
+        pharmacy_type: course.pharmacy_type || 'pharm-d',
         price: course.price || '',
         preview_url: course.preview_url || '',
         thumbnail_url: course.thumbnail_url || '',
@@ -29,7 +30,7 @@ const CourseFormModal = ({ open, onClose, onSave, course, loading }) => {
     } else {
       setFormData({
         title: '', description: '', category: 'pharmacy', college_type: 'male', 
-        price: '', preview_url: '', thumbnail_url: ''
+        pharmacy_type: 'pharm-d', price: '', preview_url: '', thumbnail_url: ''
       });
     }
   }, [course, open]);
@@ -72,6 +73,16 @@ const CourseFormModal = ({ open, onClose, onSave, course, loading }) => {
                 </Select>
               </FormControl>
             </div>
+
+            {formData.category === 'pharmacy' && (
+              <FormControl fullWidth required>
+                <InputLabel>تخصص الصيدلة</InputLabel>
+                <Select name="pharmacy_type" value={formData.pharmacy_type} label="تخصص الصيدلة" onChange={handleChange}>
+                  <MenuItem value="pharm-d">Pharm-D</MenuItem>
+                  <MenuItem value="clinical">Clinical</MenuItem>
+                </Select>
+              </FormControl>
+            )}
             
             <div className="form-row">
                 <TextField name="price" label="السعر (بالجنيه)" type="number" value={formData.price} onChange={handleChange} fullWidth required />

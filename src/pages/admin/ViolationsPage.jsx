@@ -1,8 +1,8 @@
 // src/pages/admin/ViolationsPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Box, Typography, Paper, CircularProgress, Alert, Table,
-  TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Chip
+    Box, Typography, Paper, CircularProgress, Alert, Table,
+    TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Chip
 } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -39,20 +39,30 @@ const ViolationsPage = () => {
     const handleActionClick = (action, userId, userName) => {
         let title = '';
         let message = '';
-        if(action === 'suspend') {
+        let confirmText = 'تأكيد'; // Default text
+        let color = 'primary'; // Default color
+
+        if (action === 'suspend') {
             title = 'تأكيد تعليق الحساب';
-            message = `هل أنت متأكد من تعليق حساب الطالب "${userName}"؟ لن يتمكن من تسجيل الدخول.`
+            message = `هل أنت متأكد من تعليق حساب الطالب "${userName}"؟ لن يتمكن من تسجيل الدخول.`;
+            confirmText = 'نعم، قم بالتعليق';
+            color = 'warning';
         } else if (action === 'reactivate') {
             title = 'تأكيد إعادة التفعيل';
-            message = `هل أنت متأكد من إعادة تفعيل حساب الطالب "${userName}"؟ سيتم تصفير عداد المخالفات.`
+            message = `هل أنت متأكد من إعادة تفعيل حساب الطالب "${userName}"؟ سيتم تصفير عداد المخالفات.`;
+            confirmText = 'نعم، قم بالتفعيل';
+            color = 'success';
         } else if (action === 'delete') {
             title = 'تأكيد الحذف النهائي';
-            message = `تحذير! هل أنت متأكد من حذف حساب الطالب "${userName}" بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء.`
+            message = `تحذير! هل أنت متأكد من حذف حساب الطالب "${userName}" بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء.`;
+            confirmText = 'نعم، قم بالحذف';
+            color = 'error';
         }
-        
-        setActionToConfirm({ action, userId, title, message });
+
+        setActionToConfirm({ action, userId, title, message, confirmText, color });
         setConfirmModalOpen(true);
     };
+
 
     const handleConfirmAction = async () => {
         if (!actionToConfirm) return;
@@ -60,7 +70,7 @@ const ViolationsPage = () => {
         const { action, userId } = actionToConfirm;
         setProcessingId(userId);
         setConfirmModalOpen(false);
-        
+
         try {
             switch (action) {
                 case 'suspend':
@@ -154,9 +164,12 @@ const ViolationsPage = () => {
                     onConfirm={handleConfirmAction}
                     title={actionToConfirm.title}
                     message={actionToConfirm.message}
+                    confirmText={actionToConfirm.confirmText} // Pass confirmText
+                    confirmButtonColor={actionToConfirm.color} // Pass color
                     loading={processingId === actionToConfirm.userId}
                 />
             )}
+
         </Box>
     );
 };
