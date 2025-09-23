@@ -18,10 +18,12 @@ import CourseCard from '../components/courses/CourseCard';
 import CourseService from '../services/courseService';
 import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import ScienceIcon from '@mui/icons-material/Science';
 import { keyframes } from '@emotion/react';
 import './CoursesPage.css';
 
-// --- Animations ---
+// --- Animations (No changes here) ---
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; translateY(0); }
@@ -32,7 +34,7 @@ const backgroundPan = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
-// --- College Selection Component (nested) ---
+// --- CollegeSelection Component (No changes here) ---
 const CollegeSelection = ({ onSelect, category }) => {
   const theme = useTheme();
   const categoryText = category === 'pharmacy' ? 'الصيدلة' : 'طب الأسنان';
@@ -135,11 +137,12 @@ const CollegeSelection = ({ onSelect, category }) => {
   );
 };
 
+// --- PharmacyTypeSelection Component (No changes here) ---
 const PharmacyTypeSelection = ({ onSelect }) => {
     const theme = useTheme();
     const choices = [
-      { type: 'pharm-d', label: 'Pharm-D', icon: <ManIcon sx={{ fontSize: '5rem' }} />, color: theme.palette.primary.dark },
-      { type: 'clinical', label: 'Clinical', icon: <WomanIcon sx={{ fontSize: '5rem' }} />, color: theme.palette.primary.main }
+      { type: 'pharm-d', label: 'Pharm-D', icon: <MedicalServicesIcon  sx={{ fontSize: '5rem' }} />, color: theme.palette.primary.dark },
+      { type: 'clinical', label: 'Clinical', icon: <ScienceIcon  sx={{ fontSize: '5rem' }} />, color: theme.palette.primary.main }
     ];
   
     return (
@@ -236,13 +239,14 @@ const PharmacyTypeSelection = ({ onSelect }) => {
     );
   };
 
-// --- Courses List Component (nested) ---
+// --- Courses List Component ---
 const CoursesList = ({ category, collegeType, pharmacyType }) => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const theme = useTheme();
   const categoryText = category === 'pharmacy' ? 'الصيدلة' : 'طب الأسنان';
+  // سنحتفظ بـ collegeText ليتم عرضها في العنوان بشكل صحيح
   const collegeText = collegeType === 'male' ? 'البنين' : 'البنات';
   
   useEffect(() => {
@@ -251,8 +255,16 @@ const CoursesList = ({ category, collegeType, pharmacyType }) => {
       setError('');
       try {
         // ✨ --- START: THE FIX --- ✨
-        const response = await CourseService.getAllCourses({ category, college_type: collegeType, pharmacy_type: pharmacyType });
+        // بناء كائن الفلاتر بدون college_type
+        const params = { category };
+        if (pharmacyType) {
+          params.pharmacy_type = pharmacyType;
+        }
+        
+        // استدعاء الخدمة بالفلاتر الجديدة
+        const response = await CourseService.getAllCourses(params);
         // ✨ --- END: THE FIX --- ✨
+        
         setCourses(response.data.courses || []);
       } catch (err) {
         setError('حدث خطأ أثناء جلب الكورسات. يرجى المحاولة مرة أخرى.');
@@ -261,6 +273,7 @@ const CoursesList = ({ category, collegeType, pharmacyType }) => {
       }
     };
     fetchCourses();
+    // collegeType يبقى هنا ليتم تحديث الواجهة عند الاختيار، لكنه لا يُرسل للخلفية
   }, [category, collegeType, pharmacyType]);
   
   return (
@@ -271,6 +284,7 @@ const CoursesList = ({ category, collegeType, pharmacyType }) => {
     }}>
         <Container maxWidth="xl" sx={{ py: 6, animation: `${fadeInUp} 0.8s ease-out`, zIndex: 1, position: 'relative' }}>
             <Typography variant="h3" component="h2" sx={{ fontWeight: 700, mb: 4, textAlign: 'center' }}>
+                {/* العنوان سيعرض الكلية المختارة ولكن المحتوى سيكون موحداً */}
                 كورسات {categoryText} - كلية {collegeText} {pharmacyType && `- ${pharmacyType}`}
             </Typography>
             
@@ -307,7 +321,7 @@ const CoursesList = ({ category, collegeType, pharmacyType }) => {
   );
 };
 
-// --- Main Page Component ---
+// --- Main Page Component (No changes here) ---
 const CoursesPage = () => {
   const [selectedCollege, setSelectedCollege] = useState(null);
   const [selectedPharmacyType, setSelectedPharmacyType] = useState(null);

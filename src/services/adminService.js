@@ -18,7 +18,7 @@ const AdminService = {
   getLessonsForCourse: (courseId) => api.get(`/courses/${courseId}/lessons-admin`),
   addLessonToCourse: (courseId, lessonData) => api.post(`/courses/${courseId}/lessons`, lessonData),
   deleteLesson: (lessonId) => api.delete(`/courses/lessons/${lessonId}`),
-  
+
   // --- Students (Users) ---
   getAllUsers: (params) => api.get("/admin/users", { params }),
   searchUsers: (query) => api.get("/admin/users/search", { params: { q: query } }),
@@ -30,9 +30,9 @@ const AdminService = {
   getRevenueReport: () => api.get("/admin/revenue/report"),
   getApprovedPayments: () => api.get("/admin/payments/approved"),
   resetRevenue: () => api.delete("/admin/revenue/reset"),
-  
+
   // === START: دوال جديدة لنظام الحماية ===
-  
+
   // جلب طلبات الأجهزة الجديدة
   getDeviceRequests: () => {
     return api.get("/admin/device-requests");
@@ -62,7 +62,11 @@ const AdminService = {
   reactivateUser: (userId) => {
     return api.put(`/admin/users/${userId}/reactivate`);
   },
-  
+
+  updateLesson: (lessonId, lessonData) => {
+    return api.put(`/admin/lessons/${lessonId}`, lessonData);
+  },
+
 };
 
 export default AdminService;
