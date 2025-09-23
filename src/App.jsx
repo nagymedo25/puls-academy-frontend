@@ -33,7 +33,8 @@ import CourseWatchPage from "./pages/student/CourseWatchPage";
 import ChatPage from "./pages/student/Dashboard/ChatPage";
 
 function App() {
-  const { sessionExpired, logout, loading } = useAuth();
+  const { sessionExpired, sessionExpiredMessage, logout, loading } = useAuth();
+
 
   if (loading) {
     return null;
@@ -45,6 +46,7 @@ function App() {
       <SessionExpiredModal
         open={sessionExpired}
         onConfirm={() => logout(true)}
+        message={sessionExpiredMessage} 
       />
 
       <Routes>

@@ -26,7 +26,11 @@ const iconPulse = keyframes`
   }
 `;
 
-const SessionExpiredModal = ({ open, onConfirm }) => {
+const SessionExpiredModal = ({ open, onConfirm , message }) => {
+
+  const displayMessage = message || 'لأسباب تتعلق بالأمان، تم تسجيل خروجك. يرجى تسجيل الدخول مرة أخرى للمتابعة.';
+
+
   return (
     <Modal
       open={open}
@@ -78,7 +82,7 @@ const SessionExpiredModal = ({ open, onConfirm }) => {
         </Typography>
 
         <Typography id="session-expired-modal-description" color="text.secondary" sx={{ mb: 3 }}>
-          لأسباب تتعلق بالأمان، تم تسجيل خروجك. يرجى تسجيل الدخول مرة أخرى للمتابعة.
+            {displayMessage}
         </Typography>
 
         <Button

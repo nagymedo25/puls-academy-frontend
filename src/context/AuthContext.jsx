@@ -92,6 +92,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [sessionExpired, setSessionExpired] = useState(false);
+    const [sessionExpiredMessage, setSessionExpiredMessage] = useState('');
     const navigate = useNavigate();
 
     // دالة للتحقق من المستخدم عند تحميل التطبيق لأول مرة
@@ -133,16 +134,18 @@ export const AuthProvider = ({ children }) => {
     }, [navigate]);
 
     // ✨ --- ربط حدث انتهاء الجلسة بالـ Context --- ✨
-    useEffect(() => {
-        const handleSessionExpired = () => {
-            if (user) { // فقط إذا كان هناك مستخدم مسجل بالفعل
-                setSessionExpired(true); // عرض المودال
+     useEffect(() => {
+        // The event handler now extracts the message from the custom event's detail property.
+        const handleSessionExpired = (event) => {
+            if (user) {
+                setSessionExpiredMessage(event.detail.message);
+                setSessionExpired(true);
             }
         };
         window.addEventListener('session-expired', handleSessionExpired);
         return () => window.removeEventListener('session-expired', handleSessionExpired);
-    }, [user]); // يعتمد على `user` لمنع التشغيل غير الضروري
-
+    }, [user]);
+    
     const value = {
         user,
         loading,
