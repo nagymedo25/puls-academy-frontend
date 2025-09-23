@@ -1,7 +1,5 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AuthService from '../services/authService';
-import { Box } from '@mui/material';
 
 const AuthContext = createContext(null);
 
@@ -12,6 +10,23 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [sessionExpired, setSessionExpired] = useState(false); // 1. إضافة حالة جديدة للمودال
+
+    // هذا الـ hook سيستمع للحدث الذي يطلقه axios interceptor
+    useEffect(() => {
+        const handleSessionExpired = () => {
+            if (user) { // لمنع إطلاق الحدث بشكل متكرر
+                setUser(null); // مسح بيانات المستخدم
+                setSessionExpired(true); // عرض المودال
+            }
+        };
+
+        window.addEventListener('session-expired', handleSessionExpired);
+        return () => {
+            window.removeEventListener('session-expired', handleSessionExpired);
+        };
+    }, [user]); // الاعتماد على user لضمان أننا نمسح البيانات مرة واحدة فقط
+
 
     useEffect(() => {
         AuthService.getProfile()
@@ -28,24 +43,35 @@ export const AuthProvider = ({ children }) => {
 
     const login = (userData) => {
         setUser(userData);
+        setSessionExpired(false); // التأكد من إخفاء المودال عند تسجيل الدخول
     };
 
     const logout = async () => {
-        await AuthService.logout();
+        // لا تستدعي الـ API إذا كان سبب الخروج هو انتهاء الجلسة بالفعل
+        if (!sessionExpired) {
+             try {
+                await AuthService.logout();
+            } catch (error) {
+                console.error("Logout API call failed, proceeding with client-side logout:", error);
+            }
+        }
         setUser(null);
-        window.location.href = '/login';
+        setSessionExpired(false); // إخفاء المودال قبل إعادة التوجيه
+        // استخدام `replace` يمنع المستخدم من العودة للصفحة السابقة باستخدام زر الرجوع في المتصفح
+        window.location.replace('/login');
     };
 
     const value = {
         user,
+        loading,
         login,
         logout,
+        sessionExpired, // 2. تمرير حالة المودال
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin'
     };
-
-    // ✨ --- START: التعديل الرئيسي هنا --- ✨
-    // استبدال الدائرة الدوارة بتصميم القلب النابض
+    
+    // شاشة التحميل تبقى كما هي
     if (loading) {
         return (
             <>
@@ -110,9 +136,9 @@ export const AuthProvider = ({ children }) => {
                         100% { transform: scale(0.9); }
                     }
                     @keyframes draw-beat {
-                      0% { stroke-dashoffset: 200; }
-                      50% { stroke-dashoffset: 0; }
-                      100% { stroke-dashoffset: -200; }
+                        0% { stroke-dashoffset: 200; }
+                        50% { stroke-dashoffset: 0; }
+                        100% { stroke-dashoffset: -200; }
                     }
                     `}
                 </style>
@@ -126,7 +152,6 @@ export const AuthProvider = ({ children }) => {
             </>
         );
     }
-    // ✨ --- END: نهاية التعديل --- ✨
 
     return (
         <AuthContext.Provider value={value}>
