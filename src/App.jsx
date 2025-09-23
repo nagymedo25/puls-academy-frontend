@@ -35,26 +35,18 @@ import ChatPage from "./pages/student/Dashboard/ChatPage";
 function App() {
   const { sessionExpired, logout, loading } = useAuth();
 
-  useEffect(() => {
-    const handleSessionExpired = () => {
-      logout();
-    };
-
-    window.addEventListener('session-expired', handleSessionExpired);
-
-    return () => {
-      window.removeEventListener('session-expired', handleSessionExpired);
-    };
-  }, [logout]);
-
   if (loading) {
-    return null; 
+    return null;
   }
 
   return (
-    <Router>
-      <SessionExpiredModal open={sessionExpired} onConfirm={logout} />
-      
+    <>
+
+      <SessionExpiredModal
+        open={sessionExpired}
+        onConfirm={() => logout(true)}
+      />
+
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
@@ -89,7 +81,7 @@ function App() {
           </Route>
         </Route>
       </Routes>
-    </Router>
+    </>
   );
 }
 

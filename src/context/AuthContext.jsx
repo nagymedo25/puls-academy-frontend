@@ -1,4 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/authService';
 
 const AuthContext = createContext(null);
@@ -7,76 +8,11 @@ export const useAuth = () => {
     return useContext(AuthContext);
 };
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [sessionExpired, setSessionExpired] = useState(false); // 1. إضافة حالة جديدة للمودال
-
-    // هذا الـ hook سيستمع للحدث الذي يطلقه axios interceptor
-    useEffect(() => {
-        const handleSessionExpired = () => {
-            if (user) { // لمنع إطلاق الحدث بشكل متكرر
-                setUser(null); // مسح بيانات المستخدم
-                setSessionExpired(true); // عرض المودال
-            }
-        };
-
-        window.addEventListener('session-expired', handleSessionExpired);
-        return () => {
-            window.removeEventListener('session-expired', handleSessionExpired);
-        };
-    }, [user]); // الاعتماد على user لضمان أننا نمسح البيانات مرة واحدة فقط
-
-
-    useEffect(() => {
-        AuthService.getProfile()
-            .then(response => {
-                setUser(response.data.user);
-            })
-            .catch(() => {
-                setUser(null);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, []);
-
-    const login = (userData) => {
-        setUser(userData);
-        setSessionExpired(false); // التأكد من إخفاء المودال عند تسجيل الدخول
-    };
-
-    const logout = async () => {
-        // لا تستدعي الـ API إذا كان سبب الخروج هو انتهاء الجلسة بالفعل
-        if (!sessionExpired) {
-             try {
-                await AuthService.logout();
-            } catch (error) {
-                console.error("Logout API call failed, proceeding with client-side logout:", error);
-            }
-        }
-        setUser(null);
-        setSessionExpired(false); // إخفاء المودال قبل إعادة التوجيه
-        // استخدام `replace` يمنع المستخدم من العودة للصفحة السابقة باستخدام زر الرجوع في المتصفح
-        window.location.replace('/login');
-    };
-
-    const value = {
-        user,
-        loading,
-        login,
-        logout,
-        sessionExpired, // 2. تمرير حالة المودال
-        isAuthenticated: !!user,
-        isAdmin: user?.role === 'admin'
-    };
-    
-    // شاشة التحميل تبقى كما هي
-    if (loading) {
-        return (
-            <>
-                <style>
-                    {`
+// --- شاشة التحميل الأولية ---
+const AuthLoader = () => (
+    <>
+        <style>
+            {`
                     .loader-container {
                         display: flex;
                         justify-content: center;
@@ -141,16 +77,84 @@ export const AuthProvider = ({ children }) => {
                         100% { stroke-dashoffset: -200; }
                     }
                     `}
-                </style>
-                <div className="loader-container">
-                    <div className="heart">
-                        <svg className="heart-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <path className="heart-beat" d="M10 50 Q 20 10, 40 50 T 90 50" />
-                        </svg>
-                    </div>
-                </div>
-            </>
-        );
+        </style>
+        <div className="loader-container">
+            <div className="heart">
+                <svg className="heart-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <path className="heart-beat" d="M10 50 Q 20 10, 40 50 T 90 50" />
+                </svg>
+            </div>
+        </div>
+    </>
+);
+
+export const AuthProvider = ({ children }) => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [sessionExpired, setSessionExpired] = useState(false);
+    const navigate = useNavigate();
+
+    // دالة للتحقق من المستخدم عند تحميل التطبيق لأول مرة
+    const verifyUser = useCallback(async () => {
+        try {
+            const response = await AuthService.getProfile();
+            setUser(response.data.user);
+        } catch (error) {
+            setUser(null); // إذا فشل الطلب، فهذا يعني أن المستخدم غير مسجل الدخول
+        } finally {
+            setLoading(false); // إنهاء التحميل في كلتا الحالتين
+        }
+    }, []);
+
+    useEffect(() => {
+        verifyUser();
+    }, [verifyUser]);
+
+    const login = (userData) => {
+        setUser(userData);
+        setSessionExpired(false);
+    };
+
+    // ✨ --- تعديل دالة تسجيل الخروج --- ✨
+    // نستخدم `useCallback` لضمان عدم إعادة تعريف الدالة إلا عند الحاجة
+    const logout = useCallback(async (isSessionExpired = false) => {
+        // لا تستدعي API الخروج إذا كان السبب هو انتهاء الجلسة بالفعل
+        if (!isSessionExpired) {
+            try {
+                await AuthService.logout();
+            } catch (error) {
+                console.error("Logout API call failed, proceeding with client-side logout:", error);
+            }
+        }
+        setUser(null);
+        setSessionExpired(false);
+        // استخدام `Maps` للتوجيه بدلاً من إعادة تحميل الصفحة بالكامل
+        navigate('/login', { replace: true });
+    }, [navigate]);
+
+    // ✨ --- ربط حدث انتهاء الجلسة بالـ Context --- ✨
+    useEffect(() => {
+        const handleSessionExpired = () => {
+            if (user) { // فقط إذا كان هناك مستخدم مسجل بالفعل
+                setSessionExpired(true); // عرض المودال
+            }
+        };
+        window.addEventListener('session-expired', handleSessionExpired);
+        return () => window.removeEventListener('session-expired', handleSessionExpired);
+    }, [user]); // يعتمد على `user` لمنع التشغيل غير الضروري
+
+    const value = {
+        user,
+        loading,
+        sessionExpired,
+        login,
+        logout,
+        isAuthenticated: !!user,
+        isAdmin: user?.role === 'admin'
+    };
+
+    if (loading) {
+        return <AuthLoader />;
     }
 
     return (
