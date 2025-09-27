@@ -43,39 +43,39 @@ const AbstractShape = ({ sx }) => (
 
 // Helper function to calculate password strength
 const getPasswordStrength = (password) => {
-  let score = 0;
-  if (!password) return 0;
-  if (password.length > 8) score++;
-  if (/[a-z]/.test(password)) score++;
-  if (/[A-Z]/.test(password)) score++;
-  if (/[0-9]/.test(password)) score++;
-  if (/[^a-zA-Z0-9]/.test(password)) score++;
-  return score;
+    let score = 0;
+    if (!password) return 0;
+    if (password.length > 8) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^a-zA-Z0-9]/.test(password)) score++;
+    return score;
 };
 
 const PasswordStrengthBar = ({ password }) => {
-  const strength = getPasswordStrength(password);
-  const color = ['#f44336', '#ff9800', '#ffc107', '#4caf50', '#4caf50'][strength - 1] || 'transparent';
-  const value = (strength / 5) * 100;
-  const label = ['ضعيفة جدًا', 'ضعيفة', 'متوسطة', 'قوية', 'قوية جدًا'][strength - 1] || '';
+    const strength = getPasswordStrength(password);
+    const color = ['#f44336', '#ff9800', '#ffc107', '#4caf50', '#4caf50'][strength - 1] || 'transparent';
+    const value = (strength / 5) * 100;
+    const label = ['ضعيفة جدًا', 'ضعيفة', 'متوسطة', 'قوية', 'قوية جدًا'][strength - 1] || '';
 
-  return (
-    <Box sx={{ width: '100%', mt: 1 }}>
-      <LinearProgress
-        variant="determinate"
-        value={value}
-        sx={{
-          height: 8,
-          borderRadius: 5,
-          backgroundColor: '#e0e0e0',
-          '& .MuiLinearProgress-bar': { backgroundColor: color, transition: 'transform .4s linear' }
-        }}
-      />
-      <Typography variant="caption" color={color} sx={{ display: 'block', textAlign: 'right', mt: 0.5, height: '1.2em' }}>
-        {label}
-      </Typography>
-    </Box>
-  );
+    return (
+        <Box sx={{ width: '100%', mt: 1 }}>
+            <LinearProgress 
+                variant="determinate" 
+                value={value} 
+                sx={{ 
+                    height: 8, 
+                    borderRadius: 5, 
+                    backgroundColor: '#e0e0e0',
+                    '& .MuiLinearProgress-bar': { backgroundColor: color, transition: 'transform .4s linear' } 
+                }} 
+            />
+            <Typography variant="caption" color={color} sx={{ display: 'block', textAlign: 'right', mt: 0.5, height: '1.2em' }}>
+                {label}
+            </Typography>
+        </Box>
+    );
 };
 
 const RegisterPage = () => {
@@ -97,40 +97,40 @@ const RegisterPage = () => {
 
   const validateEmail = (email) => {
     if (!email) {
-      setEmailError('');
-      return true;
+        setEmailError('');
+        return true;
     }
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!re.test(String(email).toLowerCase())) {
-      setEmailError('صيغة البريد الإلكتروني غير صحيحة.');
-      return false;
+        setEmailError('صيغة البريد الإلكتروني غير صحيحة.');
+        return false;
     }
     setEmailError('');
     return true;
   };
 
   const validatePhone = (phone) => {
-    if (!phone) {
+      if (!phone) {
+          setPhoneError('');
+          return true;
+      }
+      const re = /^01[0-2,5]{1}[0-9]{8}$/;
+      if(!re.test(phone)) {
+          setPhoneError('رقم الهاتف يجب أن يكون رقم مصري صحيح.');
+          return false;
+      }
       setPhoneError('');
       return true;
-    }
-    const re = /^01[0-2,5]{1}[0-9]{8}$/;
-    if (!re.test(phone)) {
-      setPhoneError('رقم الهاتف يجب أن يكون رقم مصري صحيح.');
-      return false;
-    }
-    setPhoneError('');
-    return true;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    if (name === 'email') {
-      validateEmail(value);
+     if (name === 'email') {
+        validateEmail(value);
     }
     if (name === 'phone') {
-      validatePhone(value);
+        validatePhone(value);
     }
   };
 
@@ -139,13 +139,13 @@ const RegisterPage = () => {
     setError('');
 
     if (!(formData.email || formData.phone)) {
-      setError('يرجى إدخال البريد الإلكتروني أو رقم الهاتف.');
-      return;
+        setError('يرجى إدخال البريد الإلكتروني أو رقم الهاتف.');
+        return;
     }
 
     if (Object.values(formData).some(field => field === '')) {
-      setError('يرجى ملء جميع الحقول المطلوبة.');
-      return;
+        setError('يرجى ملء جميع الحقول المطلوبة.');
+        return;
     }
     if (!validateEmail(formData.email) || !validatePhone(formData.phone)) return;
     if (formData.password !== formData.confirmPassword) {
@@ -153,8 +153,8 @@ const RegisterPage = () => {
       return;
     }
     if (getPasswordStrength(formData.password) < 3) {
-      setError('كلمة المرور يجب أن تكون "متوسطة" على الأقل.');
-      return;
+        setError('كلمة المرور يجب أن تكون "متوسطة" على الأقل.');
+        return;
     }
 
     setSuccess('');
@@ -163,7 +163,7 @@ const RegisterPage = () => {
     try {
       const { confirmPassword, ...apiData } = formData;
       const response = await AuthService.register(apiData);
-
+      
       setSuccess(`أهلاً بك ${response.data.user.name}! جاري توجيهك إلى لوحة التحكم...`);
 
       setTimeout(() => {
@@ -210,7 +210,7 @@ const RegisterPage = () => {
       <AbstractShape sx={{ width: 150, height: 150, top: '20%', right: '-50px', animationDuration: '18s' }} />
       <AbstractShape sx={{ width: 200, height: 200, bottom: '-70px', right: '20%', animationDuration: '22s' }} />
       <AbstractShape sx={{ width: 100, height: 100, bottom: '10%', left: '-30px', animationDuration: '16s' }} />
-
+      
       <Container maxWidth="sm" sx={{ zIndex: 1 }}>
         <Box
           sx={{
@@ -255,7 +255,7 @@ const RegisterPage = () => {
                 helperText={emailError}
                 InputProps={{ startAdornment: <EmailOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
               />
-              <TextField
+                <TextField
                 label="رقم الهاتف"
                 name="phone"
                 type="tel"
@@ -268,14 +268,14 @@ const RegisterPage = () => {
               />
               <Box>
                 <TextField
-                  label="كلمة المرور"
-                  name="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  fullWidth
-                  InputProps={{ startAdornment: <LockOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
+                    label="كلمة المرور"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    fullWidth
+                    InputProps={{ startAdornment: <LockOutlined sx={{ mr: 1, color: 'action.active' }} /> }}
                 />
                 <PasswordStrengthBar password={formData.password} />
               </Box>
@@ -295,7 +295,7 @@ const RegisterPage = () => {
                 <Select
                   labelId="college-select-label"
                   name="college"
-                  value={formData.college || ''}
+                  value={formData.college}
                   label="الكليّة"
                   onChange={handleChange}
                   startAdornment={<SchoolOutlined sx={{ mr: 1, color: 'action.active' }} />}
@@ -311,7 +311,7 @@ const RegisterPage = () => {
                   <Select
                     labelId="pharmacy-type-select-label"
                     name="pharmacy_type"
-                    value={formData.pharmacy_type || ''}
+                    value={formData.pharmacy_type}
                     label="التخصص"
                     onChange={handleChange}
                   >
@@ -323,10 +323,10 @@ const RegisterPage = () => {
 
               <FormControl component="fieldset" required>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, color: 'text.secondary' }}>
-                  <WcOutlined />
-                  <Typography component="legend" variant="body1">النوع</Typography>
+                   <WcOutlined />
+                   <Typography component="legend" variant="body1">النوع</Typography>
                 </Box>
-                <RadioGroup row name="gender" value={formData.gender || ''} onChange={handleChange}>
+                <RadioGroup row name="gender" value={formData.gender} onChange={handleChange}>
                   <FormControlLabel value="male" control={<Radio />} label="ذكر" />
                   <FormControlLabel value="female" control={<Radio />} label="أنثى" />
                 </RadioGroup>
