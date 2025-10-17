@@ -15,6 +15,9 @@ import Logo from "../../assets/logo2.png";
 // Services
 import CourseService from "../../services/courseService";
 
+// Utils
+import { processVideoUrl } from "../../utils/videoUtils";
+
 // CSS
 import "./CourseWatchPage.css";
 
@@ -78,16 +81,13 @@ const CourseWatchPage = () => {
   const [error, setError] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 900);
 
-  const getBunnyEmbedUrl = useCallback((playUrl) => {
-    if (!playUrl || !playUrl.includes("mediadelivery.net/play")) return "";
-    try {
-      const embedUrl = new URL(playUrl.replace("/play/", "/embed/"));
-      embedUrl.searchParams.set("autoplay", "true");
-      return embedUrl.toString();
-    } catch (e) {
-      console.error("Could not parse Bunny.net URL", e);
-      return "";
+  const getVideoEmbedData = useCallback((videoUrl) => {
+    const result = processVideoUrl(videoUrl);
+    if (result.error) {
+      console.error("Video URL processing error:", result.error);
+      return null;
     }
+    return result;
   }, []);
 
   useEffect(() => {
@@ -251,13 +251,53 @@ const CourseWatchPage = () => {
           <>
             <h1 className="current-lesson-title">{currentLesson.title}</h1>
             <div className="video-player-wrapper">
-              <iframe
-                src={getBunnyEmbedUrl(currentLesson.video_url)}
-                loading="eager"
-                title={currentLesson.title}
-                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-                allowFullScreen={true}
-              ></iframe>
+              {(() => {
+                const videoData = getVideoEmbedData(currentLesson.video_url);
+                if (!videoData) {
+                  return (
+                    <div className="video-error">
+                      <p>عذراً، لا يمكن تشغيل هذا الفيديو. ربما الرابط غير مدعوم أو تالف.</p>
+                    </div>
+                  );
+                }
+
+                // Add autoplay parameter based on service type
+                let embedUrl = videoData.embedUrl;
+                if (videoData.service === 'youtube') {
+                  // YouTube embed URL already includes autoplay in the utility
+                  // But we need to ensure it has the autoplay parameter
+                  try {
+                    const url = new URL(embedUrl);
+                    if (!url.searchParams.has('autoplay')) {
+                      url.searchParams.set('autoplay', '1');
+                    }
+                    embedUrl = url.toString();
+                  } catch (e) {
+                    console.error('Error adding autoplay to YouTube URL:', e);
+                  }
+                } else if (videoData.service === 'bunny') {
+                  // Bunny URLs might need autoplay parameter
+                  try {
+                    const url = new URL(embedUrl);
+                    if (!url.searchParams.has('autoplay')) {
+                      url.searchParams.set('autoplay', 'true');
+                    }
+                    embedUrl = url.toString();
+                  } catch (e) {
+                    console.error('Error adding autoplay to Bunny URL:', e);
+                  }
+                }
+
+                return (
+                  <iframe
+                    src={embedUrl}
+                    loading="eager"
+                    title={currentLesson.title}
+                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                    allowFullScreen={true}
+                  />
+                );
+              })()}
             </div>
             <div className="lesson-description-box">
               <h3>وصف الدرس</h3>

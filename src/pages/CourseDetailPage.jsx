@@ -9,6 +9,7 @@ import Header from '../components/common/Header/Header';
 import Footer from '../components/common/Footer/Footer';
 import CourseService from '../services/courseService';
 import AuthRedirectModal from '../components/common/AuthRedirectModal';
+import { processVideoUrl } from '../utils/videoUtils';
 
 import './CourseDetailPage.css';
 
@@ -45,22 +46,9 @@ const CourseDetailPage = () => {
     return <Alert severity="error">{error || 'لم يتم العثور على الكورس.'}</Alert>;
   }
 
-  const getBunnyEmbedUrl = (playUrl) => {
-    if (!playUrl || !playUrl.includes('mediadelivery.net/play')) {
-      console.error("Invalid Bunny.net URL provided in database:", playUrl);
-      return '';
-    }
-    try {
-      const embedUrl = new URL(playUrl.replace('/play/', '/embed/'));
-      embedUrl.searchParams.set('autoplay', 'false');
-      return embedUrl.toString();
-    } catch (e) {
-      console.error("Could not parse Bunny.net URL", e);
-      return '';
-    }
-  }
-
-  const embedSrc = getBunnyEmbedUrl(course.preview_url);
+  // Process video URL using the new utility function
+  const videoResult = processVideoUrl(course.preview_url);
+  const embedSrc = videoResult.embedUrl;
 
   return (
     <>
@@ -82,7 +70,9 @@ const CourseDetailPage = () => {
                   ></iframe>
                 ) : (
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                     <Typography color="white">فشل تحميل الفيديو. الرابط غير صالح.</Typography>
+                     <Typography color="white">
+                       {videoResult.error || 'فشل تحميل الفيديو. الرابط غير صالح.'}
+                     </Typography>
                   </Box>
                 )}
               </div>

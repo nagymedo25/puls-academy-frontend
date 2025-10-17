@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://puls-academy-backend-production.up.railway.app', // Your backend URL
+        target: 'https://pulse-academy-backend.vercel.app/', // Your backend URL
         changeOrigin: true,
       },
     },

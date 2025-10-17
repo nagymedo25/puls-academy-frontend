@@ -11,6 +11,31 @@ const api = axios.create({
   },
 });
 
+// Add request interceptor to log outgoing requests
+api.interceptors.request.use(
+  (config) => {
+    console.log('🚀 [API REQUEST]', {
+      url: config.url,
+      method: config.method,
+      withCredentials: config.withCredentials,
+      headers: config.headers
+    });
+
+    // Log cookies for debugging
+    if (document.cookie) {
+      console.log('🍪 [API REQUEST] Cookies:', document.cookie);
+    } else {
+      console.log('⚠️ [API REQUEST] No cookies found');
+    }
+
+    return config;
+  },
+  (error) => {
+    console.error('❌ [API REQUEST ERROR]', error);
+    return Promise.reject(error);
+  }
+);
+
 // ✨ --- START: Interceptor Update --- ✨
 // This interceptor will now pass the specific error message from the backend.
 api.interceptors.response.use(
